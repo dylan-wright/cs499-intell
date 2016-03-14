@@ -7,6 +7,7 @@ from django.views.generic.list import ListView
 from .forms import *
 from django.template import RequestContext
 
+
 # Create your views here.
 class CharacterCreate(CreateView):
     template_name = "editor/edit/create_form.html"
@@ -71,11 +72,11 @@ class DescriptionList(ListView):
 class EventCreate(CreateView):
     template_name = "editor/edit/create_form.html"
     model = Event
-    fields = ["name", "turn"]
+    fields = ["turn"]
 class EventUpdate(UpdateView):
     template_name = "editor/edit/update_form.html"
     model = Event
-    fields = ["name", "turn"]
+    fields = ["turn"]
 class EventDelete(DeleteView):
     template_name = "editor/edit/delete_form.html"
     model = Event
@@ -150,7 +151,7 @@ class InvolvedList(ListView):
         return context
 
 def index(request):
-    return HttpResponse("Editor Index")
+    return render(request, "editor/index.html")
 
 def edit(request):
     tableselect = ["character", "location", "description", "event",

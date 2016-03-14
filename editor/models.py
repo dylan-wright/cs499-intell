@@ -10,6 +10,15 @@ from django.db import models
 from django.core.urlresolvers import reverse
 
 # Create your models here.
+class Scenario(models.Model):
+    name = models.CharField(max_length=64)
+    turn_num = models.IntegerField()
+    point_num = models.IntegerField()
+    author = models.CharField(max_length=64)
+
+    def __str(self):
+        return self.name
+
 class Character(models.Model):
     name = models.CharField(max_length=64)
     key = models.BooleanField()
@@ -46,6 +55,7 @@ class Description(models.Model):
         
 class Event(models.Model):
     turn = models.IntegerField()
+    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return "Event on turn "+str(self.turn)

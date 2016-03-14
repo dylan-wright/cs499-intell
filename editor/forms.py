@@ -4,7 +4,7 @@ from .models import *
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('turn', 'notes')
+        fields = ('turn',)
 
 class DescriptionForm(forms.ModelForm):
     class Meta:

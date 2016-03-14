@@ -16,7 +16,7 @@ class Character(models.Model):
     notes = models.CharField(max_length=512)
 
     def __str__(self):
-        return name
+        return self.name
 
     def get_absolute_url(self):
         return reverse("edit")
@@ -27,7 +27,7 @@ class Location(models.Model):
     y = models.IntegerField()
 
     def __str__(self):
-        return name
+        return self.name
 
     def get_absolute_url(self):
         return reverse("edit")
@@ -39,7 +39,7 @@ class Description(models.Model):
     key = models.BooleanField()
 
     def __str__(self):
-        return text
+        return self.text
 
     def get_absolute_url(self):
         return reverse("edit")
@@ -48,7 +48,7 @@ class Event(models.Model):
     turn = models.IntegerField()
 
     def __str__(self):
-        return "Event on turn "+str(turn)
+        return "Event on turn "+str(self.turn)
 
     def get_absolute_url(self):
         return reverese("edit")

@@ -178,4 +178,4 @@ def accept_ajax_scenario(request):
     # generate file name
     # save json
     # add file name to db
-    return render(request, "editor/edit/accept_ajax_scenario.html")
+    return render(request, "editor/accept_ajax_scenario.html")

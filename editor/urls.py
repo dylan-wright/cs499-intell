@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
 
     #ajax_scenario
-    url(r'^edit/accept_ajax_scenario/$', views.accept_ajax_scenario, name='accept_ajax_scenario'),
+    url(r'^accept_ajax_scenario/$', views.accept_ajax_scenario, name='accept_ajax_scenario'),
 
     #manual html page based editor 
     #TODO: migrate to FE js/html editor

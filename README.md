@@ -18,7 +18,7 @@ Repurpose to frontend application which sends scenario back to be verified and a
 3. Managment
 
 ## Cool Links Yo :100: :
-* https://docs.djangoproject.com/en/dev/
-* https://guides.github.com/features/mastering-markdown/
-* http://restforchrome.blogspot.com/
-* https://www.youtube.com/watch?v=ateQQc-AgEM
+* django docs: https://docs.djangoproject.com/en/dev/
+* guide to this format: https://guides.github.com/features/mastering-markdown/
+* motivation: https://www.youtube.com/watch?v=ateQQc-AgEM
+* REST testing interface GUI (really useful): https://github.com/wiztools/rest-client

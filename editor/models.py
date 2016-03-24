@@ -1,23 +1,39 @@
 '''
     INTELL The Craft of Intelligence
-    Django Models
+    Django Models - Scenario Database schema design:
+            https://intellproject.com/~dylan/INTELL/documents/schema.shtml
+            TODO: this ^
 
     Version
         0314 :  Incorporated prototype models
+        0324 :  Start migration to FE centric editor with verification BE
+                Added Scenario Model
 '''
 
 from django.db import models
 from django.core.urlresolvers import reverse
 
 # Create your models here.
+'''
+Scenario
+    id          - auto gen primary key
+    name        - author's name for scenario
+    turn_num    - turns in game
+    author      - author's name, db will actually connect author model to
+                    their scenarios but this way the author can choose to
+                    be anonomys - thats not spelled right sue me. 
+    file_name   - location JSON dump will be stored (/static ?)
+'''
 class Scenario(models.Model):
     name = models.CharField(max_length=64)
     turn_num = models.IntegerField()
     point_num = models.IntegerField()
-    author = models.CharField(max_length=64)
+    author = models.CharField(max_length=32)     # too short?
+    file_name = models.CharField(max_length=156, null=True) # length may be too long
 
-    def __str(self):
-        return self.name
+    #TODO: make better 
+    def __str__(self):
+        return self.author + " presents " + self.name
 
 class Character(models.Model):
     name = models.CharField(max_length=64)
@@ -55,7 +71,6 @@ class Description(models.Model):
         
 class Event(models.Model):
     turn = models.IntegerField()
-    scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return "Event on turn "+str(self.turn)

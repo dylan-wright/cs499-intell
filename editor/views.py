@@ -158,3 +158,24 @@ def edit(request):
                    "describedby", "happenedat", "involved"]
     context = {"tableselect": tableselect}
     return render(request, "editor/edit/index.html", context)
+
+'''
+    accept_ajax_scenario
+        recv ajax from editor FE
+        sanitize JSON contents
+        validate contents
+        generate file name and save
+        store file name in db
+
+    ref:
+        djangoproject serializer/deserializer
+        https://docs.djangoproject.com/en/dev/topics/serialization/
+'''
+def accept_ajax_scenario(request):
+    # recv assumed
+    # sanitize
+    # validate
+    # generate file name
+    # save json
+    # add file name to db
+    return render(request, "editor/edit/accept_ajax_scenario.html")

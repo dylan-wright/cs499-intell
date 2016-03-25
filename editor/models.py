@@ -35,6 +35,14 @@ class Scenario(models.Model):
     def __str__(self):
         return self.author + " presents " + self.name
 
+'''
+Character
+    id          - auto get primary key
+    name        - name of character
+    key         - is the character key to the scenario? True: user wins on
+                    capture
+    notes       - author notes about character
+'''
 class Character(models.Model):
     name = models.CharField(max_length=64)
     key = models.BooleanField()

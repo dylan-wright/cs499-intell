@@ -181,5 +181,5 @@ def accept_ajax_scenario(request):
     # generate file name
     # save json
     # add file name to db
-    context = {"data":request.GET}
-    return render(request, "editor/accept_ajax_scenario.html")
+    context = {"data":request}
+    return render(request, "editor/accept_ajax_scenario.html", context)

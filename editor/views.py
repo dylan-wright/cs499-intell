@@ -1,3 +1,5 @@
+from django.views.decorators.csrf import csrf_exempt
+
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
@@ -174,6 +176,7 @@ def edit(request):
     current use:
         dump request data to template
 '''
+@csrf_exempt
 def accept_ajax_scenario(request):
     # recv assumed
     # sanitize
@@ -181,5 +184,8 @@ def accept_ajax_scenario(request):
     # generate file name
     # save json
     # add file name to db
-    context = {"data":request}
+    if request.method == 'POST':
+        context = {"data":request.body}
+    else:
+        context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)

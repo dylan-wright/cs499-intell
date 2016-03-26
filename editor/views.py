@@ -1,3 +1,15 @@
+'''
+    INTELL The Craft of Intelligence
+    Django Views - Editor screens:
+            https://intellproject.com/~dylan/INTELL/documents/design.shtml
+
+    Version
+        0314 :  Incorporated prototype views
+        0326 :  Added documentation and incorporated ajax post reflector
+'''
+
+
+#TODO: remove this
 from django.views.decorators.csrf import csrf_exempt
 
 from django.shortcuts import render, render_to_response
@@ -11,6 +23,13 @@ from django.template import RequestContext
 
 
 # Create your views here.
+'''
+generic Create/Update/Delete/List pages
+    CreateView -> templates/editor/edit/create_form.html
+    UpdateView -> templates/editor/edit/update_form.html
+    DeleteView -> templates/editor/edit/delete_form.html
+    ListView   -> templates/editor/edit/list_view.html
+'''
 class CharacterCreate(CreateView):
     template_name = "editor/edit/create_form.html"
     model = Character
@@ -152,9 +171,17 @@ class InvolvedList(ListView):
         context["tablename"]="involved"
         return context
 
+'''
+index for editor
+    index -> templates/editor/index.html
+'''
 def index(request):
     return render(request, "editor/index.html")
 
+'''
+navigation page for page based (protoeditor)
+    edit -> templates/editor/edit/index.html
+'''
 def edit(request):
     tableselect = ["character", "location", "description", "event",
                    "describedby", "happenedat", "involved"]

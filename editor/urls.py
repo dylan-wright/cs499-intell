@@ -1,3 +1,11 @@
+'''
+    INTELL The Craft of Intelligence
+    Django URLS - Editor url routing
+
+    Version
+        0314 :  Incorporated prototype urls
+        0326 :  Added documentation and incorporated ajax post reflector
+'''
 from django.conf.urls import url
 
 from . import views

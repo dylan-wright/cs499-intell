@@ -54,6 +54,13 @@ class Character(models.Model):
     def get_absolute_url(self):
         return reverse("edit")
 
+'''
+Location
+    id          - auto gen primary key
+    name        - name of location
+    x           - x coord of location
+    y           - y coord of location
+'''
 class Location(models.Model):
     name = models.CharField(max_length=64)
     x = models.IntegerField()
@@ -65,6 +72,19 @@ class Location(models.Model):
     def get_absolute_url(self):
         return reverse("edit")
 
+'''
+Description
+    id          - auto gen primary key
+    text        - description of the event (events can have multiple
+                    description so multiple text's)
+    hidden      - flag indicating whether the description is hidden by default
+                    an Event's Description(s) can have different hidden flag
+                    values (basis of investigations)
+    name        - TODO:why does this have a name
+    key         - flag indicating if the description is relevent to the
+                    scenario 
+                    TODO: should this be moved to event? (i say no)
+'''
 class Description(models.Model):
     text = models.CharField(max_length=512)
     hidden = models.BooleanField()
@@ -77,6 +97,11 @@ class Description(models.Model):
     def get_absolute_url(self):
         return reverse("edit")
         
+'''
+Event
+    id          - auto gen primary key
+    turn        - turn event occurs on
+'''
 class Event(models.Model):
     turn = models.IntegerField()
 
@@ -86,6 +111,12 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverese("edit")
 
+'''
+Involved
+    id          - auto gen primary key
+    event       - id of event
+    character   - id of character
+'''
 class Involved(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     character = models.ForeignKey(Character, on_delete=models.CASCADE)
@@ -96,6 +127,12 @@ class Involved(models.Model):
     def get_absolute_url(self):
         return reverse("edit")
 
+'''
+HappenedAt
+    id          - auto gen primary key
+    event       - id of event
+    location    - id of location
+'''
 class HappenedAt(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -106,6 +143,12 @@ class HappenedAt(models.Model):
     def get_absolute_url(self):
         return reverse("edit")
 
+'''
+DescribedBy
+    id          - auto gen primary key
+    event       - id of event
+    description - id of description
+'''
 class DescribedBy(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     description = models.ForeignKey(Description, on_delete=models.CASCADE)

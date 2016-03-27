@@ -230,31 +230,27 @@ def accept_ajax_scenario(request):
         read post username/password
         authenticate
 '''
+'''
 def login(request):
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(username=username, password=password)
-
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            # success
-            return render(request, "editor/login_good.html")
-        else:
-            # user disabled
-            pass
+    if user is not None and user.is_active:
+        login(request, user)
+        return HttpResponseRedirect("/account/loggedin")
     else:
-        # invalid login
-        pass
+        return HttpResponseRedirect("/account/invalid")
+'''
 
 '''
     logout
         logout user
 '''
+'''
 def logout_view(request):
     logout(request)
-    return render(request, "editor/logout_good.html")
-
+    HttpResponseRedirect("/account/loggedout")
+'''
 '''
     register
 
@@ -265,7 +261,12 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
+            return HttpResponseRedirect("/editor/dump_session/")
     else:
         form = UserCreationForm()
     context = {'form':form}
     return render(request, "registration/register.html", context)
+
+def dump_session(request):
+    context = {"session": request.session.items}
+    return render(request, "editor/dump_session.html", context)

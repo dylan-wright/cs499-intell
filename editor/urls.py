@@ -21,6 +21,7 @@ urlpatterns = [
     #TODO: migrate to FE js/html editor
     url(r'^edit/$', views.edit, name='edit'),
 
+    url(r'^dump_session/$', views.dump_session, name='dump_sesssion'),
 
     #manual html character pages
     url(r'^edit/character/$', views.CharacterList.as_view(), name="character-view"),

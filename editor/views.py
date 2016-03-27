@@ -20,6 +20,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from .forms import *
 from django.template import RequestContext
+from django.core import serializers
 
 
 # Create your views here.
@@ -201,7 +202,8 @@ def edit(request):
         https://docs.djangoproject.com/en/dev/topics/serialization/
 
     current use:
-        dump request data to template
+        Dump deserialized objects from JSON file. currently using 
+        /editor/static/editor/fixture.json for testing
 '''
 @csrf_exempt
 def accept_ajax_scenario(request):
@@ -212,7 +214,11 @@ def accept_ajax_scenario(request):
     # save json
     # add file name to db
     if request.method == 'POST':
-        context = {"data":request.body}
+        data = []
+        for obj in serializers.deserialize("json", 
+                                            request.FILES['fileUpload'].read()):
+            data.append(obj)
+        context = {"data":data}
     else:
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)

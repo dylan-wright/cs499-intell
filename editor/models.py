@@ -25,7 +25,7 @@ Scenario
     file_name   - location JSON dump will be stored (/static ?)
 '''
 class Scenario(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, null=True)
     turn_num = models.IntegerField()
     point_num = models.IntegerField()
     author = models.CharField(max_length=32)     # too short?

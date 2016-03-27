@@ -23,6 +23,8 @@ from django.template import RequestContext
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.core.files import File
+from django.conf import settings
 
 # Create your views here.
 '''
@@ -216,11 +218,18 @@ def accept_ajax_scenario(request):
     # add file name to db
     if request.method == 'POST':
         data = []
-        for obj in serializers.deserialize("json", 
-                                            request.FILES['fileUpload'].read()):
+
+        fileUpload = request.FILES['fileUpload']
+        for obj in serializers.deserialize("json", fileUpload.read()):
             data.append(obj)
             obj.save()
         context = {"data":data}
+
+        scenario = Scenario(name="temp", turn_num=20, point_num=20, author="")
+        scenario.save()
+        file_name = str(scenario.id)
+        scenario.file_name.save(file_name, fileUpload)
+        scenario.save()
     else:
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)

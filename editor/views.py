@@ -225,6 +225,7 @@ def accept_ajax_scenario(request):
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)
 
+#TODO: move registrations things out of editor
 '''
     login
         read post username/password

@@ -29,9 +29,8 @@ class Scenario(models.Model):
     turn_num = models.IntegerField()
     point_num = models.IntegerField()
     author = models.CharField(max_length=32)     # too short?
-    file_name = models.CharField(max_length=156, null=True) # length may be too long
-
-    #TODO: make better 
+    file_name = models.FileField(upload_to='scenarios', null=True) 
+    
     def __str__(self):
         return self.author + " presents " + self.name
 

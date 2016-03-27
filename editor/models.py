@@ -45,7 +45,7 @@ Character
 '''
 class Character(models.Model):
     name = models.CharField(max_length=64)
-    key = models.BooleanField()
+    key = models.NullBooleanField()
     notes = models.CharField(max_length=512)
 
     def __str__(self):
@@ -89,7 +89,7 @@ class Description(models.Model):
     text = models.CharField(max_length=512)
     hidden = models.BooleanField()
     name = models.CharField(max_length=64)
-    key = models.BooleanField()
+    key = models.NullBooleanField()
 
     def __str__(self):
         return self.text

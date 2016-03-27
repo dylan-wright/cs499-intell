@@ -218,6 +218,7 @@ def accept_ajax_scenario(request):
         for obj in serializers.deserialize("json", 
                                             request.FILES['fileUpload'].read()):
             data.append(obj)
+            obj.save()
         context = {"data":data}
     else:
         context = {"data":request}

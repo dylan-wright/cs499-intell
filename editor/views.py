@@ -22,7 +22,7 @@ from .forms import *
 from django.template import RequestContext
 from django.core import serializers
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 '''
@@ -254,3 +254,18 @@ def login(request):
 def logout_view(request):
     logout(request)
     return render(request, "editor/logout_good.html")
+
+'''
+    register
+
+    http://www.djangobook.com/en/2.0/chapter14.html
+'''
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+    else:
+        form = UserCreationForm()
+    context = {'form':form}
+    return render(request, "registration/register.html", context)

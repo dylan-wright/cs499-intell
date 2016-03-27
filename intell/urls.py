@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^editor/', include('editor.urls')),
     url(r'^game/', include('game.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('django.contrib.auth.urls')),
 ]

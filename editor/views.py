@@ -21,6 +21,7 @@ from django.views.generic.list import ListView
 from .forms import *
 from django.template import RequestContext
 from django.core import serializers
+from django.contrib.auth import authenticate, login, logout
 
 
 # Create your views here.

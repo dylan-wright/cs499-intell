@@ -223,3 +223,33 @@ def accept_ajax_scenario(request):
     else:
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)
+
+'''
+    login
+        read post username/password
+        authenticate
+'''
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            # success
+            return render(request, "editor/login_good.html")
+        else:
+            # user disabled
+            pass
+    else:
+        # invalid login
+        pass
+
+'''
+    logout
+        logout user
+'''
+def logout_view(request):
+    logout(request)
+    return render(request, "editor/logout_good.html")

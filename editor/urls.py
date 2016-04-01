@@ -19,7 +19,9 @@ urlpatterns = [
 
     #manual html page based editor 
     #TODO: migrate to FE js/html editor
+    #bootstrap html
     url(r'^edit/$', views.edit, name='edit'),
+
 
     url(r'^dump_session/$', views.dump_session, name='dump_sesssion'),
 

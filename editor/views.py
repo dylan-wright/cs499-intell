@@ -187,10 +187,7 @@ navigation page for page based (protoeditor)
     edit -> templates/editor/edit/index.html
 '''
 def edit(request):
-    tableselect = ["character", "location", "description", "event",
-                   "describedby", "happenedat", "involved"]
-    context = {"tableselect": tableselect}
-    return render(request, "editor/edit/index.html", context)
+    return render(request, "editor/edit/edit.html")
 
 '''
     accept_ajax_scenario

@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,7 +124,7 @@
 							<!-- Locs Tab contents -->
 							<div id="LocsTab" class="tab-pane fade">
 								<div class="row">
-									<img id="locMap" src="img/map.png" class="img-responsive thumbnail" alt="Map">
+									<img id="locMap" src="{% static "Img/map.png" %}" class="img-responsive thumbnail" alt="Map">
 								</div>
 								<div class="row"> <!--Buttons -->
 									<div class="col-sm-4">

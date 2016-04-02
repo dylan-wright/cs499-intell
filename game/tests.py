@@ -51,6 +51,11 @@ class  GameTestCase(TestCase):
         self.assertEqual(len(game.players.all()), 3)
         self.assertEqual(game.players.all()[0].user.username, "user1")
 
+        game.start()
+
+        self.assertEqual(game.started, True)
+
+
 class PlayerTestCase(TestCase):
     def setUp(self):
         pass

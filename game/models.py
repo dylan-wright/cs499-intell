@@ -10,3 +10,14 @@ class Game(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
     players = models.ManyToManyField(Player)
     started = models.BooleanField(default=False)
+    creator = models.ForeignKey(User, null=True)
+
+    def __str__(self):
+        return "Game created by %s using scenario %s"%(creator.name, scenario.name)
+
+    def add_player(self, player):
+        self.players.add(player)
+
+    def start(self):
+        self.started = True
+

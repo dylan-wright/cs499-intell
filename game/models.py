@@ -13,7 +13,7 @@ class Game(models.Model):
     creator = models.ForeignKey(User, null=True)
 
     def __str__(self):
-        return "Game created by %s using scenario %s"%(creator.name, scenario.name)
+        return "Game created by %s using scenario %s"%(self.creator.first_name, self.scenario.name)
 
     def add_player(self, player):
         self.players.add(player)

@@ -4,10 +4,21 @@
   <td>Game Owner</td>
   <td>Turn Timer</td>
 </tr>
-
+{% for game in current %}
+<tr>
+  <td>{{ game.turn }}</td>
+  <td>{{ game.creator }}</td>
+  <td>{{ game.turn_timer }}</td>
+</tr>
+{% endfor %}
 <tr>
   <td>Game Owner</td>
   <td>Players</td>
   <td>Start In</td>
 </tr>
+{% for game in pending %}
+<td>
+  <td>{{ game.creator }}</td>
+  <td>{{ game.players }}</td>
+{% endfor %}
 </table>

@@ -9,3 +9,4 @@ class Player(models.Model):
 class Game(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
     players = models.ManyToManyField(Player)
+    started = models.BooleanField(default=False)

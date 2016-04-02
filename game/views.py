@@ -8,8 +8,11 @@ def index(request):
     return HttpResponse("Game Index")
 
 def games(request):
-    context = {"current": Game.objects.filter(started=True),
-               "pending": Game.objects.filter(started=False)
+    current = Game.objects.filter(started=True)
+    pending = Game.objects.filter(started=False)
+
+    context = {"current": current,
+               "pending": pending,
               }
     return render(request, "game/games.html", context)
 

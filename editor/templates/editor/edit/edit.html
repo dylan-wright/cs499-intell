@@ -208,13 +208,17 @@
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">                      
-                          <div id="eventSecretBox" class="checkbox">
+                          <div id="eventSecretBox" class="checkbox" data-toggle="collapse" data-target="#secretCollapse">
                             <label><input type="checkbox" value="">Secret</label>
                           </div>
                         </div>
                       </div>
                       <label for="snippet">Snippet:</label>
                       <textarea class="form-control" rows="3" id="snippet"></textarea>
+                      <div id="secretCollapse" class="collapse">
+                        <label for"secretSnippet">Secret Snippet:</label>
+                        <textarea class="form-control" rows="3" id="secretSnippet"></textarea>
+                      </div>
                     </div>
                   </div>
                 </div>

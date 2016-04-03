@@ -9,6 +9,13 @@
 
 function toJSONClass() {
 
+
+    //TODO: 
+        //Need to arbitrarily create keys
+        //Use GetElementByID to get each of the needed variables for EDIT/ADDi
+        //Create xHTTP request and create a file that contains the JSON info
+        //Need to delete from tables as well
+
     //Scenario properties
     this.name = 'NULL';
     this.turn_num = 20;
@@ -19,7 +26,8 @@ function toJSONClass() {
     this.hashJSON = [];
 
     //Character related methods
-    this.add_char = function(charName, isKey, charNotes) {
+    this.add_char = function(charName, isKey, charNotes) {    
+
 
         //Create a character object to match with the fixture.json format
         var charObj = {
@@ -34,7 +42,7 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        this.hashJSON[pk] = charObj;
+        hashJSON[pk] = charObj;
 
     }
 

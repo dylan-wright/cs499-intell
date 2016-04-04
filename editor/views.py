@@ -277,3 +277,13 @@ def register(request):
 def dump_session(request):
     context = {"session": request.session.items}
     return render(request, "editor/dump_session.html", context)
+
+@csrf_exempt
+def dump_request(request):
+    if request.method == "GET":
+        context = {"request": request.GET, "meta": request.META}
+    elif request.method == "POST":
+        context = {"request": request.POST, 
+                   "files": request.FILES,
+                   "meta": request.META}
+    return render(request, "editor/dump_request.html", context)

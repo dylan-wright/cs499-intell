@@ -11,10 +11,8 @@ function toJSONClass() {
 
 
     //TODO: 
-        //Need to arbitrarily create keys
-        //Use GetElementByID to get each of the needed variables for EDIT/ADDi
         //Create xHTTP request and create a file that contains the JSON info
-        //Need to delete from tables as well
+        //figure out how to get values from the map for the location editor
 
     //Scenario properties
     this.name = 'NULL';
@@ -22,17 +20,25 @@ function toJSONClass() {
     this.point_num = 20;
     this.author = 'NULL';
 
+    this.charKey = 0;
+    this.eventKey = 0;
+    this.locKey = 0;
+
     //hashMap to contain input, passed from 
     this.hashJSON = [];
 
     //Character related methods
-    this.add_char = function(charName, isKey, charNotes) {    
+    this.add_char = function() {    
 
+        //Fetch the desired attributes for the character
+        var charName = document.GetElementByID('charNameBox').value;
+        var isKey = document.GetElementByID('keyCharBox').value;
+        var charNotes = document.GetElementByID('charComment').value;
 
         //Create a character object to match with the fixture.json format
         var charObj = {
             model:"editor.character",
-            pk:42,
+            pk:charKey, 
             fields:{
                 name: charName,
                 key: isKey,
@@ -42,95 +48,157 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[pk] = charObj;
+        hashJSON[charKey] = charObj;
 
+        //Need to add the character object to the table as well...
+        var newCharElement = document.getElementById("charsTable").insertRow(0);
+        newCharElement.innerHTML = charName;
+        
+        //incrememnt the key associated with character objects. 
+        this.charKey++;
     }
 
-    this.edit_char = function(charName, isKey, charNotes) {
+    this.edit_char = function() {
         
+        var charName = document.GetElementByID('charNameBox').value;
+        var isKey = document.GetElementByID('keyCharBox').value;
+        var charNotes = document.GetElementByID('charComment').value;
+        
+
+//TODO: Need to change the charKey so that it matches with the desired char
+//maybe using GetElementByID(table element).selected()["key"] or something
+
         //check that the entry already exists
-        if(pk in hashJSON){
+        if(charKey in hashJSON){
                 //Use key value to locate the object in the hashmap and then set  
                 //it to a new object using the hashmap
-                hashJSON[pk] = {
+                hashJSON[charKey] = {
                     model:"editor.character",
-                    pk:42,
+                    key:charKey,
                     fields:{
                         name: charName,
                         key: isKey,
                         notes: charNotes
                     }
                 };
+
+            //also need to edit that specified value in the table 
+            var editCharElement = document.getElementById("charsTable").item(charKey);
+            editCharElement.innerHTML = charName;
         }
+
 
     }
 
-    this.del_char = function(charName, isKey, charNotes) {
+    this.del_char = function() {
+
+    //TODO: Again, need to fix things here...
         //Check that the key is in hashJSON and delete it if so. 
-        if(pk in hashJSON){
-            delete hashJSON[pk];
+        if(charKey in hashJSON){
+            delete hashJSON[charKey];
+
+            //delete the row from the table as well
+            document.getElementById("charsTable").deleteRow(charKey);
         }
     }
 
     //Event related methods
-    this.add_event = function(eventName, isKey, isSecret, eventSnip, tagTurn,
-    tagType, tagTarget) {
+    this.add_event = function() {
         
+        var eventName = document.GetElementByID('eventNameBox').value;
+        var isKey = document.GetElementByID('eventKeyBox').value;
+        var isSecret = document.GetElementByID('eventSecretBox').value;
+        
+        /*
+        Need to account for the more complex ones... 
+
+        var eventSnip = document.GetElementByID('').value;
+        var tagTurn = document.GetElementByID('').value;
+        var tagType = document.GetElementByID('').value;
+        var tagTarget = document.GetElementByID('').value;
+        */
+
         //Create an event object to match with the fixture.json format
         var eventObj = {
             model:"editor.event",
-            pk:42,
+            pk:eventKey,
             fields:{
                 name: eventName,
                 key: isKey,
-                secret: isSecret,
+                secret: isSecret
+                /*
                 snippet: eventSnip,
                 turn: tagTurn,
                 type: tagType,
                 target: tagTarget
+                */
             }
         };
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[pk] = eventObj;
+        hashJSON[eventKey] = eventObj;
+
+         
+        var newEventElement = document.getElementById("eventTable").insertRow(0);
+        newEventElement.innerHTML = eventName;
+        
+        this.eventKey++;
     }
 
-    this.edit_event = function(eventName, isKey, isSecret, eventSnip, tagTurn,   
-    tagType, tagTarget) {
+    this.edit_event = function() {
         
-        if(pk in hashJSON){
-            hashJSON[pk] = {
+        var eventName = document.GetElementByID('eventNameBox').value;
+        var isKey = document.GetElementByID('eventKeyBox').value;
+        var isSecret = document.GetElementByID('eventSecretBox').value;
+        
+        if(eventKey in hashJSON){
+            hashJSON[eventKey] = {
                 model:"editor.event",
-                pk:42,
+                pk:eventKey,
                 fields:{
                     name: eventName,
                     key: isKey,
-                    secret: isSecret,
+                    secret: isSecret
+                    /*
                     snippet: eventSnip,
                     turn: tagTurn,
                     type: tagType,
                     target: tagTarget
+                    */
                 }
             };
+
+            var editEventElement = document.getElementById("eventTable").item(eventKey);
+            editEventElement.innerHTML = eventName;
+        
         }
     }
 
-    this.del_event = function(eventName, isKey, isSecret, eventSnip, tagTurn,   
-    tagType, tagTarget) {
+    this.del_event = function() {
         
-        if(pk in hashJSON){
-            delete hashJSON[pk];
+        if(eventKey in hashJSON){
+            delete hashJSON[eventKey];
+            //delete the table entry
+            document.getElementById("eventTable").deleteRow(eventKey);
+
         }
     }
 
     //Location related methods
-    this.add_loc = function(locName, locCoordX, locCoordY) {
+    this.add_loc = function() {
         
+        
+//TODO: figure out how to get the values from the map...
+
+        var locName = "test";
+        var locCoordX = 0;
+        var locCoordY = 0;
+
         //Create a location object to match with the fixture.json format
         var locObj = {
             model:"editor.location",
-            pk:42,
+            pk:locKey,
             fields:{
                 name: locName,
                 x: locCoordX,
@@ -138,31 +206,45 @@ function toJSONClass() {
             }
         };
 
-        hashJSON[pk] = locObj;
+        hashJSON[locKey] = locObj;
+
+        var newLocElement = document.getElementById("locsTable").insertRow(0);
+        newLocElement.innerHTML = charName;
+        
+        this.locKey++;
 
     }
 
-    this.edit_loc = function(locName, locCoordX, locCoordY) {
+    this.edit_loc = function() {
        
+        var locName = "test";
+        var locCoordX = 0;
+        var locCoordY = 0;
+        
         //check that the entry already exists
-        if(pk in hashJSON){
+        if(locKey in hashJSON){
                 this.hashJSON[pk] = {
                     model:"editor.location",
-                    pk:42,
+                    pk:locKey,
                     fields:{
                         name: locName,
                         x: locCoordX,
                         y: locCoordY
                     }
                 };
+
+            var editLocElement = document.getElementById("locsTable").item(locKey);
+            editLocElement.innerHTML = locName;
+
         }
 
     }
 
-    this.del_loc = function(locName, locCoordX, locCoordY) {
+    this.del_loc = function() {
         
-        if(pk in hashJSON){
-            delete hashJSON[pk];
+        if(locKey in hashJSON){
+            delete hashJSON[locKey];
+            document.getElementById("locsTable").deleteRow(locKey);
         }
     }
 
@@ -170,7 +252,7 @@ function toJSONClass() {
     //Final method to submit the JSON currently stored in hashJSON
     this.submitJSON = function(){
         
-        //Create a final array tat will contain the JSON objects
+        //Create a final array that will contain the JSON objects
         var JSONarr = [];
 
         //Iterate through each object in the hashMap

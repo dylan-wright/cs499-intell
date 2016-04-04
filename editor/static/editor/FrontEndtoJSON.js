@@ -14,21 +14,24 @@ function toJSONClass() {
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
 
-    //Scenario properties
-    this.name = 'NULL';
-    this.turn_num = 20;
-    this.point_num = 20;
-    this.author = 'NULL';
 
-    this.charKey = 0;
-    this.eventKey = 0;
-    this.locKey = 0;
+    var classInstance = {};
+
+    //Scenario properties
+    classInstance.name = 'NULL';
+    classInstance.turn_num = 20;
+    classInstance.point_num = 20;
+    classInstance.author = 'NULL';
+
+    classInstance.charKey = 0;
+    classInstance.eventKey = 0;
+    classInstance.locKey = 0;
 
     //hashMap to contain input, passed from 
-    this.hashJSON = [];
+    classInstance.hashJSON = [];
 
     //Character related methods
-    this.add_char = function() {    
+    classInstance.add_char = function() {    
 
         //Fetch the desired attributes for the character
         var charName = document.GetElementByID('charNameBox').value;
@@ -48,17 +51,17 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[charKey] = charObj;
+        classInstance.hashJSON[charKey] = charObj;
 
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTable").insertRow(0);
         newCharElement.innerHTML = charName;
         
         //incrememnt the key associated with character objects. 
-        this.charKey++;
+        classInstance.charKey++;
     }
 
-    this.edit_char = function() {
+    classInstance.edit_char = function() {
         
         var charName = document.GetElementByID('charNameBox').value;
         var isKey = document.GetElementByID('keyCharBox').value;
@@ -69,10 +72,10 @@ function toJSONClass() {
 //maybe using GetElementByID(table element).selected()["key"] or something
 
         //check that the entry already exists
-        if(charKey in hashJSON){
+        if(charKey in classInstance.hashJSON){
                 //Use key value to locate the object in the hashmap and then set  
                 //it to a new object using the hashmap
-                hashJSON[charKey] = {
+                classInstance.hashJSON[charKey] = {
                     model:"editor.character",
                     key:charKey,
                     fields:{
@@ -90,12 +93,12 @@ function toJSONClass() {
 
     }
 
-    this.del_char = function() {
+    classInstance.del_char = function() {
 
     //TODO: Again, need to fix things here...
         //Check that the key is in hashJSON and delete it if so. 
-        if(charKey in hashJSON){
-            delete hashJSON[charKey];
+        if(charKey in classInstance.hashJSON){
+            delete classInstance.hashJSON[charKey];
 
             //delete the row from the table as well
             document.getElementById("charsTable").deleteRow(charKey);
@@ -103,7 +106,7 @@ function toJSONClass() {
     }
 
     //Event related methods
-    this.add_event = function() {
+    classInstance.add_event = function() {
         
         var eventName = document.GetElementByID('eventNameBox').value;
         var isKey = document.GetElementByID('eventKeyBox').value;
@@ -137,23 +140,23 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[eventKey] = eventObj;
+        classInstance.hashJSON[eventKey] = eventObj;
 
          
         var newEventElement = document.getElementById("eventTable").insertRow(0);
         newEventElement.innerHTML = eventName;
         
-        this.eventKey++;
+        classInstance.eventKey++;
     }
 
-    this.edit_event = function() {
+    classInstance.edit_event = function() {
         
         var eventName = document.GetElementByID('eventNameBox').value;
         var isKey = document.GetElementByID('eventKeyBox').value;
         var isSecret = document.GetElementByID('eventSecretBox').value;
         
-        if(eventKey in hashJSON){
-            hashJSON[eventKey] = {
+        if(eventKey in classInstance.hashJSON){
+            classInstnace.hashJSON[eventKey] = {
                 model:"editor.event",
                 pk:eventKey,
                 fields:{
@@ -175,10 +178,10 @@ function toJSONClass() {
         }
     }
 
-    this.del_event = function() {
+    classInstance.del_event = function() {
         
-        if(eventKey in hashJSON){
-            delete hashJSON[eventKey];
+        if(eventKey in classInstance.hashJSON){
+            delete classInstance.hashJSON[eventKey];
             //delete the table entry
             document.getElementById("eventTable").deleteRow(eventKey);
 
@@ -186,7 +189,7 @@ function toJSONClass() {
     }
 
     //Location related methods
-    this.add_loc = function() {
+    classInstance.add_loc = function() {
         
         
 //TODO: figure out how to get the values from the map...
@@ -206,24 +209,24 @@ function toJSONClass() {
             }
         };
 
-        hashJSON[locKey] = locObj;
+        classInstance.hashJSON[locKey] = locObj;
 
         var newLocElement = document.getElementById("locsTable").insertRow(0);
         newLocElement.innerHTML = charName;
         
-        this.locKey++;
+         classInstance.locKey++;
 
     }
 
-    this.edit_loc = function() {
+    classInstance.edit_loc = function() {
        
         var locName = "test";
         var locCoordX = 0;
         var locCoordY = 0;
         
         //check that the entry already exists
-        if(locKey in hashJSON){
-                this.hashJSON[pk] = {
+        if(locKey in classInstance.hashJSON){
+                classInstance.hashJSON[locKey] = {
                     model:"editor.location",
                     pk:locKey,
                     fields:{
@@ -240,26 +243,26 @@ function toJSONClass() {
 
     }
 
-    this.del_loc = function() {
+    classInstance.del_loc = function() {
         
-        if(locKey in hashJSON){
-            delete hashJSON[locKey];
+        if(locKey in classInstance.hashJSON){
+            delete classInstance.hashJSON[locKey];
             document.getElementById("locsTable").deleteRow(locKey);
         }
     }
 
 
     //Final method to submit the JSON currently stored in hashJSON
-    this.submitJSON = function(){
+    classInstance.submitJSON = function(){
         
         //Create a final array that will contain the JSON objects
         var JSONarr = [];
 
         //Iterate through each object in the hashMap
-        for(var key in hashJSON){
+        for(var key in classInstance.hashJSON){
             
             //Get the key values of the hashmap
-            var value = hashJSON[key];
+            var value = classInstance.hashJSON[key];
 
 
             //Iterate through each filed in the value of the hashmap
@@ -277,7 +280,7 @@ function toJSONClass() {
 
     }
 
-
+    return classInstance;
 }
 
 

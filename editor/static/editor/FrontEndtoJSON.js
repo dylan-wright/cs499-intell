@@ -281,4 +281,4 @@ function toJSONClass() {
 }
 
 
-var currEdit = toJSONCLass();
+var currEdit = toJSONClass();

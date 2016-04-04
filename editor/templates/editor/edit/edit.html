@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-  <script src="{% static "FrontEndtoJson.js" %}"></script>
+  <!--Instantiating the JSON class object after the script was referenced -->
+  <script src="{% static "FrontEndtoJSON.js" %}"></script>
 </head>
 <body>
 <div class="container">
@@ -128,13 +128,13 @@
                     
                     <div class="row"> <!--Buttons -->
                       <div class="col-sm-4">
-                        <button id="charAddBtn" type="button" class="btn btn-block">Add</button>
+                        <button id="charAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_char()">Add</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="charEditBtn" type="button" class="btn btn-block">Edit</button>
+                        <button id="charEditBtn" type="button" class="btn btn-block" onclick="currEdit.edit_char()">Edit</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="charDelBtn" type="button" class="btn btn-block">Delete</button>
+                        <button id="charDelBtn" type="button" class="btn btn-block" onclick="currEdit.del_char()">Delete</button>
                       </div>
                     </div>
                   </div>
@@ -148,13 +148,13 @@
                 </div>
                 <div class="row"> <!--Buttons -->
                   <div class="col-sm-4">
-                    <button id="locAddBtn" type="button" class="btn btn-block">Add</button>
+                    <button id="locAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_loc()">Add</button>
                   </div>
                   <div class="col-sm-4">
-                    <button id="locEditBtn" type="button" class="btn btn-block">Edit</button>
+                    <button id="locEditBtn" type="button" class="btn btn-block" onclick="currEdit.edit_loc()">Edit</button>
                   </div>
                   <div class="col-sm-4">
-                    <button id="locDelBtn" type="button" class="btn btn-block">Delete</button>
+                    <button id="locDelBtn" type="button" class="btn btn-block" onclick="currEdit.del_loc()">Delete</button>
                   </div>
                 </div>
                 <div class="row"><!--Table-->
@@ -293,13 +293,13 @@
                     </div>
                     <div class="row"> <!--Buttons -->
                       <div class="col-sm-4">
-                        <button id="eventTagAddBtn" type="button" class="btn btn-block">Add</button>
+                        <button id="eventTagAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_event()">Add</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="eventTagEditBtn" type="button" class="btn btn-block">Edit</button>
+                        <button id="eventTagEditBtn" type="button" class="btn btn-block" onclick="currEdit.edit_event()">Edit</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="eventTagDelBtn" type="button" class="btn btn-block">Delete</button>
+                        <button id="eventTagDelBtn" type="button" class="btn btn-block" onclick="currEdit.del_event()">Delete</button>
                       </div>
                     </div>
                   </div>

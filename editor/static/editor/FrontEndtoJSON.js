@@ -278,7 +278,7 @@ function toJSONClass() {
     }
 
 
-
 }
 
 
+var currEdit = toJSONCLass();

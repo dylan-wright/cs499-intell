@@ -38,20 +38,20 @@ function toJSONClass() {
         //Create a character object to match with the fixture.json format
         var charObj = {
             model:"editor.character",
-            pk:charKey, 
+            pk:this.charKey, 
             fields:{
-                name: charName,
-                key: isKey,
-                notes: charNotes
+                name: this.charName,
+                key: this.isKey,
+                notes: this.charNotes
             }
         };
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[charKey] = charObj;
+        this.hashJSON[this.charKey] = charObj;
 
         //Need to add the character object to the table as well...
-        var newCharElement = document.getElementById("charsTable").insertRow(0);
+        var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         newCharElement.innerHTML = charName;
         
         //incrememnt the key associated with character objects. 

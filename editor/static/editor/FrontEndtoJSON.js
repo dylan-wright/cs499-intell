@@ -10,7 +10,8 @@
 function toJSONClass() {
 
 
-    //TODO: 
+    //TODO:
+        //Storing title information as well
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
 
@@ -32,7 +33,7 @@ function toJSONClass() {
 
         //Fetch the desired attributes for the character
         var charName = document.getElementById('charNameBox').value;
-        var isKey = document.getElementById('keyCharBox').value;
+        var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
 
         //Create a character object to match with the fixture.json format
@@ -64,7 +65,7 @@ function toJSONClass() {
     this.edit_char = function() {
         
         var charName = document.getElementById('charNameBox').value;
-        var isKey = document.getElementById('keyCharBox').value;
+        var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
         
 
@@ -109,7 +110,7 @@ function toJSONClass() {
     this.add_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').value;
+        var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
         /*
@@ -152,7 +153,7 @@ function toJSONClass() {
     this.edit_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').value;
+        var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
         if(this.eventKey in this.hashJSON){

@@ -13,6 +13,32 @@ class  GameTestCase(TestCase):
                                 file_name="fixture.json")
         Game.objects.create(scenario=Scenario.objects.all()[0])
 
+    def test_start_next_turn(self):
+        game = Game.objects.get(pk=1)
+        
+        self.assertEqual(game.started, False)
+        next_turn = game.next_turn
+        self.assertEqual(next_turn, None)
+
+        #start game
+        game.start()
+        self.assertEqual(game.started, True)
+        self.assertNotEqual(game.next_turn, next_turn)
+
+        next_turn = game.next_turn
+
+        self.assertEqual(game.turn, 0)
+        game.start_next_turn()
+        self.assertEqual(game.turn, 1)
+        self.assertNotEqual(game.next_turn, next_turn)
+
+        next_turn = game.next_turn
+
+        self.assertEqual(game.turn, 0)
+        game.start_next_turn()
+        self.assertEqual(game.turn, 1)
+        self.assertNotEqual(game.next_turn, next_turn)
+
     def test_games_init(self):
         '''game initialized and players can be added'''
         game = Game.objects.get(pk=1)
@@ -59,4 +85,3 @@ class  GameTestCase(TestCase):
 class PlayerTestCase(TestCase):
     def setUp(self):
         pass
-

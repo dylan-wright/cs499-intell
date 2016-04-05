@@ -69,6 +69,8 @@ class Game(models.Model):
     '''
     def start(self):
         self.started = True
+        self.next_turn = self.turn_length + datetime.now()
+        self.save()
 
     '''
     time_till
@@ -81,3 +83,7 @@ class Game(models.Model):
         if self.next_turn != None:
             till = self.next_turn - now
             return till.seconds
+
+    def start_next_turn(self):
+        self.turn += 1
+        self.save()

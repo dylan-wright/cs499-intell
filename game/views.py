@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
 from .forms import *
+from django.utils.timezone import datetime, make_aware
 
 # Create your views here.
 def index(request):
@@ -21,7 +22,8 @@ def create(request):
         form = GameForm(request.POST)
         if form.is_valid():
             game = Game(scenario=form.cleaned_data["scenario"],
-                        creator=form.cleaned_data["creator"])
+                        creator=form.cleaned_data["creator"],
+                        turn_length=form.cleaned_data["turn_length"])
             game.save()
             return HttpResponseRedirect("../")
     else:

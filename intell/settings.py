@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -125,3 +126,7 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/editor/dump_session/'
 
 MEDIA_ROOT = 'files/'
+
+CRONJOBS = [
+    ('*/1 * * * *', 'game.cron.check_games')
+]

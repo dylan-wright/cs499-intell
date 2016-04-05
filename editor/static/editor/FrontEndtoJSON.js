@@ -38,7 +38,7 @@ function toJSONClass() {
         //Create a character object to match with the fixture.json format
         var charObj = {
             model:"editor.character",
-            pk:charKey, 
+            pk:this.charKey, 
             fields:{
                 name: charName,
                 key: isKey,
@@ -48,14 +48,19 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[charKey] = charObj;
+        this.hashJSON[this.charKey] = charObj;
 
         //Need to add the character object to the table as well...
-        var newCharElement = document.getElementById("charsTable").insertRow(0);
-        newCharElement.innerHTML = charName;
+
+        //ERROR HERE. Look at insertRow()
+        //var newCharElement = document.getElementById("charsTable").insertRow(0);
+        //newCharElement.innerHTML = charName;
         
         //incrememnt the key associated with character objects. 
         this.charKey++;
+
+
+        console.log(charObj);
     }
 
     this.edit_char = function() {
@@ -69,12 +74,12 @@ function toJSONClass() {
 //maybe using getElementById(table element).selected()["key"] or something
 
         //check that the entry already exists
-        if(charKey in hashJSON){
+        if(this.charKey in this.hashJSON){
                 //Use key value to locate the object in the hashmap and then set  
                 //it to a new object using the hashmap
-                hashJSON[charKey] = {
+                this.hashJSON[this.charKey] = {
                     model:"editor.character",
-                    key:charKey,
+                    key:this.charKey,
                     fields:{
                         name: charName,
                         key: isKey,
@@ -83,8 +88,8 @@ function toJSONClass() {
                 };
 
             //also need to edit that specified value in the table 
-            var editCharElement = document.getElementById("charsTable").item(charKey);
-            editCharElement.innerHTML = charName;
+            //var editCharElement = document.getElementById("charsTable").item(charKey);
+            //editCharElement.innerHTML = charName;
         }
 
 
@@ -94,11 +99,11 @@ function toJSONClass() {
 
     //TODO: Again, need to fix things here...
         //Check that the key is in hashJSON and delete it if so. 
-        if(charKey in hashJSON){
-            delete hashJSON[charKey];
+        if(this.charKey in this.hashJSON){
+            delete this.hashJSON[this.charKey];
 
             //delete the row from the table as well
-            document.getElementById("charsTable").deleteRow(charKey);
+            //document.getElementById("charsTable").deleteRow(charKey);
         }
     }
 

@@ -31,9 +31,9 @@ function toJSONClass() {
     this.add_char = function() {    
 
         //Fetch the desired attributes for the character
-        var charName = document.GetElementByID('charNameBox').value;
-        var isKey = document.GetElementByID('keyCharBox').value;
-        var charNotes = document.GetElementByID('charComment').value;
+        var charName = document.getElementById('charNameBox').value;
+        var isKey = document.getElementById('keyCharBox').value;
+        var charNotes = document.getElementById('charComment').value;
 
         //Create a character object to match with the fixture.json format
         var charObj = {
@@ -60,13 +60,13 @@ function toJSONClass() {
 
     this.edit_char = function() {
         
-        var charName = document.GetElementByID('charNameBox').value;
-        var isKey = document.GetElementByID('keyCharBox').value;
-        var charNotes = document.GetElementByID('charComment').value;
+        var charName = document.getElementById('charNameBox').value;
+        var isKey = document.getElementById('keyCharBox').value;
+        var charNotes = document.getElementById('charComment').value;
         
 
 //TODO: Need to change the charKey so that it matches with the desired char
-//maybe using GetElementByID(table element).selected()["key"] or something
+//maybe using getElementById(table element).selected()["key"] or something
 
         //check that the entry already exists
         if(charKey in hashJSON){
@@ -105,17 +105,17 @@ function toJSONClass() {
     //Event related methods
     this.add_event = function() {
         
-        var eventName = document.GetElementByID('eventNameBox').value;
-        var isKey = document.GetElementByID('eventKeyBox').value;
-        var isSecret = document.GetElementByID('eventSecretBox').value;
+        var eventName = document.getElementById('eventNameBox').value;
+        var isKey = document.getElementById('eventKeyBox').value;
+        var isSecret = document.getElementById('eventSecretBox').value;
         
         /*
         Need to account for the more complex ones... 
 
-        var eventSnip = document.GetElementByID('').value;
-        var tagTurn = document.GetElementByID('').value;
-        var tagType = document.GetElementByID('').value;
-        var tagTarget = document.GetElementByID('').value;
+        var eventSnip = document.getElementById('').value;
+        var tagTurn = document.getElementById('').value;
+        var tagType = document.getElementById('').value;
+        var tagTarget = document.getElementById('').value;
         */
 
         //Create an event object to match with the fixture.json format
@@ -148,9 +148,9 @@ function toJSONClass() {
 
     this.edit_event = function() {
         
-        var eventName = document.GetElementByID('eventNameBox').value;
-        var isKey = document.GetElementByID('eventKeyBox').value;
-        var isSecret = document.GetElementByID('eventSecretBox').value;
+        var eventName = document.getElementById('eventNameBox').value;
+        var isKey = document.getElementById('eventKeyBox').value;
+        var isSecret = document.getElementById('eventSecretBox').value;
         
         if(eventKey in hashJSON){
             hashJSON[eventKey] = {
@@ -281,4 +281,4 @@ function toJSONClass() {
 }
 
 
-var currEdit = toJSONCLass();
+var currEdit = new toJSONCLass();

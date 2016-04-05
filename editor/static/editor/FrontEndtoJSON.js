@@ -40,9 +40,9 @@ function toJSONClass() {
             model:"editor.character",
             pk:this.charKey, 
             fields:{
-                name: charName,
-                key: isKey,
-                notes: charNotes
+                name: this.charName,
+                key: this.isKey,
+                notes: this.charNotes
             }
         };
 
@@ -51,10 +51,8 @@ function toJSONClass() {
         this.hashJSON[this.charKey] = charObj;
 
         //Need to add the character object to the table as well...
-
-        //ERROR HERE. Look at insertRow()
-        //var newCharElement = document.getElementById("charsTable").insertRow(0);
-        //newCharElement.innerHTML = charName;
+        var newCharElement = document.getElementById("charsTableBody").insertRow(0);
+        newCharElement.innerHTML = charName;
         
         //incrememnt the key associated with character objects. 
         this.charKey++;

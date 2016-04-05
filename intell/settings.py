@@ -128,5 +128,6 @@ LOGIN_REDIRECT_URL = '/editor/dump_session/'
 MEDIA_ROOT = 'files/'
 
 CRONJOBS = [
-    ('*/1 * * * *', 'game.cron.check_games')
+    ('* * * * *', 'game.cron.check_games'),
 ]
+

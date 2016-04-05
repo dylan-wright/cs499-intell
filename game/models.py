@@ -84,6 +84,12 @@ class Game(models.Model):
             till = self.next_turn - now
             return till.seconds
 
+    '''
+    start_next_turn
+        I:
+        O:  increment turn counter, proccess actions, produce snippets,
+            set next turn time
+    '''
     def start_next_turn(self):
         self.turn += 1
         self.save()

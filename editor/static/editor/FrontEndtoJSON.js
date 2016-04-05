@@ -53,12 +53,16 @@ function toJSONClass() {
 
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
-        newCharElement.innerHTML = charName;
+        cell = newCharElement.insertCell(0);
+        cell.innerHTML = charName;
+        newCharElement.addEventListener("click", function(){foo(charObj.pk);});
         
         //incrememnt the key associated with character objects. 
         this.charKey++;
 
 
+        console.log(cell);
+        console.log(newCharElement);
         console.log(charObj);
     }
 
@@ -283,6 +287,7 @@ function toJSONClass() {
 
 
 }
-
-
 var currEdit = new toJSONClass();
+function foo(charKey) {
+    console.log(charKey);
+}

@@ -86,8 +86,8 @@ function toJSONClass() {
                 };
 
             //also need to edit that specified value in the table 
-            //var editCharElement = document.getElementById("charsTable").item(charKey);
-            //editCharElement.innerHTML = charName;
+            var editCharElement = document.getElementById("charsTableBody").item(charKey);
+            editCharElement.innerHTML = charName;
         }
 
 
@@ -101,7 +101,7 @@ function toJSONClass() {
             delete this.hashJSON[this.charKey];
 
             //delete the row from the table as well
-            //document.getElementById("charsTable").deleteRow(charKey);
+            document.getElementById("charsTableBody").deleteRow(charKey);
         }
     }
 
@@ -124,7 +124,7 @@ function toJSONClass() {
         //Create an event object to match with the fixture.json format
         var eventObj = {
             model:"editor.event",
-            pk:eventKey,
+            pk:this.eventKey,
             fields:{
                 name: eventName,
                 key: isKey,
@@ -140,10 +140,10 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        hashJSON[eventKey] = eventObj;
+        this.hashJSON[this.eventKey] = eventObj;
 
          
-        var newEventElement = document.getElementById("eventTable").insertRow(0);
+        var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
         newEventElement.innerHTML = eventName;
         
         this.eventKey++;
@@ -155,10 +155,10 @@ function toJSONClass() {
         var isKey = document.getElementById('eventKeyBox').value;
         var isSecret = document.getElementById('eventSecretBox').value;
         
-        if(eventKey in hashJSON){
+        if(this.eventKey in this.hashJSON){
             hashJSON[eventKey] = {
                 model:"editor.event",
-                pk:eventKey,
+                pk:this.eventKey,
                 fields:{
                     name: eventName,
                     key: isKey,
@@ -172,7 +172,7 @@ function toJSONClass() {
                 }
             };
 
-            var editEventElement = document.getElementById("eventTable").item(eventKey);
+            var editEventElement = document.getElementById("eventsTableBody").item(eventKey);
             editEventElement.innerHTML = eventName;
         
         }
@@ -180,10 +180,10 @@ function toJSONClass() {
 
     this.del_event = function() {
         
-        if(eventKey in hashJSON){
-            delete hashJSON[eventKey];
+        if(this.eventKey in this.hashJSON){
+            delete this.hashJSON[this.eventKey];
             //delete the table entry
-            document.getElementById("eventTable").deleteRow(eventKey);
+            document.getElementById("eventsTableBody").deleteRow(eventKey);
 
         }
     }
@@ -201,7 +201,7 @@ function toJSONClass() {
         //Create a location object to match with the fixture.json format
         var locObj = {
             model:"editor.location",
-            pk:locKey,
+            pk:this.locKey,
             fields:{
                 name: locName,
                 x: locCoordX,
@@ -209,10 +209,10 @@ function toJSONClass() {
             }
         };
 
-        hashJSON[locKey] = locObj;
+        this.hashJSON[this.locKey] = locObj;
 
-        var newLocElement = document.getElementById("locsTable").insertRow(0);
-        newLocElement.innerHTML = charName;
+        var newLocElement = document.getElementById("locsTableBody").insertRow(0);
+        newLocElement.innerHTML = locName;
         
         this.locKey++;
 
@@ -225,8 +225,8 @@ function toJSONClass() {
         var locCoordY = 0;
         
         //check that the entry already exists
-        if(locKey in hashJSON){
-                this.hashJSON[pk] = {
+        if(this.locKey in this.hashJSON){
+                this.hashJSON[locKey] = {
                     model:"editor.location",
                     pk:locKey,
                     fields:{
@@ -236,7 +236,7 @@ function toJSONClass() {
                     }
                 };
 
-            var editLocElement = document.getElementById("locsTable").item(locKey);
+            var editLocElement = document.getElementById("locsTableBody").item(locKey);
             editLocElement.innerHTML = locName;
 
         }
@@ -247,7 +247,7 @@ function toJSONClass() {
         
         if(locKey in hashJSON){
             delete hashJSON[locKey];
-            document.getElementById("locsTable").deleteRow(locKey);
+            document.getElementById("locsTableBody").deleteRow(locKey);
         }
     }
 

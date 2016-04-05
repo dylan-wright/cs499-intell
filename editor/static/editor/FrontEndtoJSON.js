@@ -40,9 +40,9 @@ function toJSONClass() {
             model:"editor.character",
             pk:this.charKey, 
             fields:{
-                name: this.charName,
-                key: this.isKey,
-                notes: this.charNotes
+                name: charName,
+                key: isKey,
+                notes: charNotes
             }
         };
 

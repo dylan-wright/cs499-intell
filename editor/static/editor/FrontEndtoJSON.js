@@ -295,6 +295,7 @@ var currEdit = new toJSONClass();
 //Function used to select an element based on the row selected 
 function selChar(charObj) {
 
+    //Store current/total rows in order to determine which row is hilighted
     console.log(charObj.pk);
     var currRow = charObj.pk;
     var totalRows = document.getElementById('charsTableBody').rows.length -1;
@@ -307,6 +308,17 @@ function selChar(charObj) {
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('charEditBtn').disabled = false;
     document.getElementById('charDelBtn').disabled = false;
+
+    /*
+    if(row.pk != prevSelRow){
+        document.getElementById('charsTableBody').rows[prevSelRow].cells[0].style.backgroundColor='white';
+        document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    }
+
+    prevSelRow = totalRows-currRow;
+    //Need to return the prevSelRow?
+
+    */
 
     //Highlight the currently selected item
     document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';

@@ -254,13 +254,6 @@ function toJSONClass() {
         }
     }
 
-
-
-    //Serialize the fields, place into an array
-    //Serialize the object, place into an arry
-    
-
-
     //Final method to submit the JSON currently stored in hashJSON
     this.submitJSON = function(){
         
@@ -270,16 +263,8 @@ function toJSONClass() {
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
             
-            var JSONarr = [];
-            
             //Get the key values of the hashmap
-            var value = this.hashJSON[key];
-
-            JSONarr.push(value.model);
-            JSONarr.push(value.pk);
-            JSONarr.push(value.fields);
-            //JSONarr.push(fieldarr);
-            finalarr.push(JSONarr);
+            finalarr.push(this.hashJSON[key]);
         }
 
         //Generate the JSON file using stringify on the JSON array

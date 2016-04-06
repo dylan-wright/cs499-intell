@@ -292,12 +292,14 @@ function toJSONClass() {
 }
 var currEdit = new toJSONClass();
 
+var prevChar;
 //Function used to select an element based on the row selected 
 function selChar(charObj) {
 
     console.log(charObj.pk);
     var currRow = charObj.pk;
     var totalRows = document.getElementById('charsTableBody').rows.length -1;
+    
 
     //Set fields to those associated with the selected object
     document.getElementById('charNameBox').value = charObj.fields.name;
@@ -310,4 +312,8 @@ function selChar(charObj) {
 
     //Highlight the currently selected item
     document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevChar != null && this.prevChar != currRow) {
+        document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';
+    }
+    this.prevChar = currRow;
 }

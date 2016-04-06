@@ -11,8 +11,6 @@ function toJSONClass() {
 
 
     //TODO:
-        //Fix background colors for the currently selected object
-        //Enable Edit/Delete button when object selected
         //Storing title information as well
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
@@ -64,9 +62,6 @@ function toJSONClass() {
         this.charKey++;
 
 
-        console.log(cell);
-        console.log(newCharElement);
-        //console.log(charObj);
     }
 
     this.edit_char = function() {
@@ -267,10 +262,10 @@ function toJSONClass() {
         var JSONarr = [];
 
         //Iterate through each object in the hashMap
-        for(var key in hashJSON){
+        for(var key in this.hashJSON){
             
             //Get the key values of the hashmap
-            var value = hashJSON[key];
+            var value = this.hashJSON[key];
 
 
             //Iterate through each filed in the value of the hashmap
@@ -284,8 +279,16 @@ function toJSONClass() {
         //Generate the JSON file using stringify on the JSON array
         //after the hashmap has been iterated through
         var JSONfile = JSON.stringify(JSONarr);
+        console.log(JSONfile);
 
 
+        //Trying to send the current hashmap to the dump request webpage
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('POST', "../dump_request/", false);
+        xhttp.send(JSONfile);
+
+        //document.getElementById('charsIntrBody').innerHTML = xhttp.responseText;
+        console.log(xhttp.responseText);
     }
 
 
@@ -310,17 +313,6 @@ function selChar(charObj) {
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('charEditBtn').disabled = false;
     document.getElementById('charDelBtn').disabled = false;
-
-    /*
-    if(row.pk != prevSelRow){
-        document.getElementById('charsTableBody').rows[prevSelRow].cells[0].style.backgroundColor='white';
-        document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    }
-
-    prevSelRow = totalRows-currRow;
-    //Need to return the prevSelRow?
-
-    */
 
     //Highlight the currently selected item
     document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';

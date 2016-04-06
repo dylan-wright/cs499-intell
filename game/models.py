@@ -85,6 +85,25 @@ class Game(models.Model):
             return till.seconds
     
     '''
+    start_next_turn
+        I:
+        O:  increment turn counter, proccess actions, produce snippets,
+            set next turn time
+    '''
+    def start_next_turn(self):
+        #next turn
+        self.turn += 1
+
+        #proccess actions
+        for player in self.players.all():
+            pass
+        #next turn time
+        self.next_turn += self.turn_length
+
+        #store in db
+        self.save()
+    
+    '''
     start
         I: 
         O:  started becomes true
@@ -100,30 +119,12 @@ class Game(models.Model):
         self.next_turn = make_aware(datetime.now())
 
         #init first turn 
-        start_next_turn()
+        self.start_next_turn()
 
         #write to the db
         self.save()
 
 
-    '''
-    start_next_turn
-        I:
-        O:  increment turn counter, proccess actions, produce snippets,
-            set next turn time
-    '''
-    def start_next_turn(self):
-        #next turn
-        self.turn += 1
-
-        #proccess actions
-        for player in players:
-            pass
-        #next turn time
-        self.next_turn += self.turn_length
-
-        #store in db
-        self.save()
 
 '''
 Action

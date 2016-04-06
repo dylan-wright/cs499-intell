@@ -34,10 +34,11 @@ class  GameTestCase(TestCase):
 
         next_turn = game.next_turn
 
-        self.assertEqual(game.turn, 0)
-        game.start_next_turn()
         self.assertEqual(game.turn, 1)
+        game.start_next_turn()
+        self.assertEqual(game.turn, 2)
         self.assertNotEqual(game.next_turn, next_turn)
+        self.assertEqual(game.next_turn, next_turn+game.turn_length)
 
     def test_games_init(self):
         '''game initialized and players can be added'''

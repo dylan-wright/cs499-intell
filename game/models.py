@@ -69,7 +69,7 @@ class Game(models.Model):
     '''
     def start(self):
         self.started = True
-        self.next_turn = self.turn_length + datetime.now()
+        self.next_turn = self.turn_length + make_aware(datetime.now())
         self.save()
 
     '''
@@ -92,4 +92,5 @@ class Game(models.Model):
     '''
     def start_next_turn(self):
         self.turn += 1
+        self.next_turn += self.turn_length
         self.save()

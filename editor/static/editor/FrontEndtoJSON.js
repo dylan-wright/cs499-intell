@@ -10,7 +10,8 @@
 function toJSONClass() {
 
 
-    //TODO: 
+    //TODO:
+        //Storing title information as well
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
 
@@ -28,11 +29,12 @@ function toJSONClass() {
     this.hashJSON = [];
 
     //Character related methods
-    this.add_char = function() {    
+    this.add_char = function() {  
+
 
         //Fetch the desired attributes for the character
         var charName = document.getElementById('charNameBox').value;
-        var isKey = document.getElementById('keyCharBox').value;
+        var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
 
         //Create a character object to match with the fixture.json format
@@ -54,21 +56,18 @@ function toJSONClass() {
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
         cell.innerHTML = charName;
-        newCharElement.addEventListener("click", function(){foo(charObj.pk);});
+        newCharElement.addEventListener("click", function(){selChar(charObj);});
         
         //incrememnt the key associated with character objects. 
         this.charKey++;
 
 
-        console.log(cell);
-        console.log(newCharElement);
-        console.log(charObj);
     }
 
     this.edit_char = function() {
         
         var charName = document.getElementById('charNameBox').value;
-        var isKey = document.getElementById('keyCharBox').value;
+        var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
         
 
@@ -113,7 +112,7 @@ function toJSONClass() {
     this.add_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').value;
+        var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
         /*
@@ -156,7 +155,7 @@ function toJSONClass() {
     this.edit_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').value;
+        var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
         if(this.eventKey in this.hashJSON){
@@ -263,10 +262,10 @@ function toJSONClass() {
         var JSONarr = [];
 
         //Iterate through each object in the hashMap
-        for(var key in hashJSON){
+        for(var key in this.hashJSON){
             
             //Get the key values of the hashmap
-            var value = hashJSON[key];
+            var value = this.hashJSON[key];
 
 
             //Iterate through each filed in the value of the hashmap
@@ -280,13 +279,45 @@ function toJSONClass() {
         //Generate the JSON file using stringify on the JSON array
         //after the hashmap has been iterated through
         var JSONfile = JSON.stringify(JSONarr);
+        console.log(JSONfile);
 
 
+        //Trying to send the current hashmap to the dump request webpage
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('POST', "../dump_request/", false);
+        xhttp.send(JSONfile);
+
+        //document.getElementById('charsIntrBody').innerHTML = xhttp.responseText;
+        console.log(xhttp.responseText);
     }
 
 
 }
 var currEdit = new toJSONClass();
-function foo(charKey) {
-    console.log(charKey);
+
+var prevChar;
+//Function used to select an element based on the row selected 
+function selChar(charObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(charObj.pk);
+    var currRow = charObj.pk;
+    var totalRows = document.getElementById('charsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('charNameBox').value = charObj.fields.name;
+    document.getElementById('keyCharBox').checked = charObj.fields.key;
+    document.getElementById('charComment').value = charObj.fields.notes;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('charEditBtn').disabled = false;
+    document.getElementById('charDelBtn').disabled = false;
+
+    //Highlight the currently selected item
+    document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevChar != null && this.prevChar != currRow) {
+        document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';
+    }
+    this.prevChar = currRow;
 }

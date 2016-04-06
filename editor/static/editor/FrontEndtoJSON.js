@@ -11,8 +11,6 @@ function toJSONClass() {
 
 
     //TODO:
-        //Fix background colors for the currently selected object
-        //Enable Edit/Delete button when object selected
         //Storing title information as well
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
@@ -64,9 +62,6 @@ function toJSONClass() {
         this.charKey++;
 
 
-        console.log(cell);
-        console.log(newCharElement);
-        //console.log(charObj);
     }
 
     this.edit_char = function() {
@@ -267,10 +262,10 @@ function toJSONClass() {
         var JSONarr = [];
 
         //Iterate through each object in the hashMap
-        for(var key in hashJSON){
+        for(var key in this.hashJSON){
             
             //Get the key values of the hashmap
-            var value = hashJSON[key];
+            var value = this.hashJSON[key];
 
 
             //Iterate through each filed in the value of the hashmap
@@ -284,8 +279,16 @@ function toJSONClass() {
         //Generate the JSON file using stringify on the JSON array
         //after the hashmap has been iterated through
         var JSONfile = JSON.stringify(JSONarr);
+        console.log(JSONfile);
 
 
+        //Trying to send the current hashmap to the dump request webpage
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('POST', "../dump_request/", false);
+        xhttp.send(JSONfile);
+
+        //document.getElementById('charsIntrBody').innerHTML = xhttp.responseText;
+        console.log(xhttp.responseText);
     }
 
 
@@ -296,6 +299,7 @@ var prevChar;
 //Function used to select an element based on the row selected 
 function selChar(charObj) {
 
+    //Store current/total rows in order to determine which row is hilighted
     console.log(charObj.pk);
     var currRow = charObj.pk;
     var totalRows = document.getElementById('charsTableBody').rows.length -1;

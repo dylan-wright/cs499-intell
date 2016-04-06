@@ -284,7 +284,6 @@ def dump_request(request):
         context = {"request": request.GET, "meta": request.META}
     elif request.method == "POST":
         context = {"request": request.POST, 
-                   "files": request.FILES,
-                   "meta": request.META,
-                   "body": request.body}
+                   "files": request.body,
+                   "meta": request.META}
     return render(request, "editor/dump_request.html", context)

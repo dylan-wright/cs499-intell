@@ -1,5 +1,5 @@
 from django.db import models
-from editor.models import Scenario
+from editor.models import *
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
@@ -9,11 +9,16 @@ from django.utils.timezone import datetime, make_aware
 Player
     used to represent a particular user in a game
 
-    id -    auto gen primary key
-    user -  user being represented
+    id      -   auto gen primary key
+    user    -   user being represented
+    points  -   number of intell points left
 '''
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "player controlled by %s"%(user.username)
 
 '''
 Game
@@ -37,9 +42,11 @@ Game
                     be. When the turn changes the next_turn field will
                     get this delta added to it
 methods
-    add_player
-    start
-    time_till
+    detail_html - temp used for prototype page
+    add_player  - add player to players
+    time_till - till next turn. used for nice countdown page
+    start - sets started and inits next_turn
+    start_next_turn - does turn proccessing
 '''
 class Game(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
@@ -53,6 +60,8 @@ class Game(models.Model):
     def __str__(self):
         return "Game created by %s using scenario %s"%(self.creator.first_name, self.scenario.name)
 
+    def detail_html(self):
+        return "scenario: "+str(self.scenario)
     '''
     add_player
         I: player - a Player object
@@ -61,15 +70,6 @@ class Game(models.Model):
     '''
     def add_player(self, player):
         self.players.add(player)
-
-    '''
-    start
-        I: 
-        O:  started becomes true
-    '''
-    def start(self):
-        self.started = True
-        self.next_turn = self.turn_length + make_aware(datetime.now())
         self.save()
 
     '''
@@ -83,6 +83,28 @@ class Game(models.Model):
         if self.next_turn != None:
             till = self.next_turn - now
             return till.seconds
+    
+    '''
+    start
+        I: 
+        O:  started becomes true
+            sideffects: players are initialized, start_next_turn used to
+            make next turn environment (turn counter, actions, snippets)
+            initial agents are created
+    '''
+    def start(self):
+        #init players
+
+        #init game
+        self.started = True
+        self.next_turn = make_aware(datetime.now())
+
+        #init first turn 
+        start_next_turn()
+
+        #write to the db
+        self.save()
+
 
     '''
     start_next_turn
@@ -91,6 +113,65 @@ class Game(models.Model):
             set next turn time
     '''
     def start_next_turn(self):
+        #next turn
         self.turn += 1
+
+        #proccess actions
+        for player in players:
+            pass
+        #next turn time
         self.next_turn += self.turn_length
+
+        #store in db
         self.save()
+
+'''
+Action
+    model tracking an action's target(s)/info
+
+    id      -   auto gen primary key
+    acttype -   type of action TODO: fix this
+'''
+class Action(models.Model):
+    acttype = models.CharField(max_length=64) #this is obviously not right
+    
+    def __str__(self):
+        return "Action %s"%(self.acttype)
+'''
+Agent
+    model tracking an Agent's status
+
+    id      -   auto gen primary key
+    name    -   Agent name (meaningless but pretty)
+    action  -   current action for agent to perform on turn proccessing
+    alive   -   is the agent alive
+    location-   where the agent is
+    player  -   player controlling this agent
+'''
+class Agent(models.Model):
+    name = models.CharField(max_length=64)
+    action = models.ForeignKey(Action)
+    alive = models.BooleanField(default=True)
+    location = models.ManyToManyField(Location, null=True)
+    player = models.ForeignKey(Player, null=True) #a null player is an orphaned
+                                                  # agent-they cant perform
+                                                  # actions
+
+    def __str__(self):
+        return "Agent %s"%(str(self.name))
+
+'''
+Knowledge
+    model relating Players to Events. issued when a player performs an
+    investigation on an Event
+
+    event   -   Event model investigated
+    turn    -   turn investigation occoured on
+'''
+class Knowledge(models.Model):
+    event = models.ForeignKey(Event, null=True)
+    turn = models.IntegerField()
+
+    def __str__(self):
+        return "result of investigation of %s on turn %s"%(str(self.event), str(self.turn))
+

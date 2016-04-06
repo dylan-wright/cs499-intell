@@ -17,6 +17,14 @@ def games(request):
               }
     return render(request, "game/games.html", context)
 
+def game_detail(request, pk):
+    if request.method == "GET":
+        context = {"game": Game.objects.get(pk=pk)}
+        return render(request, "game/games/game_detail.html", context)
+    elif request.method == "POST":
+        Game.objects.get(pk=pk).start()
+        return HttpResponseRedirect("../")
+
 def create(request):
     if request.method == "POST":
         form = GameForm(request.POST)

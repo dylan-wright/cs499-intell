@@ -37,3 +37,11 @@ def create(request):
     else:
         context = {"form": GameForm()}
     return render(request, "game/games/create.html", context)
+
+def agents(request):
+    context = {"agents": Agent.objects.all()}
+    return render(request, "game/agents.html", context)
+
+def agent_detail(request, pk):
+    context = {"agent": Agent.objects.get(pk=pk)}
+    return render(request, "game/agents/agent_detail.html", context)

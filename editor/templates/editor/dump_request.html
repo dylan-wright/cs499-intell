@@ -16,12 +16,6 @@
 
 <h1>Requset Files</h1>
 {{ files }}
-{{ files.items }}
-{% for key, value in files.items %}
-{{ value.read }}
-{% empty %}
-<p>No files found</p>
-{% endfor %}
 
 <h1>Request Meta</h1>
 <table border="1">

@@ -31,7 +31,8 @@ function toJSONClass() {
     this.hashJSON = [];
 
     //Character related methods
-    this.add_char = function() {    
+    this.add_char = function() {  
+
 
         //Fetch the desired attributes for the character
         var charName = document.getElementById('charNameBox').value;
@@ -65,7 +66,7 @@ function toJSONClass() {
 
         console.log(cell);
         console.log(newCharElement);
-        console.log(charObj);
+        //console.log(charObj);
     }
 
     this.edit_char = function() {
@@ -291,17 +292,22 @@ function toJSONClass() {
 }
 var currEdit = new toJSONClass();
 
-/*
-function foo(charKey){ 
-    console.log(charObj.pk);
-}
-*/
 //Function used to select an element based on the row selected 
 function selChar(charObj) {
+
     console.log(charObj.pk);
+    var currRow = charObj.pk;
+    var totalRows = document.getElementById('charsTableBody').rows.length -1;
+
+    //Set fields to those associated with the selected object
     document.getElementById('charNameBox').value = charObj.fields.name;
     document.getElementById('keyCharBox').checked = charObj.fields.key;
     document.getElementById('charComment').value = charObj.fields.notes;
     
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('charEditBtn').disabled = false;
+    document.getElementById('charDelBtn').disabled = false;
 
+    //Highlight the currently selected item
+    document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
 }

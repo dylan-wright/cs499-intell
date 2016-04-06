@@ -45,3 +45,19 @@ def agents(request):
 def agent_detail(request, pk):
     context = {"agent": Agent.objects.get(pk=pk)}
     return render(request, "game/agents/agent_detail.html", context)
+
+def players(request):
+    context = {"players": Player.objects.all()}
+    return render(request, "game/players.html", context)
+
+def player_detail(request, pk):
+    context = {"player": Player.objects.get(pk=pk)}
+    return render(request, "game/players/player_detail.html", context)
+
+def knowledges(request):
+    context = {"knowledges": Knowledge.objects.all()}
+    return render(request, "game/knowledges.html", context)
+
+def knowledge_detail(request, pk):
+    context = {"knowledge": Knowledge.objects.get(pk=pk)}
+    return render(request, "game/knowledges/knowledge_detail.html", context)

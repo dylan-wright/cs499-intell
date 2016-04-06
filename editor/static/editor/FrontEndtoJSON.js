@@ -255,40 +255,48 @@ function toJSONClass() {
     }
 
 
+
+    //Serialize the fields, place into an array
+    //Serialize the object, place into an arry
+    
+
+
     //Final method to submit the JSON currently stored in hashJSON
     this.submitJSON = function(){
         
         //Create a final array that will contain the JSON objects
-        var JSONarr = [];
-
+        var finalarr = [];
+        
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
+            
+            var JSONarr = [];
             
             //Get the key values of the hashmap
             var value = this.hashJSON[key];
 
-
-            //Iterate through each filed in the value of the hashmap
-            for(var field in value){ 
-                //push each object to the JSON array
-                JSONarr.push(value[field]);
-            }
-
+            JSONarr.push(value.model);
+            JSONarr.push(value.pk);
+            JSONarr.push(value.fields);
+            //JSONarr.push(fieldarr);
+            finalarr.push(JSONarr);
         }
 
         //Generate the JSON file using stringify on the JSON array
         //after the hashmap has been iterated through
-        var JSONfile = JSON.stringify(JSONarr);
-        console.log(JSONfile);
+        //var fileUpload = JSON.stringify(JSONarr);
+        var fileUpload = JSON.stringify(finalarr);
+        console.log(fileUpload);
 
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
         xhttp.open('POST', "../dump_request/", false);
-        xhttp.send(JSONfile);
+        xhttp.send(fileUpload);
 
         //document.getElementById('charsIntrBody').innerHTML = xhttp.responseText;
-        console.log(xhttp.responseText);
+        //console.log(xhttp.responseText);
+        document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
 
 

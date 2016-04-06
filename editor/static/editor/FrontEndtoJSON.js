@@ -11,6 +11,8 @@ function toJSONClass() {
 
 
     //TODO:
+        //Fix background colors for the currently selected object
+        //Enable Edit/Delete button when object selected
         //Storing title information as well
         //Create xHTTP request and create a file that contains the JSON info
         //figure out how to get values from the map for the location editor
@@ -55,7 +57,7 @@ function toJSONClass() {
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
         cell.innerHTML = charName;
-        newCharElement.addEventListener("click", function(){foo(charObj.pk);});
+        newCharElement.addEventListener("click", function(){selChar(charObj);});
         
         //incrememnt the key associated with character objects. 
         this.charKey++;
@@ -288,6 +290,18 @@ function toJSONClass() {
 
 }
 var currEdit = new toJSONClass();
-function foo(charKey) {
-    console.log(charKey);
+
+/*
+function foo(charKey){ 
+    console.log(charObj.pk);
+}
+*/
+//Function used to select an element based on the row selected 
+function selChar(charObj) {
+    console.log(charObj.pk);
+    document.getElementById('charNameBox').value = charObj.fields.name;
+    document.getElementById('keyCharBox').checked = charObj.fields.key;
+    document.getElementById('charComment').value = charObj.fields.notes;
+    
+
 }

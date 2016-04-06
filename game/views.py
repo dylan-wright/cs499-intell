@@ -36,7 +36,8 @@ def create(request):
             return HttpResponseRedirect("../")
     else:
         context = {"form": GameForm()}
-    return render(request, "game/games/create.html", context)
+        return render(request, "game/games/create.html", context)
+    return HttpResponseRedirect("")
 
 def agents(request):
     context = {"agents": Agent.objects.all()}

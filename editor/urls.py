@@ -16,6 +16,7 @@ urlpatterns = [
 
     #ajax_scenario
     url(r'^accept_ajax_scenario/$', views.accept_ajax_scenario, name='accept_ajax_scenario'),
+    url(r'^dump_request/$', views.dump_request, name='dump_request'),
 
     #manual html page based editor 
     #TODO: migrate to FE js/html editor

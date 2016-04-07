@@ -30,7 +30,7 @@ class Scenario(models.Model):
     point_num = models.IntegerField()
     author = models.CharField(max_length=32)     # too short?
     file_name = models.FileField(upload_to='scenarios', null=True) 
-    events = models.OneToOneField('Event', null=True)
+    events = models.ForeignKey('Event', null=True)
 
     def __str__(self):
         return self.author + " presents " + self.name

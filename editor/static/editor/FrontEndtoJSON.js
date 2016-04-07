@@ -283,6 +283,35 @@ function toJSONClass() {
         //console.log(xhttp.responseText);
         document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
+    //method to populate the target selection when character/location is slected
+    this.populateTagTargets = function(){
+        var loopKey = 0;
+        //store the element for the type and target selectors
+        var targetSel = document.getElementById('targetSel');
+        var tagType = document.getElementById('tagTypeSel');
+
+        //set the loop variable to the number of characters if character was selected
+        if(tagType.selectedIndex == 0){
+            loopKey = this.charKey;
+        }
+
+        //set the loop variable to the number of locations if location was selected
+        else if(tagType.selectedIndex == 1){
+            loopKey = this.locKey;
+        }
+    
+        //clear the selector options list
+        targetSel.innerHTML = '';
+
+        //loop through each of the locations/characters and add to the list
+        for(i=0; i < loopKey; i++)
+        {
+            var tarOption = document.createElement("option");
+            tarOption.text = this.hashJSON[i].fields.name;
+            console.log(tarOption.text)
+            targetSel.add(tarOption);
+        }
+    }   
 
 
 }

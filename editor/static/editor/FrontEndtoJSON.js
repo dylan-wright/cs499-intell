@@ -303,7 +303,17 @@ function toJSONClass() {
 
         //Create a final array that will contain the JSON objects
         var finalarr = [];
-        
+        scenariomodel = {
+            "model": "editor.scenario",
+            "pk": null,
+            "fields": {
+                "name": this.name,
+                "turn_num": this.turn_num,
+                "point_num": this.point_num
+            }
+        };
+        finalarr.push(scenariomodel);
+
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
             

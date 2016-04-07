@@ -30,6 +30,10 @@ function toJSONClass() {
 
     //hashMap to contain input received from the user  
     this.hashJSON = [];
+//TODO: Decide what to do with hashJSON
+    //Seperate keys by constants 
+    //Use multiple hash structures
+
 
 
     /*

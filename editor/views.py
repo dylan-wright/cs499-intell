@@ -216,17 +216,17 @@ def accept_ajax_scenario(request):
     if request.method == 'POST':
         data = []
 
-        fileUpload = request.FILES['fileUpload']
-        for obj in serializers.deserialize("json", fileUpload.read()):
+        #fileUpload = request.FILES['fileUpload']
+        for obj in serializers.deserialize("json", request.body):
             data.append(obj)
-            obj.save()
+            #obj.save()
         context = {"data":data}
 
         scenario = Scenario(name="temp", turn_num=20, point_num=20, author="")
-        scenario.save()
-        file_name = str(scenario.id)
-        scenario.file_name.save(file_name, fileUpload)
-        scenario.save()
+        #scenario.save()
+        #file_name = str(scenario.id)
+        #scenario.file_name.save(file_name, fileUpload)
+        #scenario.save()
     else:
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)

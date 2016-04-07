@@ -30,9 +30,28 @@ class Scenario(models.Model):
     point_num = models.IntegerField()
     author = models.CharField(max_length=32)     # too short?
     file_name = models.FileField(upload_to='scenarios', null=True) 
-    
+    events = models.OneToOneField('Event', null=True)
+
     def __str__(self):
         return self.author + " presents " + self.name
+
+    '''
+    load_events
+        used to populate db if the events in the file are not in the db
+        called when a game is being spun up
+        for now unimplemnted (events always in db)
+    '''
+    def load_events(self):
+        pass
+
+    '''
+    unload_events
+        used to depopulate db when a game ends. 
+        called by manager
+        for now unimplemented (events always in db)
+    '''
+    def unload_events(self):
+        pass
 
 '''
 Character

@@ -1,3 +1,4 @@
+<!-- -->
 {% load staticfiles %}
 
 <!DOCTYPE html>
@@ -14,15 +15,15 @@
 </head>
 <body>
 <div class="container">
-	<div class="row">
-		<div class="col-sm-5"> <!-- instructions -->
-			<div class="panel-group">
-				<div class="panel panel-default">
-					<div class="panel-heading"><h4>Instructions:</h4></div>
-					<div class="panel-body">
-						<div class="tab-content">
-							<!-- Title Tab instructions -->
-          <div id="TitleInstr" class="tab-pane fade in active">
+  <div class="row">
+    <div class="col-sm-5"> <!-- instructions -->
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading"><h4>Instructions:</h4></div>
+          <div class="panel-body">
+            <div class="tab-content">
+
+<div id="TitleInstr" class="tab-pane fade in active">
 
           <div class="panel panel-default">
           <div class="panel-heading">
@@ -381,300 +382,317 @@
         </div>
         </div>
         </div>
-
         </div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-7"> <!-- window -->
-			<div class="panel-group">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<div class="tab-content">
-							<!-- Title Tab contents -->
-							<div id="TitleTitle" class="tab-pane fade in active">
-								<h4>Title</h4>
-							</div>
-							<!-- Chars Tab contents -->
-							<div id="CharsTitle" class="tab-pane fade">
-								<h4>Characters</h4>
-							</div>
-							<!-- Locs Tab contents -->
-							<div id="LocsTitle" class="tab-pane fade">
-								<h4>Locations</h4>
-							</div>
-							<!-- Events Tab contents -->
-							<div id="EventsTitle" class="tab-pane fade">
-								<h4>Events</h4>
-							</div>
-						</div>
-					</div>
-					<div class="panel-body">
-						<div class="tab-content">
-							<!-- Title Tab contents -->
-							<div id="TitleTab" class="tab-pane fade in active">
-								<div class="form-group">
-									<div class="row">
-										<div class="col-sm-4">
-											<label for="titleBox">Title:</label>
-										</div>
-										<div class="col-sm-4">
-											<input type="text" class="form-control" id="titleBox">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-4">
-											<label for="turnSpin">Turns:</label>
-										</div>
-										<div class="col-sm-4">
-											<input type="text" class="form-control" id="turnSpin" value="20" name="turnSpin">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-sm-4">
-											<label for="pointSpin">Starting INTELL Points:</label>
-										</div>
-										<div class="col-sm-4">
-											<input type="text" class="form-control" id="pointSpin" value="25" name="pointSpin">
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- Chars Tab contents -->
-							<div id="CharsTab" class="tab-pane fade">
-							<div class="row">
-								<div class="col-sm-5">
-									<div id="charsTable" class="table-responsive">
-									<table class="table table-hover, table-bordered">
-										<thead>
-											<tr>
-												<th>Characters</th>
-											</tr>
-										</thead>
-										<tbody>
-											
-										</tbody>
-									</table>
-									</div>
-								</div>
-								<div class="col-sm-7">
-									<!-- Chars Input -->
-									<div id="charInput" class="form-group">
-										<label for="charNameBox">Name:</label>
-										<input type="text" class="form-control" id="charNameBox">
-										
-										<div class="checkbox"><!-- Key Box-->
-											<label><input id="keyCharBox" type="checkbox" value="">Key</label>
-										</div>
-										
-										<label for="charComment">Comment:</label>
-										<textarea class="form-control" rows="6" id="charComment"></textarea>
-										
-										<div class="row"> <!--Buttons -->
-											<div class="col-sm-4">
-												<button id="charAddBtn" type="button" class="btn btn-block">Add</button>
-											</div>
-											<div class="col-sm-4">
-												<button id="charEditBtn" type="button" class="btn btn-block">Edit</button>
-											</div>
-											<div class="col-sm-4">
-												<button id="charDelBtn" type="button" class="btn btn-block">Delete</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							</div>
-							<!-- Locs Tab contents -->
-							<div id="LocsTab" class="tab-pane fade">
-								<div class="row">
-									<img id="locMap" src="{% static "Img/map.png" %}" class="img-responsive thumbnail" alt="Map">
-								</div>
-								<div class="row"> <!--Buttons -->
-									<div class="col-sm-4">
-										<button id="locAddBtn" type="button" class="btn btn-block">Add</button>
-									</div>
-									<div class="col-sm-4">
-										<button id="locEditBtn" type="button" class="btn btn-block">Edit</button>
-									</div>
-									<div class="col-sm-4">
-										<button id="locDelBtn" type="button" class="btn btn-block">Delete</button>
-									</div>
-								</div>
-								<div class="row"><!--Table-->
-								<div id="locsTable" class="table-responsive">
-								<table class="table table-hover, table-bordered">
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th>X</th>
-											<th>Y</th>
-										</tr>
-									</thead>
-									<tbody>
-										
-									</tbody>
-								</table>
-								</div>
-								</div>
-							</div>
-							<!-- Events Tab contents -->
-							<div id="EventsTab" class="tab-pane fade">
-								<div class="row">
-									<div class="col-sm-5">
-										<div id="eventTable" class="table-responsive">
-										<table class="table table-hover, table-bordered">
-											<thead>
-												<tr>
-													<th>Events</th>
-												</tr>
-											</thead>
-											<tbody>
-												
-											</tbody>
-										</table>
-										</div>
-									</div>
-									<div class="col-sm-7">
-										<div id="eventInputs" class="form-group">
-											<div class="row">
-												<label class="control-label col-sm-2" for="eventNameBox">Name:</label>
-												<div class="col-sm-10">
-													<input type="text" class="form-control" id="eventNameBox">
-												</div>
-											</div>
-											<div class="row"><!-- Check boxes -->
-												<div class="col-sm-2"></div>
-												<div class="col-sm-4">
-													<div id="eventKeyBox" class="checkbox">
-														<label><input type="checkbox" value="">Key</label>
-													</div>
-												</div>
-												<div class="col-sm-2"></div>
-												<div class="col-sm-4">											
-													<div id="eventSecretBox" class="checkbox">
-														<label><input type="checkbox" value="">Secret</label>
-													</div>
-												</div>
-											</div>
-											<label for="snippet">Snippet:</label>
-											<textarea class="form-control" rows="3" id="snippet"></textarea>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-5">
-										<div id="eventTagTable" class="table-responsive">
-										<table class="table table-hover, table-bordered">
-											<thead>
-												<tr>
-													<th>Event Tag</th>
-													<th>Target</th>
-												</tr>
-											</thead>
-											<tbody>
-												
-											</tbody>
-										</table>
-										</div>
-									</div>
-									<div class="col-sm-7">
-										<div id="eventTagInput" class="form-group">
-											<div class="row">
-												<div class="col-sm-3">
-													<label class="control-label col-sm-2" for ="turnTagSel">Turn:</label>
-												</div>
-												<div class="col-sm-9">
-													<select class="form-control" id="turnTagSel">
-														<option>0</option>
-														<option>1</option>
-														<option>2</option>
-														<option>3</option>
-														<option>4</option>
-														<option>5</option>
-														<option>6</option>
-														<option>7</option>
-														<option>8</option>
-														<option>9</option>
-														<option>10</option>
-														<option>11</option>
-														<option>12</option>
-														<option>13</option>
-														<option>14</option>
-														<option>15</option>
-														<option>16</option>
-														<option>17</option>
-														<option>18</option>
-														<option>19</option>
-														<option>20</option>
-													</select>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-sm-3">
-													<label for="tagTypeSel">Tag Type:</label>
-												</div>
-												<div class="col-sm-9">
-													<select class="form-control" id="tagTypeSel">
-														<option>Character</option>
-														<option>Location</option>
-													</select>
-												</div>
-											</div>
-											<div class="row">
-												<div class="col-sm-3">
-													<label class="control-label col-sm-2" for="targetSel">Target:</label>
-												</div>
-												<div class="col-sm-9">
-													<select class="form-control" id="targetSel">
-													</select>
-												</div>
-											</div>
-										</div>
-										<div class="row"> <!--Buttons -->
-											<div class="col-sm-4">
-												<button id="eventTagAddBtn" type="button" class="btn btn-block">Add</button>
-											</div>
-											<div class="col-sm-4">
-												<button id="eventTagEditBtn" type="button" class="btn btn-block">Edit</button>
-											</div>
-											<div class="col-sm-4">
-												<button id="eventTagDelBtn" type="button" class="btn btn-block">Delete</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="panel-footer"> <!--Navigation -->
-						<ul class="nav nav-pills nav-justified">
-							<li class="active"><a data-target="#TitleInstr, #TitleTitle, #TitleTab" data-toggle="pill" href="#Title">Title</a></li>
-							<li><a data-target="#CharsInstr, #CharsTitle, #CharsTab" data-toggle="pill" href="#Chars">Characters</a></li>
-							<li><a data-target="#LocsInstr, #LocsTitle, #LocsTab" data-toggle="pill" href="#Locs">Locations</a></li>
-							<li><a data-target="#EventsInstr, #EventsTitle, #EventsTab" data-toggle="pill" href="#Events">Events</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-2"></div>
-				<div class="col-sm-8">
-					<div class="col-sm-4">
-						<button id="saveBtn" type="button" class="btn btn-block">Save</button>
-					</div>
-					<div class="col-sm-4">
-						<button id="openBtn" type="button" class="btn btn-block">Open</button>
-					</div>
-					<div class="col-sm-4">
-						<button id="closeBtn" type="button" class="btn btn-block">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-7"> <!-- window -->
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="tab-content">
+              <!-- Title Tab contents -->
+              <div id="TitleTitle" class="tab-pane fade in active">
+                <h4>Title</h4>
+              </div>
+              <!-- Chars Tab contents -->
+              <div id="CharsTitle" class="tab-pane fade">
+                <h4>Characters</h4>
+              </div>
+              <!-- Locs Tab contents -->
+              <div id="LocsTitle" class="tab-pane fade">
+                <h4>Locations</h4>
+              </div>
+              <!-- Events Tab contents -->
+              <div id="EventsTitle" class="tab-pane fade">
+                <h4>Events</h4>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="tab-content">
+              <!-- Title Tab contents -->
+              <div id="TitleTab" class="tab-pane fade in active">
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <label for="titleBox">Title:</label>
+                    </div>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="titleBox">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <label for="turnSpin">Turns:</label>
+                    </div>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="turnSpin" value="20" name="turnSpin">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <label for="pointSpin">Starting INTELL Points:</label>
+                    </div>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="pointSpin" value="25" name="pointSpin">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Chars Tab contents -->
+              <div id="CharsTab" class="tab-pane fade">
+              <div class="row">
+                <div class="col-sm-5">
+                  <div id="charsTable" class="table-responsive">
+                  <table class="table table-hover, table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Characters</th>
+                      </tr>
+                    </thead>
+                    <tbody id="charsTableBody">
+                    
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+                <div class="col-sm-7">
+                  <!-- Chars Input -->
+                  <div id="charInput" class="form-group">
+                    <label for="charNameBox">Name:</label>
+                    <input type="text" class="form-control" id="charNameBox">
+                    
+                    <div class="checkbox"><!-- Key Box-->
+                      <label><input id="keyCharBox" type="checkbox" value="">Key</label>
+                    </div>
+                    
+                    <label for="charComment">Comment:</label>
+                    <textarea class="form-control" rows="6" id="charComment"></textarea>
+                    
+                    <div class="row"> <!--Buttons -->
+                      <div class="col-sm-4">
+                        <button id="charAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_char()">Add</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="charEditBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.edit_char()">Edit</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="charDelBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.del_char()">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+              <!-- Locs Tab contents -->
+              <div id="LocsTab" class="tab-pane fade">
+                <div class="row">
+                  <img id="locMap" src="{% static "Img/map.png" %}" class="img-responsive thumbnail" alt="Map">
+                </div>
+                <div class="row"> <!--Buttons -->
+                  <div class="col-sm-4">
+                    <button id="locAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_loc()">Add</button>
+                  </div>
+                  <div class="col-sm-4">
+                    <button id="locEditBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.edit_loc()">Edit</button>
+                  </div>
+                  <div class="col-sm-4">
+                    <button id="locDelBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.del_loc()">Delete</button>
+                  </div>
+                </div>
+                <div class="row"><!--Table-->
+                <div id="locsTable" class="table-responsive">
+                <table class="table table-hover, table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>X</th>
+                      <th>Y</th>
+                    </tr>
+                  </thead>
+                  <tbody id="locsTableBody">
+                  
+                  </tbody>
+                </table>
+                </div>
+                </div>
+                <div class="row"><!--table input-->
+                    <div class="form-group col-xs-6">
+                        <input id="locNameInput" class="form-control" type="text" placeholder="Location Name">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <input id="locXinput" class="form-control" type="text" placeholder="X Coord">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <input id="locYinput" class="form-control" type="text" placeholder="Y Coord">
+                    </div>
+                </div>
+              </div>
+              <!-- Events Tab contents -->
+              <div id="EventsTab" class="tab-pane fade">
+                <div class="row">
+                  <div class="col-sm-5">
+                    <div id="eventTable" class="table-responsive">
+                    <table class="table table-hover, table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Events</th>
+                        </tr>
+                      </thead>
+                      <tbody id="eventsTableBody">
+                        
+                      </tbody>
+                    </table>
+                    </div>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="eventInputs" class="form-group">
+                      <div class="row">
+                        <label class="control-label col-sm-2" for="eventNameBox">Name:</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="eventNameBox">
+                        </div>
+                      </div>
+                      <div class="row"><!-- Check boxes -->
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-4">
+                          <div id="eventKeyBox" class="checkbox">
+                            <label><input type="checkbox" value="">Key</label>
+                          </div>
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-4">                      
+                          <div id="eventSecretBox" class="checkbox" data-toggle="collapse" data-target="#secretCollapse">
+                            <label><input type="checkbox" value="">Secret</label>
+                          </div>
+                        </div>
+                      </div>
+                      <label for="snippet">Snippet:</label>
+                      <textarea class="form-control" rows="3" id="snippet"></textarea>
+                      <div id="secretCollapse" class="collapse">
+                        <label for"secretSnippet">Secret Snippet:</label>
+                        <textarea class="form-control" rows="3" id="secretSnippet"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-5">
+                    <div id="eventTagTable" class="table-responsive">
+                    <table class="table table-hover, table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Event Tag</th>
+                          <th>Target</th>
+                        </tr>
+                      </thead>
+                      <tbody id="eventsTagBody">
+                        
+                      </tbody>
+                    </table>
+                    </div>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="eventTagInput" class="form-group">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <label class="control-label col-sm-2" for ="turnTagSel">Turn:</label>
+                        </div>
+                        <div class="col-sm-9">
+                          <select class="form-control" id="turnTagSel">
+                            <option>0</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <label for="tagTypeSel">Tag Type:</label>
+                        </div>
+                        <div class="col-sm-9">
+                          <select class="form-control" id="tagTypeSel">
+                            <option>Character</option>
+                            <option>Location</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <label class="control-label col-sm-2" for="targetSel">Target:</label>
+                        </div>
+                        <div class="col-sm-9">
+                          <select class="form-control" id="targetSel">
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row"> <!--Buttons -->
+                      <div class="col-sm-4">
+                        <button id="eventTagAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_event()">Add</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="eventTagEditBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.edit_event()">Edit</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="eventTagDelBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.del_event()">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-footer"> <!--Navigation -->
+            <ul class="nav nav-pills nav-justified">
+              <li class="active"><a data-target="#TitleInstr, #TitleTitle, #TitleTab" data-toggle="pill" href="#Title">Title</a></li>
+              <li><a data-target="#CharsInstr, #CharsTitle, #CharsTab" data-toggle="pill" href="#Chars">Characters</a></li>
+              <li><a data-target="#LocsInstr, #LocsTitle, #LocsTab" data-toggle="pill" href="#Locs">Locations</a></li>
+              <li><a data-target="#EventsInstr, #EventsTitle, #EventsTab" data-toggle="pill" href="#Events">Events</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+          <div class="col-sm-4">
+            <button id="saveBtn" type="button" class="btn btn-block" onclick="currEdit.submitJSON()">Save</button>
+          </div>
+          <div class="col-sm-4">
+            <button id="openBtn" type="button" class="btn btn-block">Open</button>
+          </div>
+          <div class="col-sm-4">
+            <button id="closeBtn" type="button" class="btn btn-block">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- Where the dump contents are going to go... -->
 <div class="container" id="dumpLoc">Dump Object Location</div>

@@ -11,8 +11,9 @@ function toJSONClass() {
 
 
     //TODO:
-        //Storing title information as well
-        //Create xHTTP request and create a file that contains the JSON info
+        //Get add Event and Location working
+        //Get the edit/delete buttons working  
+        //Input validation?
         //figure out how to get values from the map for the location editor
 
     //Scenario properties
@@ -21,14 +22,24 @@ function toJSONClass() {
     this.point_num = 20;
     this.author = 'NULL';
 
+    //Unique keys for each of the tabs to uniquely identify objects in the 
+    //hashJSON structure
     this.charKey = 0;
     this.eventKey = 0;
     this.locKey = 0;
 
-    //hashMap to contain input, passed from 
+    //hashMap to contain input received from the user  
     this.hashJSON = [];
 
-    //Character related methods
+
+    /*
+        add_char takes no arguments and is called when the add button is selected
+        in the character tab.
+
+        It receives the values stored in each fo the fields for the character
+        tab, creates a formalized character object and stores the result in the
+        object's hash map.
+    */
     this.add_char = function() {  
 
 
@@ -56,6 +67,8 @@ function toJSONClass() {
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
         cell.innerHTML = charName;
+
+        //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
         
         //incrememnt the key associated with character objects. 
@@ -108,7 +121,14 @@ function toJSONClass() {
         }
     }
 
-    //Event related methods
+    
+    /*
+        add_event takes no arguments and is called when the add button is selected
+        in the event tab.
+
+        it reacts similarly to the add_character method, but with the unique
+        fields associated with the event tab
+    */ 
     this.add_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
@@ -191,15 +211,19 @@ function toJSONClass() {
         }
     }
 
-    //Location related methods
+
+    /*
+        add_loc takes no arguments and is called when the add button is selected
+        in the locations tab.
+
+        it reacts similarly to the add_loc method, but with the unique
+        fields associated with the location tab
+    */
     this.add_loc = function() {
         
-        
-//TODO: figure out how to get the values from the map...
-
-        var locName = "test";
-        var locCoordX = 0;
-        var locCoordY = 0;
+        var locName = document.getElementById('locNameInput').value;
+        var locCoordX = document.getElementById('locXinput').value;
+        var locCoordY = document.getElementById('locYinput').value;
 
         //Create a location object to match with the fixture.json format
         var locObj = {
@@ -215,7 +239,13 @@ function toJSONClass() {
         this.hashJSON[this.locKey] = locObj;
 
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
-        newLocElement.innerHTML = locName;
+        nameCell = newLocElement.insertCell(0);
+        xCell = newLocElement.insertCell(1);
+        yCell = newLocElement.insertCell(2);
+        
+        nameCell.innerHTML = locName;
+        xCell.innerHTML = locCoordX;
+        yCell.innerHTML = locCoordY;
         
         this.locKey++;
 
@@ -254,42 +284,58 @@ function toJSONClass() {
         }
     }
 
-    //Final method to submit the JSON currently stored in hashJSON
+    /*
+        submitJSON method - takes no arguments but is cast on the current object
+        to stringify all elements being currently stored in hashJSON in order
+        to create a JSON object. 
+
+        Also, the fields associated with the field tab are stored in the object 
+        as well. 
+    */
     this.submitJSON = function(){
         
+        //Assign the values in the title field 
+        this.name = document.getElementById('titleBox').value;
+        this.turn_num = document.getElementById('turnSpin').value;
+        this.point_num = document.getElementById('pointSpin').value;
+        //Getting the author field populated? Can be done later
+
+
         //Create a final array that will contain the JSON objects
         var finalarr = [];
         
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
             
-            //Get the key values of the hashmap
+            //Push each element of the hashmap to the array to match fixture.JSON
             finalarr.push(this.hashJSON[key]);
         }
 
-        //Generate the JSON file using stringify on the JSON array
-        //after the hashmap has been iterated through
-        //var fileUpload = JSON.stringify(JSONarr);
+        //Generate the JSON file using stringify on the JSON array after the 
+        //hashmap has been iterated through
         var fileUpload = JSON.stringify(finalarr);
-        console.log(fileUpload);
-
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
         xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
 
-        //document.getElementById('charsIntrBody').innerHTML = xhttp.responseText;
-        //console.log(xhttp.responseText);
+        //Print out the results of the dump in the dump location at the bottom
+        //of the webpage
         document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
 
 
 }
+
+//instantiate the toJSONClass to utilize the needed methods
 var currEdit = new toJSONClass();
 
 var prevChar;
-//Function used to select an element based on the row selected 
+
+/*
+    Used to handle highlighting and row selection for the character table
+*/
 function selChar(charObj) {
 
     //Store current/total rows in order to determine which row is hilighted
@@ -307,7 +353,8 @@ function selChar(charObj) {
     document.getElementById('charEditBtn').disabled = false;
     document.getElementById('charDelBtn').disabled = false;
 
-    //Highlight the currently selected item
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
     document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
     if (this.prevChar != null && this.prevChar != currRow) {
         document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';

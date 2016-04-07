@@ -1,14 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import *
 
 # Create your tests here.
-class ScenarioTestCase(TestCase):
-    def setUp(self):
-        pass
-
-    def test_create_scenario(self):
-        pass
-
 class EventTestCase(TestCase):
     '''
         The dead parrot sketch test case
@@ -137,3 +130,28 @@ class DescriptionTestCase(TestCase):
         self.assertEqual(joestore.text, "Joe went to the store")
         self.assertEqual(joestore.hidden, False)
         self.assertEqual(joestore.key, False)
+
+class IntegrationTestCase(TestCase):
+    def setUp(self):
+        pass
+
+    def test_sending_fixture_with_title(self):
+        '''test posting json scenario'''
+        self.assertEqual(len(Scenario.objects.all()), 0)
+        #create request
+        c = Client()
+        file_in= open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = c.post("/editor/accept_ajax_scenario/", 
+                          content_type="application/json",
+                          data=body)
+        self.assertEqual(len(Scenario.objects.all()), 1)
+        
+        scenario = Scenario.objects.all()[0]
+        self.assertEqual(scenario.name, "Test Scenario")
+
+        #there are 29 characters in fixture.json
+        self.assertEqual(len(Character.objects.all()), 29)
+
+        #TODO: test number of other things

@@ -307,7 +307,17 @@ function toJSONClass() {
 
         //Create a final array that will contain the JSON objects
         var finalarr = [];
-        
+        scenariomodel = {
+            "model": "editor.scenario",
+            "pk": null,
+            "fields": {
+                "name": this.name,
+                "turn_num": this.turn_num,
+                "point_num": this.point_num
+            }
+        };
+        finalarr.push(scenariomodel);
+
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
             
@@ -321,7 +331,7 @@ function toJSONClass() {
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
-        xhttp.open('POST', "../dump_request/", false);
+        xhttp.open('POST', "../accept_ajax_scenario/", false);
         xhttp.send(fileUpload);
 
         //Print out the results of the dump in the dump location at the bottom

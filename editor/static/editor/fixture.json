@@ -1,4 +1,12 @@
 [
+    {
+        "model": "editor.scenario",
+        "fields": {
+            "name": "Test Scenario",
+            "turn_num": 20,
+            "point_num": 20
+        }
+    },
 
     {
         "model": "editor.character",

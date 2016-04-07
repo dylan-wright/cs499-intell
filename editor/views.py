@@ -25,6 +25,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.core.files import File
 from django.conf import settings
+from django.core.files.base import ContentFile
 
 # Create your views here.
 '''
@@ -216,17 +217,25 @@ def accept_ajax_scenario(request):
     if request.method == 'POST':
         data = []
 
-        fileUpload = request.FILES['fileUpload']
-        for obj in serializers.deserialize("json", fileUpload.read()):
+        #fileUpload = request.FILES['fileUpload']
+        body = request.body
+        for obj in serializers.deserialize("json", body):
+            if isinstance(obj.object, Scenario):
+                scenario = obj.object
+            else:
+                obj.save()
             data.append(obj)
-            obj.save()
         context = {"data":data}
 
-        scenario = Scenario(name="temp", turn_num=20, point_num=20, author="")
-        scenario.save()
-        file_name = str(scenario.id)
-        scenario.file_name.save(file_name, fileUpload)
-        scenario.save()
+        if (scenario != None):
+            scenario.author=""
+            scenario.save()
+            scenario.file_name.save(str(scenario.id), ContentFile(body))
+            scenario.save()
+        #scenario.save()
+        #file_name = str(scenario.id)
+        #scenario.file_name.save(file_name, fileUpload)
+        #scenario.save()
     else:
         context = {"data":request}
     return render(request, "editor/accept_ajax_scenario.html", context)

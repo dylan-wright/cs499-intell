@@ -11,12 +11,10 @@
   <td>{{ game.turn }}</td>
   <td>{{ game.creator }}</td>
   <td>{{ game.time_till }}</td>
-  {% if loggedin %}
-    {% if user in game.players.all %}
+  {% if loggedin and user in game.players.all %}
   <td><a href="../play/game.id">Play Game</a></td>
-    {% else %}
+  {% elif loggedin %}
   <td>Not in game</td>
-    {% endif %}
   {% else %}
   <td><a href="/login/?next=/game/games">Log in</a> to play</td>
   {% endif %}

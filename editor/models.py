@@ -19,6 +19,7 @@ Scenario
     id          - auto gen primary key
     name        - author's name for scenario
     turn_num    - turns in game
+    point_num   - starting points in game
     author      - author's name, db will actually connect author model to
                     their scenarios but this way the author can choose to
                     be anonomys - thats not spelled right sue me. 

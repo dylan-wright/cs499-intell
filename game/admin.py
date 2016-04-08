@@ -1,3 +1,12 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+        game/admin.py
+            Django admin settings for game
+            currently all models exposed
+'''
 from django.contrib import admin
 from .models import *
 # Register your models here.

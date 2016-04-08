@@ -1,3 +1,17 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+        game/models.py
+            Django models for game app
+                Player
+                Game
+                Agent
+                Action
+                Knowledge
+'''
+
 from django.db import models
 from editor.models import *
 from django.contrib.auth.models import User
@@ -66,11 +80,13 @@ class Game(models.Model):
     add_player
         I: player - a Player object
         O: player is added to the players field if the game has not started
+            and the player is not in the game already
             otherwise no change
     '''
     def add_player(self, player):
-        self.players.add(player)
-        self.save()
+        if player not in self.players.all():
+            self.players.add(player)
+            self.save()
 
     '''
     time_till

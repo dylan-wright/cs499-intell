@@ -1,3 +1,11 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+    
+    /game/urls.py
+        Django url resolvers for game app
+'''
 from django.conf.urls import url
 
 from . import views

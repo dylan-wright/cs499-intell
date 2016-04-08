@@ -32,13 +32,15 @@ def game_detail(request, pk):
         Game.objects.get(pk=pk).start()
         return HttpResponseRedirect("../")
 
+@login_required
 def create(request):
     if request.method == "POST":
         form = GameForm(request.POST)
         if form.is_valid():
             game = Game(scenario=form.cleaned_data["scenario"],
-                        creator=form.cleaned_data["creator"],
-                        turn_length=form.cleaned_data["turn_length"])
+                        creator=request.user,
+                        turn_length=form.cleaned_data["turn_length"],
+                        next_turn=form.cleaned_data["next_turn"])
             game.save()
             return HttpResponseRedirect("../")
     else:

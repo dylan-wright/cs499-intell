@@ -4,4 +4,4 @@ from .models import Game
 class GameForm(ModelForm):
     class Meta:
         model = Game
-        fields = ['scenario', 'creator', 'turn_length']
+        fields = ['scenario', 'turn_length', 'next_turn']

@@ -81,8 +81,13 @@ class Game(models.Model):
     def time_till(self):
         now = make_aware(datetime.now())
         if self.next_turn != None:
-            till = self.next_turn - now
-            return till.seconds
+            #otherwise get large ugly number of seconds
+            if now > self.next_turn:
+                return 0
+            else:
+                till = self.next_turn - now
+                return till.seconds
+        
     
     '''
     start_next_turn
@@ -127,13 +132,10 @@ class Game(models.Model):
         #init game
         self.started = True
         self.next_turn = make_aware(datetime.now())
+        self.save()
 
         #init first turn 
         self.start_next_turn()
-
-        #write to the db
-        self.save()
-
 
 
 '''

@@ -1,0 +1,175 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>INTELL</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+{{ username }}
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Map</h4>
+          </div>
+          <div class="panel-body">
+            <img id="mapDisplay" src="{% static "Img/map.png" %}" 
+                 class="img-responsive thumbnail" alt="Map">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Timer</h4>
+          </div>
+          <div class="panel-body">
+            <p id="timerDisplay">{{ timerDisplay }}</p>
+          </div>
+        </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4>INTELL</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Turn</h4>
+          </div>
+          <div class="panel-body">
+              <p id="turnDisplay">{{ turnDisplay }}</p>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4>Points</h4>
+            </div>
+            <div class="panel-body">
+              <p id="pointsDisplay">{{ pointsDisplay }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6"> <!--Info Window-->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Info</h4>
+          </div>
+          <div class="panel-body">
+            <!--use list + style id-->
+            <!--Insert snippets into paragraph tags? -->
+            <table border="1">
+              <tr><td>Snippet Text</td></tr>
+              {% for snippet in snippets %}
+              <tr><td>{{ snippet }}</td></tr>
+              {% empty %}
+              <tr><td>No snippets to display</td></tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6"> <!--Agents Window-->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>Agents</h4>
+          </div>
+          <div class="panel-body">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-8">
+                <div class="row">
+                  <label class="control-label col-sm-2" for="agentSel">
+                    Agent:
+                  </label>
+                  <div class="col-sm-5">
+                    <select class="form-control" id="agentSel">
+                      <option>Agent 1</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row"><p> </p></div>
+            <div class="row">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-8">
+                <div class="row">
+                  <label class="control-label col-sm-2" for="targetSel">
+                    Target:
+                  </label>
+                  <div class="col-sm-5">
+                    <select class="form-control" id="targetSel">
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row"><p> </p></div>
+            <div class="row">
+              <div class="col-sm-1"></div>
+              <div class="col-sm-3">
+                <button id="tailBtn" type="button" 
+                        class="btn btn-default btn-block active">Tail</button>
+              </div>
+              <div class="col-sm-3">
+                <button id="investigateBtn" type="button" 
+                        class="btn btn-default btn-block">Investigate</button>
+              </div>
+              <div class="col-sm-3">
+                <button id="checkBtn" type="button" 
+                        class="btn btn-default btn-block">Check Info</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-1"></div>
+              <div class="col-sm-3">
+                <button id="misInfoBtn" type="button" 
+                        class="btn btn-default btn-block">Misinform</button>
+              </div>
+              <div class="col-sm-3">
+                <button id="recruitBtn" type="button" 
+                        class="btn btn-default btn-block">Recruit</button>
+              </div>
+              <div class="col-sm-3">
+                <button id="apprehendBtn" type="button" 
+                        class="btn btn-default btn-block">Apprehend</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-1"></div>
+              <div class="col-sm-3">
+                <button id="researchBtn" type="button" 
+                        class="btn btn-default btn-block">Research</button>
+              </div>
+              <div class="col-sm-3">
+                <button id="terminateBtn" type="button" 
+                        class="btn btn-default btn-block">Terminate</button>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</body>
+</html>

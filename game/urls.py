@@ -13,4 +13,7 @@ urlpatterns = [
     url(r'^players/(?P<pk>[0-9]+)/$', views.player_detail, name="player_detail"),
     url(r'^knowledges/$', views.knowledges, name='knowledges'),
     url(r'^knowledges/(?P<pk>[0-9]+)/$', views.knowledge_detail, name="knowledge_detail"),
+    url(r'^games/submit_action/$', views.submit_action, name="submit_action"),
+    url(r'^play/(?P<pk>[0-9]+)/$', views.play, name="play"),
+    url(r'^games/(?P<pk>[0-9]+)/join/$', views.join, name="join")
 ]

@@ -95,7 +95,7 @@ class Game(models.Model):
         self.turn += 1
         
         #generate initial snippets
-        generateSnippets()
+        #generateSnippets()
 
         #process actions
         agents_to_proc = []
@@ -112,16 +112,6 @@ class Game(models.Model):
 
         #store in db
         self.save()
-
-    '''
-    generate_snippets
-        I:
-        O:  add snippets to snippet table for current table
-    '''
-    def generate_snippets(self):
-        snippets = {}
-        for event in self.scenario.events.filter(turn=self.turn):
-            event_snippets = event.get_snippets()
 
     '''
     start

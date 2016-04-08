@@ -123,6 +123,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = '/login/'
+
 LOGIN_REDIRECT_URL = '/editor/dump_session/'
 
 MEDIA_ROOT = 'files/'

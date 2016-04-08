@@ -350,27 +350,26 @@ function toJSONClass() {
         //store the element for the type and target selectors
         var targetSel = document.getElementById('targetSel');
         var tagType = document.getElementById('tagTypeSel');
-
-        //set the loop variable to the number of characters if character was selected
-        if(tagType.selectedIndex == 0){
-            loopKey = this.hashKey;
-        }
-
-        //set the loop variable to the number of locations if location was selected
-        else if(tagType.selectedIndex == 1){
-            loopKey = this.hashKey;
-        }
     
         //clear the selector options list
         targetSel.innerHTML = '';
 
-        //loop through each of the locations/characters and add to the list
-        for(i=0; i < loopKey; i++)
+        //loop through each element in hashJSON and find the
+		//characters or locations depending on which is selected in tagType
+        for(var key in this.hashJSON)
         {
-            var tarOption = document.createElement("option");
-            tarOption.text = this.hashJSON[i].fields.name;
-            console.log(tarOption.text)
-            targetSel.add(tarOption);
+			if(this.hashJSON[key].model=="editor.character" && tagType.selectedIndex == 0)
+			{
+				var tarOption = document.createElement("option");
+				tarOption.text = this.hashJSON[key].fields.name;
+				targetSel.add(tarOption);
+			}
+			else if (this.hashJSON[key].model=="editor.location" && tagType.selectedIndex == 1)
+			{
+				var tarOption = document.createElement("option");
+				tarOption.text = this.hashJSON[key].fields.name;
+				targetSel.add(tarOption);
+			}
         }
     }   
 
@@ -381,6 +380,9 @@ function toJSONClass() {
 var currEdit = new toJSONClass();
 
 var prevChar;
+var prevLoc;
+var prevEvent;
+var prevTag;
 
 /*
     Used to handle highlighting and row selection for the character table
@@ -410,3 +412,97 @@ function selChar(charObj) {
     }
     this.prevChar = currRow;
 }
+
+/*
+    Used to handle highlighting and row selection for the location table
+*/
+function selLoc(locObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[1].style.backgroundColor='red';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[2].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[1].style.backgroundColor='white';
+		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[2].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+
+/*
+    Used to handle highlighting and row selection for the event table
+*/
+/*
+function selEvent(eventObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+
+/*
+    Used to handle highlighting and row selection for the event tag table
+*/
+/*
+function selTag(tagObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+*/

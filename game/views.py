@@ -204,13 +204,16 @@ play
 '''
 def play(request, pk):
     user = request.user
+    game = Game.objects.get(pk=pk)
     #verify user is playing game
-    if user in Game.objects.get(pk=pk).players.all():
-        context = {"pointsDisplay": 0,
-                   "turnDisplay": 0,
-                   "timerDisplay": "59:99",
+    if user in game.get_users():
+        player = game.players.get(user=user)
+        context = {"pointsDisplay": player.points,
+                   "turnDisplay": game.turn,
+                   "timerDisplay": game.time_till(),
                    "snippets": ["a", "b", "c"],
-                   "username": user}
+                   "username": user,
+                   "agents": Agent.objects.filter(player=player)}
         return render(request, "game/IntellGame.html", context)
     else:
         return HttpResponseRedirect("../../games")

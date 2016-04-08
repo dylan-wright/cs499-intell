@@ -103,7 +103,10 @@
                   </label>
                   <div class="col-sm-5">
                     <select class="form-control" id="agentSel">
-                      <option>Agent 1</option>
+                      {% for agent in agents %}
+                      <option>{{ agent }}</option>
+                      {% empty %}
+                      {% endfor %}
                     </select>
                   </div>
                 </div>

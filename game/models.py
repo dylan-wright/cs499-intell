@@ -34,6 +34,13 @@ class Player(models.Model):
     def __str__(self):
         return "player controlled by %s"%(self.user.username)
 
+    def add_agent(self):
+        action = Action()
+        action.save()
+        agent = Agent(name="", alive=True, action=action, player=self)
+        agent.save()
+
+
 '''
 Game
     used to represent a particular game. 
@@ -76,6 +83,12 @@ class Game(models.Model):
 
     def detail_html(self):
         return "scenario: "+str(self.scenario)
+
+    def get_users(self):
+        users = []
+        for player in self.players.all():
+            users += [player.user]
+        return users
     '''
     add_player
         I: player - a Player object
@@ -115,9 +128,6 @@ class Game(models.Model):
         #next turn
         self.turn += 1
         
-        #generate initial snippets
-        #generateSnippets()
-
         #process actions
         agents_to_proc = []
         for player in self.players.all():
@@ -144,6 +154,9 @@ class Game(models.Model):
     '''
     def start(self):
         #init players
+        for player in self.players:
+            #all players get an agent
+            player.add_agent()
 
         #init game
         self.started = True

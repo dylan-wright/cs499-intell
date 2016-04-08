@@ -129,6 +129,12 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverese("edit")
 
+    def get_snippets(self):
+        snippets = {}
+        for descby in DescribedBy.objects.filter(event=self):
+            snippets[descby.description.id] = descby.description.text
+        return snippets
+
 '''
 Involved
     id          - auto gen primary key

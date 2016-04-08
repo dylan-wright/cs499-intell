@@ -353,12 +353,12 @@ function toJSONClass() {
 
         //set the loop variable to the number of characters if character was selected
         if(tagType.selectedIndex == 0){
-            loopKey = this.charKey;
+            loopKey = this.hashKey;
         }
 
         //set the loop variable to the number of locations if location was selected
         else if(tagType.selectedIndex == 1){
-            loopKey = this.locKey;
+            loopKey = this.hashKey;
         }
     
         //clear the selector options list

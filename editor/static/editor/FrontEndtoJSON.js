@@ -15,6 +15,7 @@ function toJSONClass() {
         //Get the edit/delete buttons working  
         //Input validation?
         //figure out how to get values from the map for the location editor
+        //Use onreadystatechange
 
     //Scenario properties
     this.name = 'NULL';
@@ -24,16 +25,13 @@ function toJSONClass() {
 
     //Unique keys for each of the tabs to uniquely identify objects in the 
     //hashJSON structure
+    this.hashKey = 0;
     this.charKey = 0;
     this.eventKey = 0;
     this.locKey = 0;
 
     //hashMap to contain input received from the user  
     this.hashJSON = [];
-//TODO: Decide what to do with hashJSON
-    //Seperate keys by constants 
-    //Use multiple hash structures
-
 
 
     /*
@@ -65,7 +63,7 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        this.hashJSON[this.charKey] = charObj;
+        this.hashJSON[this.hashKey] = charObj;
 
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
@@ -75,8 +73,10 @@ function toJSONClass() {
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
         
-        //incrememnt the key associated with character objects. 
+        //incrememnt the keys associated with character object and hash location. 
+        this.hashKey++;
         this.charKey++;
+
 
 
     }
@@ -92,10 +92,10 @@ function toJSONClass() {
 //maybe using getElementById(table element).selected()["key"] or something
 
         //check that the entry already exists
-        if(this.charKey in this.hashJSON){
+        if(this.hashKey in this.hashJSON){
                 //Use key value to locate the object in the hashmap and then set  
                 //it to a new object using the hashmap
-                this.hashJSON[this.charKey] = {
+                this.hashJSON[this.hashKey] = {
                     model:"editor.character",
                     key:this.charKey,
                     fields:{
@@ -117,8 +117,8 @@ function toJSONClass() {
 
     //TODO: Again, need to fix things here...
         //Check that the key is in hashJSON and delete it if so. 
-        if(this.charKey in this.hashJSON){
-            delete this.hashJSON[this.charKey];
+        if(this.hashKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
 
             //delete the row from the table as well
             document.getElementById("charsTableBody").deleteRow(charKey);
@@ -167,13 +167,14 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        this.hashJSON[this.eventKey] = eventObj;
+        this.hashJSON[this.hashKey] = eventObj;
 
          
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
         newEventElement.innerHTML = eventName;
         
         this.eventKey++;
+        this.hashKey++;
     }
 
     this.edit_event = function() {
@@ -182,8 +183,8 @@ function toJSONClass() {
         var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
-        if(this.eventKey in this.hashJSON){
-            hashJSON[eventKey] = {
+        if(this.hashKey in this.hashJSON){
+            hashJSON[this.hashKey] = {
                 model:"editor.event",
                 pk:this.eventKey,
                 fields:{
@@ -207,8 +208,8 @@ function toJSONClass() {
 
     this.del_event = function() {
         
-        if(this.eventKey in this.hashJSON){
-            delete this.hashJSON[this.eventKey];
+        if(this.hashKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
             //delete the table entry
             document.getElementById("eventsTableBody").deleteRow(eventKey);
 
@@ -240,7 +241,7 @@ function toJSONClass() {
             }
         };
 
-        this.hashJSON[this.locKey] = locObj;
+        this.hashJSON[this.hashKey] = locObj;
 
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
         nameCell = newLocElement.insertCell(0);
@@ -252,6 +253,7 @@ function toJSONClass() {
         yCell.innerHTML = locCoordY;
         
         this.locKey++;
+        this.hashKey++;
 
     }
 
@@ -262,8 +264,8 @@ function toJSONClass() {
         var locCoordY = 0;
         
         //check that the entry already exists
-        if(this.locKey in this.hashJSON){
-                this.hashJSON[locKey] = {
+        if(this.hashKey in this.hashJSON){
+                this.hashJSON[hashKey] = {
                     model:"editor.location",
                     pk:locKey,
                     fields:{
@@ -282,11 +284,13 @@ function toJSONClass() {
 
     this.del_loc = function() {
         
-        if(locKey in hashJSON){
-            delete hashJSON[locKey];
-            document.getElementById("locsTableBody").deleteRow(locKey);
+        if(this.locKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
+            document.getElementById("locsTableBody").deleteRow(this.locKey);
         }
     }
+
+
 
     /*
         submitJSON method - takes no arguments but is cast on the current object
@@ -320,7 +324,6 @@ function toJSONClass() {
 
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
-            
             //Push each element of the hashmap to the array to match fixture.JSON
             finalarr.push(this.hashJSON[key]);
         }
@@ -331,13 +334,16 @@ function toJSONClass() {
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
-        xhttp.open('POST', "../accept_ajax_scenario/", false);
+        //xhttp.open('POST', "../accept_ajax_scenario/", false);
+        xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
 
         //Print out the results of the dump in the dump location at the bottom
         //of the webpage
         document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
+
+
     //method to populate the target selection when character/location is slected
     this.populateTagTargets = function(){
         var loopKey = 0;

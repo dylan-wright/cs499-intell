@@ -182,15 +182,16 @@ submit_action
     TODO: authenticate user->player
                     player in game.players
 
-    url         /game/games/pk/submit_action/
-    template    /game/templates/game/games/submit_action.html
+    url         /game/play/pk/submit_action/
+    template    /game/templates/game/play/submit_action.html
 '''
-def submit_action(request):
+@login_required
+def submit_action(request, pk):
     if request.method == "POST":
-        context = {"response": "posted"}
+        context = {"response": request.body}
     elif request.method == "GET":
         context = {"response": ""}
-    return render(request, "game/games/submit_action.html", context)
+    return render(request, "game/play/submit_action.html", context)
 
 '''
 play
@@ -200,7 +201,7 @@ play
     otherwise send them to game list
 
     url         /game/games/pk/play/
-    template    /game/templates/game/games/IntellGame.html
+    template    /game/templates/game/play/IntellGame.html
 '''
 def play(request, pk):
     user = request.user
@@ -214,6 +215,6 @@ def play(request, pk):
                    "snippets": ["a", "b", "c"],
                    "username": user,
                    "agents": Agent.objects.filter(player=player)}
-        return render(request, "game/IntellGame.html", context)
+        return render(request, "game/play/IntellGame.html", context)
     else:
         return HttpResponseRedirect("../../games")

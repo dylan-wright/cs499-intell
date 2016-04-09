@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <table border="1">
 <tr>
   <td>Turn</td>
@@ -9,6 +11,13 @@
   <td>{{ game.turn }}</td>
   <td>{{ game.creator }}</td>
   <td>{{ game.time_till }}</td>
+  {% if loggedin and user in game.get_users  %}
+  <td><a href="../play/{{ game.id }}">Play Game</a></td>
+  {% elif loggedin %}
+  <td>Not in game</td>
+  {% else %}
+  <td><a href="/login/?next=/game/games">Log in</a> to play</td>
+  {% endif %}
 </tr>
 {% endfor %}
 <tr>
@@ -21,6 +30,12 @@
   <td>{{ game.creator }}</td>
   <td>{{ game.players }}</td>
   <td>{{ game.time_till }}</td>
+  {% if loggedin %}
+  <td><a href="{{ game.id }}/join">Join Game</a></td>
+  {% else %}
+  <td>Log in to join</td>
+  {% endif %}
 </tr>
 {% endfor %}
 </table>
+<p><a href="create/">Create Game</a></p>

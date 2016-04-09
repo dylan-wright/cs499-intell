@@ -23,6 +23,7 @@ Scenario
     id          - auto gen primary key
     name        - author's name for scenario
     turn_num    - turns in game
+    point_num   - starting points in game
     author      - author's name, db will actually connect author model to
                     their scenarios but this way the author can choose to
                     be anonomys - thats not spelled right sue me. 
@@ -34,7 +35,6 @@ class Scenario(models.Model):
     point_num = models.IntegerField()
     author = models.CharField(max_length=32)     # too short?
     file_name = models.FileField(upload_to='scenarios', null=True) 
-    events = models.ForeignKey('Event', null=True)
 
     def __str__(self):
         return self.author + " presents " + self.name
@@ -126,12 +126,19 @@ Event
 '''
 class Event(models.Model):
     turn = models.IntegerField()
+    scenario = models.ForeignKey("Scenario", null=True)
 
     def __str__(self):
         return "Event on turn "+str(self.turn)
 
     def get_absolute_url(self):
         return reverese("edit")
+
+    def get_snippets(self):
+        snippets = {}
+        for descby in DescribedBy.objects.filter(event=self):
+            snippets[descby.description.id] = descby.description.text
+        return snippets
 
 '''
 Involved

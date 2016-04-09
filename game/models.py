@@ -1,3 +1,17 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+        game/models.py
+            Django models for game app
+                Player
+                Game
+                Agent
+                Action
+                Knowledge
+'''
+
 from django.db import models
 from editor.models import *
 from django.contrib.auth.models import User
@@ -18,7 +32,14 @@ class Player(models.Model):
     points = models.IntegerField(default=0)
 
     def __str__(self):
-        return "player controlled by %s"%(user.username)
+        return "player controlled by %s"%(self.user.username)
+
+    def add_agent(self):
+        action = Action()
+        action.save()
+        agent = Agent(name="", alive=True, action=action, player=self)
+        agent.save()
+
 
 '''
 Game
@@ -62,15 +83,23 @@ class Game(models.Model):
 
     def detail_html(self):
         return "scenario: "+str(self.scenario)
+
+    def get_users(self):
+        users = []
+        for player in self.players.all():
+            users += [player.user]
+        return users
     '''
     add_player
         I: player - a Player object
         O: player is added to the players field if the game has not started
+            and the player is not in the game already
             otherwise no change
     '''
     def add_player(self, player):
-        self.players.add(player)
-        self.save()
+        if player not in self.players.all():
+            self.players.add(player)
+            self.save()
 
     '''
     time_till
@@ -81,9 +110,40 @@ class Game(models.Model):
     def time_till(self):
         now = make_aware(datetime.now())
         if self.next_turn != None:
-            till = self.next_turn - now
-            return till.seconds
+            #otherwise get large ugly number of seconds
+            if now > self.next_turn:
+                return 0
+            else:
+                till = self.next_turn - now
+                return till.seconds
+        
     
+    '''
+    start_next_turn
+        I:
+        O:  increment turn counter, proccess actions, produce snippets,
+            set next turn time
+    '''
+    def start_next_turn(self):
+        #next turn
+        self.turn += 1
+        
+        #process actions
+        agents_to_proc = []
+        for player in self.players.all():
+            #add agents to list
+            agents_to_proc += Agent.objects.filter(player=player)
+
+        #TODO: decide on order of agents?
+        for agent in agents_to_proc:
+            agent.process()
+
+        #next turn time
+        self.next_turn += self.turn_length
+
+        #store in db
+        self.save()
+
     '''
     start
         I: 
@@ -94,36 +154,24 @@ class Game(models.Model):
     '''
     def start(self):
         #init players
+        for player in self.players.all():
+            #all players get an agent
+            player.add_agent()
 
         #init game
         self.started = True
         self.next_turn = make_aware(datetime.now())
+        self.save()
 
         #init first turn 
-        start_next_turn()
+        self.start_next_turn()
 
-        #write to the db
-        self.save()
-
-
-    '''
-    start_next_turn
-        I:
-        O:  increment turn counter, proccess actions, produce snippets,
-            set next turn time
-    '''
-    def start_next_turn(self):
-        #next turn
-        self.turn += 1
-
-        #proccess actions
-        for player in players:
-            pass
-        #next turn time
-        self.next_turn += self.turn_length
-
-        #store in db
-        self.save()
+    def get_snippets(self):
+        events = Event.objects.filter(scenario=self.scenario,
+                                      turn__lt=self.turn)
+        
+        return events
+        
 
 '''
 Action
@@ -152,7 +200,7 @@ class Agent(models.Model):
     name = models.CharField(max_length=64)
     action = models.ForeignKey(Action)
     alive = models.BooleanField(default=True)
-    location = models.ManyToManyField(Location, null=True)
+    location = models.ManyToManyField(Location)
     player = models.ForeignKey(Player, null=True) #a null player is an orphaned
                                                   # agent-they cant perform
                                                   # actions

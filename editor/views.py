@@ -1,13 +1,50 @@
 '''
     INTELL The Craft of Intelligence
-    Django Views - Editor screens:
-            https://intellproject.com/~dylan/INTELL/documents/design.shtml
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
 
-    Version
-        0314 :  Incorporated prototype views
-        0326 :  Added documentation and incorporated ajax post reflector
+    editor/views.py
+        Django class based views
+            CharacterCreate
+            CharacterUpdate
+            CharacterDelete
+            CharacterList
+            LocationCreate
+            LocationUpdate
+            LocationDelete
+            LocationList
+            DescriptionCreate
+            DescriptionUpdate
+            DescriptionDelete
+            DescriptionList
+            EventCreate
+            EventUpdate
+            EventDelete
+            EventList
+            DescribedByCreate
+            DescribedByUpdate
+            DescribedByDelete
+            DescribedByList
+            HappenedAtCreate
+            HappenedAtUpdate
+            HappenedAtDelete
+            HappenedAtList
+            InvolvedCreate
+            InvolvedUpdate
+            InvolvedDelete
+            InvolvedList
+        Django func based views
+            index
+            edit
+            accept_ajax_scenario
+            login
+            logout_view
+            register
+            dump_session
+            dump_request
+
+    TODO:   clean this up
 '''
-
 
 #TODO: remove this
 from django.views.decorators.csrf import csrf_exempt
@@ -222,14 +259,18 @@ def accept_ajax_scenario(request):
         for obj in serializers.deserialize("json", body):
             if isinstance(obj.object, Scenario):
                 scenario = obj.object
+                scenario.author = ""
+                scenario.save()
+            elif isinstance(obj.object, Event):
+                event = obj.object
+                event.scenario = scenario
+                event.save()
             else:
                 obj.save()
             data.append(obj)
         context = {"data":data}
 
         if (scenario != None):
-            scenario.author=""
-            scenario.save()
             scenario.file_name.save(str(scenario.id), ContentFile(body))
             scenario.save()
         #scenario.save()

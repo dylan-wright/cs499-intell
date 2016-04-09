@@ -1,3 +1,19 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+    editor/forms.py
+        Django forms for page based editor
+            EventForm
+            DescriptionForm
+            DescribedByForm
+            HappenedAtForm
+            CharacterForm
+            LocationForm
+            InvolvedForm
+'''
+
 from django import forms
 from .models import *
 

@@ -1,7 +1,35 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+    editor/tests.py
+        EventTestCase
+            test_create_event
+            test_single_described_by
+            test_multiple_described_by
+        CharacterTestCase
+            test_create_character
+        LocationTestCase
+            test_create_location
+        DescriptionTestCase
+            test_create_description
+        IntegrationTestCase
+            test_sending_fixture_with_title
+
+    TODO:   add more!
+'''
+
 from django.test import TestCase, Client
 from .models import *
 
 # Create your tests here.
+'''
+EventTestCase
+    test_create_event
+    test_single_described_by
+    test_multiple_described_by
+'''
 class EventTestCase(TestCase):
     '''
         The dead parrot sketch test case
@@ -86,6 +114,10 @@ class EventTestCase(TestCase):
         self.assertEqual(d0.name in valid_names, True)
         self.assertEqual(d1.name in valid_names, True)
 
+'''
+CharacterTestCase
+    test_create_character
+'''
 class CharacterTestCase(TestCase):
     def setUp(self):
         Character.objects.create(name="Michael", key=True,
@@ -104,6 +136,10 @@ class CharacterTestCase(TestCase):
         self.assertEqual(michael.key, True)
         self.assertEqual(sgtmajor.key, False)
 
+'''
+LocationTestCase
+    test_create_location
+'''
 class LocationTestCase(TestCase):
     def setUp(self):
         Location.objects.create(name="Bikini Bottom", x=0, y=0)
@@ -117,6 +153,10 @@ class LocationTestCase(TestCase):
         self.assertEqual(krab.x, 0)
         self.assertEqual(krab.y, 10)
 
+'''
+DescriptionTestCase
+    test_create_description
+'''
 class DescriptionTestCase(TestCase):
     def setUp(self):
         Description.objects.create(text="Joe went to the store", hidden=False,
@@ -131,6 +171,10 @@ class DescriptionTestCase(TestCase):
         self.assertEqual(joestore.hidden, False)
         self.assertEqual(joestore.key, False)
 
+'''
+IntegrationTestCase
+    test_sending_fixture_with_title
+'''
 class IntegrationTestCase(TestCase):
     def setUp(self):
         pass

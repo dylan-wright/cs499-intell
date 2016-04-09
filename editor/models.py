@@ -1,13 +1,17 @@
 '''
     INTELL The Craft of Intelligence
-    Django Models - Scenario Database schema design:
-            https://intellproject.com/~dylan/INTELL/documents/schema.shtml
-            TODO: this ^
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
 
-    Version
-        0314 :  Incorporated prototype models
-        0324 :  Start migration to FE centric editor with verification BE
-                Added Scenario Model
+    editor/models.py
+        Django Models
+            Scenario
+            Character
+            Location
+            Description
+            DescribedBy
+            HappenedAt
+            Involved
 '''
 
 from django.db import models

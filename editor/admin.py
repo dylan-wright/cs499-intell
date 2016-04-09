@@ -1,3 +1,12 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
+
+    editor/admin.py
+        Django Admin settings for editor app
+        currently expose all models
+'''
 from django.contrib import admin
 from .models import *
 

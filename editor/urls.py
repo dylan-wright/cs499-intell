@@ -1,10 +1,10 @@
 '''
     INTELL The Craft of Intelligence
-    Django URLS - Editor url routing
+        https://github.com/dylan-wright/cs499-intell/
+        https://intellproject.com
 
-    Version
-        0314 :  Incorporated prototype urls
-        0326 :  Added documentation and incorporated ajax post reflector
+    editor/urls.py
+        Django url resolvers
 '''
 from django.conf.urls import url
 

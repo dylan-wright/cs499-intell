@@ -30,6 +30,14 @@ function toJSONClass() {
     this.eventKey = 0;
     this.locKey = 0;
 
+    //need event related keys as well...
+    this.descKey = 0;
+    this.descbyKey = 0;
+    this.happatKey = 0;
+    this.involvKey = 0;
+    
+
+
     //hashMap to contain input received from the user  
     this.hashJSON = [];
 
@@ -134,35 +142,72 @@ function toJSONClass() {
         fields associated with the event tab
     */ 
     this.add_event = function() {
-        
+       
+        //Get values stored in the current fields 
         var eventName = document.getElementById('eventNameBox').value;
         var isKey = document.getElementById('eventKeyBox').checked;
-        var isSecret = document.getElementById('eventSecretBox').value;
+        var isSecret = document.getElementById('eventSecretBox').checked;
+        var eventSnip = document.getElementById('snippet').value;
+        var secretSnip = document.getElemeentById('secretSnippet').value;
+        var tagTurn = document.getElementById('turnTagSel').value;
         
-        /*
-        Need to account for the more complex ones... 
 
-        var eventSnip = document.getElementById('').value;
-        var tagTurn = document.getElementById('').value;
+        /*
         var tagType = document.getElementById('').value;
         var tagTarget = document.getElementById('').value;
         */
 
+        var eventTags = [];
+
+/*
+        //Populate the eventTags array with the different eleme
+        for(element in tagTable){
+            
+            //get the tagType
+
+
+            //actually instantiate the object
+            var tagObj = {
+                //tagmodel:currModel
+                //tagpk:tagKey;
+                //targetpk:TARGETBOX.pk
+                tagType: document.getElementById('typeTagSel').value,
+                            
+            }
+            
+            eventTags.push(tagObj);
+
+            //this.tagKey++;
+        }
+*/
+
+//TODO: Why name? Why no secret snippet in fixture?
         //Create an event object to match with the fixture.json format
         var eventObj = {
             model:"editor.event",
             pk:this.eventKey,
+
             fields:{
                 name: eventName,
+                turn: tagTurn
+            },
+
+            description:{
+                descmodel:'editor.description',
+                descpk:this.descKey,
                 key: isKey,
                 secret: isSecret
-                /*
                 snippet: eventSnip,
-                turn: tagTurn,
-                type: tagType,
-                target: tagTarget
-                */
-            }
+                secretSnippet: secretSnip,
+                describedby:{
+                    descbymodel:'editor.describedby',
+                    descbypk:this.descbyKey
+                }
+            },
+
+            tags:eventTags
+
+
         };
 
         //Add the character object to the hashmap where the pk will be used
@@ -311,6 +356,7 @@ function toJSONClass() {
 
         //Create a final array that will contain the JSON objects
         var finalarr = [];
+
         scenariomodel = {
             "model": "editor.scenario",
             "pk": null,
@@ -324,8 +370,22 @@ function toJSONClass() {
 
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
-            //Push each element of the hashmap to the array to match fixture.JSON
-            finalarr.push(this.hashJSON[key]);
+            
+            var currModel = this.hashJSON[key].model;
+
+            //if element is a character/location then just push as is
+            if(currModel == "editor.character" || currModel == "editor.location"){ 
+                finalarr.push(this.hashJSON[key]);
+            }
+
+            //Else, it's some other event object 
+            else{
+
+                //first create the event object
+                //then create the description object 
+                //then create the described by objects
+                //then iterate through the tags and create those objects 
+            }
         }
 
         //Generate the JSON file using stringify on the JSON array after the 

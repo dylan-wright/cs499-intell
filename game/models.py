@@ -154,7 +154,7 @@ class Game(models.Model):
     '''
     def start(self):
         #init players
-        for player in self.players:
+        for player in self.players.all():
             #all players get an agent
             player.add_agent()
 

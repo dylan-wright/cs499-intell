@@ -15,6 +15,7 @@ function toJSONClass() {
         //Get the edit/delete buttons working  
         //Input validation?
         //figure out how to get values from the map for the location editor
+        //Use onreadystatechange
 
     //Scenario properties
     this.name = 'NULL';
@@ -24,6 +25,7 @@ function toJSONClass() {
 
     //Unique keys for each of the tabs to uniquely identify objects in the 
     //hashJSON structure
+    this.hashKey = 0;
     this.charKey = 0;
     this.eventKey = 0;
     this.locKey = 0;
@@ -61,7 +63,7 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        this.hashJSON[this.charKey] = charObj;
+        this.hashJSON[this.hashKey] = charObj;
 
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
@@ -71,8 +73,10 @@ function toJSONClass() {
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
         
-        //incrememnt the key associated with character objects. 
+        //incrememnt the keys associated with character object and hash location. 
+        this.hashKey++;
         this.charKey++;
+
 
 
     }
@@ -88,10 +92,10 @@ function toJSONClass() {
 //maybe using getElementById(table element).selected()["key"] or something
 
         //check that the entry already exists
-        if(this.charKey in this.hashJSON){
+        if(this.hashKey in this.hashJSON){
                 //Use key value to locate the object in the hashmap and then set  
                 //it to a new object using the hashmap
-                this.hashJSON[this.charKey] = {
+                this.hashJSON[this.hashKey] = {
                     model:"editor.character",
                     key:this.charKey,
                     fields:{
@@ -113,8 +117,8 @@ function toJSONClass() {
 
     //TODO: Again, need to fix things here...
         //Check that the key is in hashJSON and delete it if so. 
-        if(this.charKey in this.hashJSON){
-            delete this.hashJSON[this.charKey];
+        if(this.hashKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
 
             //delete the row from the table as well
             document.getElementById("charsTableBody").deleteRow(charKey);
@@ -163,13 +167,14 @@ function toJSONClass() {
 
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
-        this.hashJSON[this.eventKey] = eventObj;
+        this.hashJSON[this.hashKey] = eventObj;
 
          
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
         newEventElement.innerHTML = eventName;
         
         this.eventKey++;
+        this.hashKey++;
     }
 
     this.edit_event = function() {
@@ -178,8 +183,8 @@ function toJSONClass() {
         var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
-        if(this.eventKey in this.hashJSON){
-            hashJSON[eventKey] = {
+        if(this.hashKey in this.hashJSON){
+            hashJSON[this.hashKey] = {
                 model:"editor.event",
                 pk:this.eventKey,
                 fields:{
@@ -203,8 +208,8 @@ function toJSONClass() {
 
     this.del_event = function() {
         
-        if(this.eventKey in this.hashJSON){
-            delete this.hashJSON[this.eventKey];
+        if(this.hashKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
             //delete the table entry
             document.getElementById("eventsTableBody").deleteRow(eventKey);
 
@@ -236,7 +241,7 @@ function toJSONClass() {
             }
         };
 
-        this.hashJSON[this.locKey] = locObj;
+        this.hashJSON[this.hashKey] = locObj;
 
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
         nameCell = newLocElement.insertCell(0);
@@ -248,6 +253,7 @@ function toJSONClass() {
         yCell.innerHTML = locCoordY;
         
         this.locKey++;
+        this.hashKey++;
 
     }
 
@@ -258,8 +264,8 @@ function toJSONClass() {
         var locCoordY = 0;
         
         //check that the entry already exists
-        if(this.locKey in this.hashJSON){
-                this.hashJSON[locKey] = {
+        if(this.hashKey in this.hashJSON){
+                this.hashJSON[hashKey] = {
                     model:"editor.location",
                     pk:locKey,
                     fields:{
@@ -278,11 +284,13 @@ function toJSONClass() {
 
     this.del_loc = function() {
         
-        if(locKey in hashJSON){
-            delete hashJSON[locKey];
-            document.getElementById("locsTableBody").deleteRow(locKey);
+        if(this.locKey in this.hashJSON){
+            delete this.hashJSON[this.hashKey];
+            document.getElementById("locsTableBody").deleteRow(this.locKey);
         }
     }
+
+
 
     /*
         submitJSON method - takes no arguments but is cast on the current object
@@ -316,7 +324,6 @@ function toJSONClass() {
 
         //Iterate through each object in the hashMap
         for(var key in this.hashJSON){
-            
             //Push each element of the hashmap to the array to match fixture.JSON
             finalarr.push(this.hashJSON[key]);
         }
@@ -327,40 +334,42 @@ function toJSONClass() {
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
-        xhttp.open('POST', "../accept_ajax_scenario/", false);
+        //xhttp.open('POST', "../accept_ajax_scenario/", false);
+        xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
 
         //Print out the results of the dump in the dump location at the bottom
         //of the webpage
         document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
+
+
     //method to populate the target selection when character/location is slected
     this.populateTagTargets = function(){
         var loopKey = 0;
         //store the element for the type and target selectors
         var targetSel = document.getElementById('targetSel');
         var tagType = document.getElementById('tagTypeSel');
-
-        //set the loop variable to the number of characters if character was selected
-        if(tagType.selectedIndex == 0){
-            loopKey = this.charKey;
-        }
-
-        //set the loop variable to the number of locations if location was selected
-        else if(tagType.selectedIndex == 1){
-            loopKey = this.locKey;
-        }
     
         //clear the selector options list
         targetSel.innerHTML = '';
 
-        //loop through each of the locations/characters and add to the list
-        for(i=0; i < loopKey; i++)
+        //loop through each element in hashJSON and find the
+		//characters or locations depending on which is selected in tagType
+        for(var key in this.hashJSON)
         {
-            var tarOption = document.createElement("option");
-            tarOption.text = this.hashJSON[i].fields.name;
-            console.log(tarOption.text)
-            targetSel.add(tarOption);
+			if(this.hashJSON[key].model=="editor.character" && tagType.selectedIndex == 0)
+			{
+				var tarOption = document.createElement("option");
+				tarOption.text = this.hashJSON[key].fields.name;
+				targetSel.add(tarOption);
+			}
+			else if (this.hashJSON[key].model=="editor.location" && tagType.selectedIndex == 1)
+			{
+				var tarOption = document.createElement("option");
+				tarOption.text = this.hashJSON[key].fields.name;
+				targetSel.add(tarOption);
+			}
         }
     }   
 
@@ -371,6 +380,9 @@ function toJSONClass() {
 var currEdit = new toJSONClass();
 
 var prevChar;
+var prevLoc;
+var prevEvent;
+var prevTag;
 
 /*
     Used to handle highlighting and row selection for the character table
@@ -400,3 +412,97 @@ function selChar(charObj) {
     }
     this.prevChar = currRow;
 }
+
+/*
+    Used to handle highlighting and row selection for the location table
+*/
+function selLoc(locObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[1].style.backgroundColor='red';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[2].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[1].style.backgroundColor='white';
+		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[2].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+
+/*
+    Used to handle highlighting and row selection for the event table
+*/
+/*
+function selEvent(eventObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+
+/*
+    Used to handle highlighting and row selection for the event tag table
+*/
+/*
+function selTag(tagObj) {
+
+    //Store current/total rows in order to determine which row is hilighted
+    console.log(locObj.pk);
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    
+
+    //Set fields to those associated with the selected object
+    document.getElementById('locNameInput').value = locObj.fields.name;
+    document.getElementById('locXinput').value = locObj.fields.x;
+    document.getElementById('locYinput').value = locObj.fields.y;
+    
+    //Enable the edit/delete buttons and highlight the selected row
+    document.getElementById('locEditBtn').disabled = false;
+    document.getElementById('locDelBtn').disabled = false;
+
+    //Highlight the currently selected item reseting the background of an object
+    //that is no longer selected
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevLoc != null && this.prevLoc != currRow) {
+        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    }
+    this.prevLoc = currRow;
+}
+*/

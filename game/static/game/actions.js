@@ -2,7 +2,7 @@
  *    https://github.com/dylan-wright/cs499-intell/
  *    https://intellproject.com/
  *
- *    static/game/actions.js
+ *    game/static/game/actions.js
  *      js controller for front end
  *      Modules:
  *        Actions
@@ -34,7 +34,7 @@
  *      research
  *      terminate
  */
-var Actions = (function() {
+var Actions = (function () {
   /*  settings
    *    module wide settings used to access various attributes
    *    in module methods
@@ -62,7 +62,6 @@ var Actions = (function() {
     activeButton: document.getElementById("researchBtn"),
     agentSelect: document.getElementById("agentSel"),
   };
-
 
   /*  bindUIActions
    *    used to bind user actions to js functions
@@ -206,12 +205,9 @@ var Actions = (function() {
      *    ui actions
      *    called by global js initializer
      */
-    init: function() {
-      //for ease of access
-      //s = this.settings;
+    init: function () {
       //connect buttons to events
       bindUIActions();
-      //
     }
   };
 })();

@@ -18,6 +18,7 @@
                 knowledge_detail
                 submit_action
                 play
+                get_status
 '''
 
 from django.shortcuts import render
@@ -26,6 +27,7 @@ from .models import *
 from .forms import *
 from django.utils.timezone import datetime, make_aware
 from django.contrib.auth.decorators import login_required
+import json
 
 # Create your views here.
 '''
@@ -200,7 +202,7 @@ play
     user must be authenticated and in game
     otherwise send them to game list
 
-    url         /game/games/pk/play/
+    url         /game/play/pk/
     template    /game/templates/game/play/IntellGame.html
 '''
 def play(request, pk):
@@ -218,3 +220,21 @@ def play(request, pk):
         return render(request, "game/play/IntellGame.html", context)
     else:
         return HttpResponseRedirect("../../games")
+
+'''
+get_status
+    used by the front end to get game status data
+    to update screen
+
+    url         /game/play/pk/get_status/
+'''
+@login_required
+def get_status(request, pk):
+    #get points, turn, time
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        player = game.players.get(user=request.user)
+        points = player.points
+        turn = game.turn
+        data = {"points": points, "turn": turn, "timer": game.time_till()}
+        return HttpResponse(json.dumps(data), content_type="application_json")

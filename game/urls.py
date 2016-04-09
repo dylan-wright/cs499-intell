@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^knowledges/(?P<pk>[0-9]+)/$', views.knowledge_detail, name="knowledge_detail"),
     url(r'^play/(?P<pk>[0-9]+)/$', views.play, name="play"),
     url(r'^play/(?P<pk>[0-9]+)/submit_action/$', views.submit_action, name="submit_action"),
+    url(r'^play/(?P<pk>[0-9]+)/get_status/$', views.get_status, name="get_status"),
 ]

@@ -45,8 +45,10 @@ var Status = (function () {
    *    update page elements
    */
   function updateStatus () {
+    getStatus();
     settings.turnDisplay.innerHTML = settings.turn;
     settings.pointsDisplay.innerHTML = settings.points;
+    settings.timerDisplay.timer = settings.timer;
   };
 
   /*  getStatus
@@ -61,6 +63,7 @@ var Status = (function () {
     var statusJSON = JSON.parse(xhttp.responseText);
     settings.turn = statusJSON.turn;
     settings.points = statusJSON.points;
+    settings.timer = statusJSON.timer;
   };
   
   return {
@@ -69,7 +72,7 @@ var Status = (function () {
      *    ui actions
      *    called by global js initializer
      */
-    init: function() {
+    init: function () {
       //for ease of actions
       //s = this.settings;
       //connect events

@@ -166,6 +166,12 @@ class Game(models.Model):
         #init first turn 
         self.start_next_turn()
 
+    def get_snippets(self):
+        events = Event.objects.filter(scenario=self.scenario,
+                                      turn__lt=self.turn)
+        
+        return events
+        
 
 '''
 Action

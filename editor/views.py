@@ -222,14 +222,18 @@ def accept_ajax_scenario(request):
         for obj in serializers.deserialize("json", body):
             if isinstance(obj.object, Scenario):
                 scenario = obj.object
+                scenario.author = ""
+                scenario.save()
+            elif isinstance(obj.object, Event):
+                event = obj.object
+                event.scenario = scenario
+                event.save()
             else:
                 obj.save()
             data.append(obj)
         context = {"data":data}
 
         if (scenario != None):
-            scenario.author=""
-            scenario.save()
             scenario.file_name.save(str(scenario.id), ContentFile(body))
             scenario.save()
         #scenario.save()

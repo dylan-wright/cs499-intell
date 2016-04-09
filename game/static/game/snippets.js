@@ -37,6 +37,45 @@ var Snippets = (function () {
 
   };
 
+  /*  addSnippet
+   *    add snippet to the table
+   */
+  function addSnippet (snippet) {
+    var tbody = settings.snippetTable.children[0];
+    var row = tbody.insertRow(0);
+    var textCell = row.insertCell(0)
+    textCell.innerHTML = snippet.fields.text;
+  }
+
+  /*  clearSnippets
+   *    remove all rows from the snippet table
+   */
+  function clearSnippets () {
+    var tbody = settings.snippetTable.tBodies[0];
+    while (tbody.rows.length != 0) {
+      tbody.deleteRow(0);
+    }
+  }
+
+  /*  getSnippets
+   *    send ajax request to server requesting JSON
+   *    snippets
+   */
+  function getSnippets () {
+    var csrftoken = Cookies.get("csrftoken")
+    var xhttp = new XMLHttpRequest();
+    //TODO: make async true
+    xhttp.open("POST", "get_snippets/", false);
+    xhttp.setRequestHeader("X-CSRFtoken", csrftoken);
+    xhttp.send();
+    response = xhttp.responseText;
+    models = JSON.parse(response);
+    var i;
+    for (i = 0; i < models.length; i++) {
+      addSnippet(models[i]);
+    }
+  }
+
   return {
     /*  init
      *    function to initialize all members and bind
@@ -45,6 +84,8 @@ var Snippets = (function () {
      */
     init: function () {
       bindUIActions();
+      clearSnippets();
+      getSnippets();
     }
   };
 })();

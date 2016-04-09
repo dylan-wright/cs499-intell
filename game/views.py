@@ -19,6 +19,7 @@
                 submit_action
                 play
                 get_status
+                get_snippets
 '''
 
 from django.shortcuts import render
@@ -27,6 +28,7 @@ from .models import *
 from .forms import *
 from django.utils.timezone import datetime, make_aware
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 import json
 
 # Create your views here.
@@ -238,3 +240,23 @@ def get_status(request, pk):
         turn = game.turn
         data = {"points": points, "turn": turn, "timer": game.time_till()}
         return HttpResponse(json.dumps(data), content_type="application_json")
+
+'''
+get_snippets
+    used by the front end to get game snippet data
+    to update screen
+
+    url         /game/play/pk/get_snippets/
+'''
+@login_required
+def get_snippets(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        events = game.get_snippets()
+        data = []
+        for event in events.all():
+            describedbys = event.describedby_set.all()
+            for describedby in describedbys:
+                data += [describedby.description]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")

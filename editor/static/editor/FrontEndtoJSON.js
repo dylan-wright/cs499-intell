@@ -11,7 +11,7 @@ function toJSONClass() {
 
 
     //TODO:
-        //Get add Event and Location working
+        //Get add Event working
         //Get the edit/delete buttons working  
         //Input validation?
         //figure out how to get values from the map for the location editor
@@ -39,6 +39,11 @@ function toJSONClass() {
     //Collection of event tags that will be stored in an event object
     this.eventTags = [];
 
+	//key hashing arrays for the tab keys so that they can be used in the hashJSON structure
+	this.charHash = [];
+	this.eventHash = [];
+	this.locHash = [];
+	
     //hashMap to contain input received from the user  
     this.hashJSON = [];
 
@@ -74,6 +79,9 @@ function toJSONClass() {
         //to determine this objects location
         this.hashJSON[this.hashKey] = charObj;
 
+		//put the value into the hash array for later use
+		this.charHash[this.charKey] = this.hashKey;
+		
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
@@ -81,7 +89,7 @@ function toJSONClass() {
 
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
-        
+        		
         //incrememnt the keys associated with character object and hash location. 
         this.hashKey++;
         this.charKey++;
@@ -185,6 +193,9 @@ function toJSONClass() {
         //Add the character object to the hashmap where the pk will be used
         //to determine this objects location
         this.hashJSON[this.hashKey] = eventObj;
+		
+		//put the value into the hash array for later use
+		this.eventHash[this.eventKey] = this.hashKey;
 
         //Update the events table with the new event object 
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
@@ -251,44 +262,21 @@ function toJSONClass() {
 
 //TODO: Find easiest way to find the the primary key of the target?
 
-    //Could use a for loop that simply looks through every one of the objects 
-    //and then breaks when it finds it
-        for(var key in this.hashJSON){
-            
-            //go through each json object until the desired target is found
-            if(this.hashJSON[key].fields.name != null){
-                
-                if(selTarget == this.hashJSON[key].fields.name)
-
-                    //bad programmer
-                    //once the target is found assign it to currTargetKey
-                    currTargetKey = selTarget;
-                    break;
-            }
-
-        }
-
-
-
-    //might be able to store the target.pk else somehow. 
-
-/*
         //The current target key can be found using the hashMap
         var key = 0;
         while(selTarget != this.hashJSON[key].fields.name)
         {
             key++;
         }
-
         //If the selected target is found in hashJSON then you have the key
         //info needed for the target pk
         currTargetKey = selTarget;
-*/
+
 
         //check if user type is character or location and match values based on result
         
         //If selected index=0, then character was selected and involved tag is used
-        if(document.getElementById('tagTypeSel').selectedIndex == 0){
+        if(tagType.selectedIndex == 0){
             currModel = 'editor.involved';
             currTagKey= this.involvKey;
             this.involvKey++;
@@ -309,7 +297,7 @@ function toJSONClass() {
         };
 
         //Update the table with the new tag element 
-        var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
+        var newEventTagElement = document.getElementById("eventTagTable").insertRow(0);
         TagNum = newEventTagElement.insertCell(0);
         TargetNum = newEventTagElement.insertCell(1);
         TagNum.innerHTML = eventTagObj.tagpk;
@@ -360,6 +348,9 @@ function toJSONClass() {
         };
 
         this.hashJSON[this.hashKey] = locObj;
+		
+		//put the value into the hash array for later use
+		this.locHash[this.locKey] = this.hashKey;
 
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
         nameCell = newLocElement.insertCell(0);
@@ -666,13 +657,14 @@ function selEvent(eventObj) {
 	document.getElementById('secretSnippet').value = eventObj.description.secretSnippet;
 	document.getElementById('turnTagSel').value = eventObj.fields.turn;
 	
-	if(!eventObj.description.secret)
-	{
-		console.log(document.getElementById('secretCollapse'));
+	//had to use jquery here to get the bootstrap object instead of the html
+	//recolapse/reshow the secret snippet text area if the secret box is checked
+	if(!eventObj.description.secret){
+		$('#secretCollapse').collapse('hide')
 	}
 	
 	else{
-		
+		$('#secretCollapse').collapse('show')
 	}
     
     //Enable the edit/delete buttons and highlight the selected row
@@ -687,7 +679,26 @@ function selEvent(eventObj) {
     }
     this.prevEvent = currRow;
 	
+	//load the selected eventObj tags into the global tags array
+	this.currEdit.eventTags = eventOgj.tags;
 	
+	document.getElementById('eventsTagBody').innerHTML = '';
+	
+	//load the tags for the event into the tags table
+	for(tag in eventObj.tags){
+		//Update the event tags table with the event tags objects
+        var newEventElement = document.getElementById("eventsTagBody").insertRow(0);
+        tagTypeCell = newEventElement.insertCell(0);
+		tagTargetCell = newEventElement.insertCell(1);
+        if(tag.tagmodel == "editor.involved"){
+			tagTypeCell.innerHTML = "Character";
+			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.charHash[targetpk]].fields.name;
+		}
+		else if(tag.tagmodel == "editor.happenedat"){
+			tagTypeCell.innerHTML = "Location";
+			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.locHash[targetpk]].fields.name;
+		}
+	}
 	
 }
 

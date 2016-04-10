@@ -151,6 +151,7 @@ function toJSONClass() {
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
+		
 
 //TODO: Why name? Why no secret snippet in fixture?
         //Create an event object to match with the fixture.json format
@@ -633,15 +634,23 @@ function selEvent(eventObj) {
     var totalRows = document.getElementById('eventsTableBody').rows.length -1;
     
 	var eventTags = eventObj.fields.tags;
-
-    //Set fields to those associated with the selected object
+	
+    //Set fields to those associated with the selected object	
     document.getElementById('eventNameBox').value = eventObj.fields.name;
-    document.getElementById('eventKeyBox').checked = eventObj.description.isKey;
-    document.getElementById('eventSecretBox').checked = eventObj.fields.secret;
-	document.getElementById('snippet').value = eventObj.description.Snippet;
-	document.getElementById('secretSnippet').value = eventObj.description.SecretSnippet;
+    document.getElementById('eventKeyBox').checked = eventObj.description.key;
+    document.getElementById('eventSecretBox').checked = eventObj.description.secret;
+	document.getElementById('snippet').value = eventObj.description.snippet;
+	document.getElementById('secretSnippet').value = eventObj.description.secretSnippet;
 	document.getElementById('turnTagSel').value = eventObj.fields.turn;
 	
+	if(!eventObj.description.secret)
+	{
+		console.log(document.getElementById('secretCollapse'));
+	}
+	
+	else{
+		
+	}
     
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('eventEditBtn').disabled = false;
@@ -656,12 +665,13 @@ function selEvent(eventObj) {
     this.prevEvent = currRow;
 	
 	
+	
 }
 
 /*
     Used to handle highlighting and row selection for the event tag table
 */
-/*
+
 function selTag(tagObj) {
 
     //Store current/total rows in order to determine which row is hilighted
@@ -687,4 +697,4 @@ function selTag(tagObj) {
     }
     this.prevLoc = currRow;
 }
-*/
+

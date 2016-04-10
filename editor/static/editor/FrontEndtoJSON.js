@@ -248,21 +248,44 @@ function toJSONClass() {
 
 //TODO: Find easiest way to find the the primary key of the target?
 
+    //Could use a for loop that simply looks through every one of the objects 
+    //and then breaks when it finds it
+        for(var key in this.hashJSON){
+            
+            //go through each json object until the desired target is found
+            if(this.hashJSON[key].fields.name != null){
+                
+                if(selTarget == this.hashJSON[key].fields.name)
+
+                    //bad programmer
+                    //once the target is found assign it to currTargetKey
+                    currTargetKey = selTarget;
+                    break;
+            }
+
+        }
+
+
+
+    //might be able to store the target.pk else somehow. 
+
+/*
         //The current target key can be found using the hashMap
         var key = 0;
         while(selTarget != this.hashJSON[key].fields.name)
         {
             key++;
         }
+
         //If the selected target is found in hashJSON then you have the key
         //info needed for the target pk
         currTargetKey = selTarget;
-
+*/
 
         //check if user type is character or location and match values based on result
         
         //If selected index=0, then character was selected and involved tag is used
-        if(tagType.selectedIndex == 0){
+        if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
             currTagKey= this.involvKey;
             this.involvKey++;
@@ -283,7 +306,7 @@ function toJSONClass() {
         };
 
         //Update the table with the new tag element 
-        var newEventTagElement = document.getElementById("eventTagTable").insertRow(0);
+        var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
         TagNum = newEventTagElement.insertCell(0);
         TargetNum = newEventTagElement.insertCell(1);
         TagNum.innerHTML = eventTagObj.tagpk;

@@ -190,7 +190,9 @@ function toJSONClass() {
         eventNameCell = newEventElement.insertCell(0);
         eventNameCell.innerHTML = eventObj.fields.name;
 
-        
+        //EventListener used when a row in the events table is selected 
+        newEventElement.addEventListener("click", function(){selEvent(eventObj);});
+		
         this.eventKey++;
         this.hashKey++;
     }
@@ -339,6 +341,9 @@ function toJSONClass() {
         nameCell = newLocElement.insertCell(0);
         xCell = newLocElement.insertCell(1);
         yCell = newLocElement.insertCell(2);
+		
+        //EventListener used when a row in the locations table is selected 
+        newLocElement.addEventListener("click", function(){selLoc(locObj);});
         
         nameCell.innerHTML = locName;
         xCell.innerHTML = locCoordX;
@@ -620,31 +625,37 @@ function selLoc(locObj) {
 /*
     Used to handle highlighting and row selection for the event table
 */
-/*
 function selEvent(eventObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(locObj.pk);
-    var currRow = locObj.pk;
-    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    console.log(eventObj.pk);
+    var currRow = eventObj.pk;
+    var totalRows = document.getElementById('eventsTableBody').rows.length -1;
     
+	var eventTags = eventObj.fields.tags;
 
     //Set fields to those associated with the selected object
-    document.getElementById('locNameInput').value = locObj.fields.name;
-    document.getElementById('locXinput').value = locObj.fields.x;
-    document.getElementById('locYinput').value = locObj.fields.y;
+    document.getElementById('eventNameBox').value = eventObj.fields.name;
+    document.getElementById('eventKeyBox').checked = eventObj.description.isKey;
+    document.getElementById('eventSecretBox').checked = eventObj.fields.secret;
+	document.getElementById('snippet').value = eventObj.description.Snippet;
+	document.getElementById('secretSnippet').value = eventObj.description.SecretSnippet;
+	document.getElementById('turnTagSel').value = eventObj.fields.turn;
+	
     
     //Enable the edit/delete buttons and highlight the selected row
-    document.getElementById('locEditBtn').disabled = false;
-    document.getElementById('locDelBtn').disabled = false;
+    document.getElementById('eventEditBtn').disabled = false;
+    document.getElementById('eventDelBtn').disabled = false;
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    if (this.prevLoc != null && this.prevLoc != currRow) {
-        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    document.getElementById('eventsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevEvent != null && this.prevEvent != currRow) {
+        document.getElementById('eventsTableBody').rows[totalRows-this.prevEvent].cells[0].style.backgroundColor='white';
     }
-    this.prevLoc = currRow;
+    this.prevEvent = currRow;
+	
+	
 }
 
 /*

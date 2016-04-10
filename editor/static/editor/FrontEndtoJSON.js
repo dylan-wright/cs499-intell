@@ -1,11 +1,56 @@
-/*
-  The toJSONClass() will be used to instantiate an object in the scenario editor
-  HTML given values to replace the name, turn, point and author. After it is 
-  instantiated, it's method will be called whenever an onclick even occurs 
-  to one of it's related buttons. After this occurs, the hashmap hashJSON
-  will be updated with the new objects. Once the submit method is used, the 
-  JSON file will be formed using the hashmap and then sent to the back end.
-*/
+/*  INTELL The Craft of Intelligence
+ *    https://github.com/dylan-wright/cs499-intell/
+ *    https://intellproject.com/
+ *
+ *    editor/static/editor/FrontEndtoJSON.js
+ *      js controller for front end aspect of the editor
+ *      Modules:
+ *        toJSONClass
+ */
+
+/*  toJSONClass:
+ *
+ *  The toJSONClass() will be used to instantiate an object in the scenario editor
+ *  HTML given values to replace the name, turn, point and author. After it is 
+ *  instantiated, it's method will be called whenever an onclick even occurs 
+ *  to one of it's related buttons. After this occurs, the hashmap hashJSON
+ *  will be updated with the new objects. Once the submit method is used, the 
+ *  JSON file will be formed using the hashmap and then sent to the back end.
+ *
+ *    attributes
+ *      name -- Scenario title
+ *      turn_num - number of turns in a scenario
+ *      point_num - number of INTELL points provided initially
+ *      author - author name
+ *
+ *      hashKey -
+ *      charKey - 
+ *      eventKey - 
+ *      locKey -
+ *      descKey -
+ *      descbyKey - 
+ *      happatKey - 
+ *      involvKey -
+ *
+ *      eventTags[] -
+ *      hashJSON[] - 
+
+
+ *    methods
+ *    action modal methods
+ *
+ */
+
+/* In progress:
+ *
+ *  Currently the functionality for the edit/delete methods are still in 
+ *  progress. 
+ *
+ *  Also, there are still some issues with the saveJSON method that are currently
+ *  being worked out.
+ *           
+ */
+
 
 function toJSONClass() {
 
@@ -151,7 +196,9 @@ function toJSONClass() {
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
-		
+	
+        //TODO: add some input validation based event tags 
+
 
 //TODO: Why name? Why no secret snippet in fixture?
         //Create an event object to match with the fixture.json format
@@ -204,6 +251,8 @@ function toJSONClass() {
         var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').value;
         
+        
+
         if(this.hashKey in this.hashJSON){
             hashJSON[this.hashKey] = {
                 model:"editor.event",
@@ -212,12 +261,6 @@ function toJSONClass() {
                     name: eventName,
                     key: isKey,
                     secret: isSecret
-                    /*
-                    snippet: eventSnip,
-                    turn: tagTurn,
-                    type: tagType,
-                    target: tagTarget
-                    */
                 }
             };
 
@@ -292,20 +335,22 @@ function toJSONClass() {
             currModel = 'editor.involved';
             currTagKey= this.involvKey;
             this.involvKey++;
+            //this.hashKey++;
         }
 
         else{
             currModel = 'editor.happenedat';
             currTagKey = this.happatKey;
             this.happatKey++;
+            //this.hashKey++;
         }       
 
         //The event tag object 
         var eventTagObj = {
 
-            tagmodel:currModel,
-            tagpk:currTagKey,
-            targetpk:currTargetKey
+            tagmodel: currModel,
+            tagpk: currTagKey,
+            targetpk: currTargetKey
         };
 
         //Update the table with the new tag element 

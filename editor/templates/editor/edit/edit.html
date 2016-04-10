@@ -414,6 +414,7 @@
               </div>
             </div>
           </div>
+
           <div class="panel-body">
             <div class="tab-content">
               <!-- Title Tab contents -->
@@ -580,6 +581,17 @@
                         <textarea class="form-control" rows="3" id="secretSnippet"></textarea>
                       </div>
                     </div>
+                    <div class="row"> <!--Buttons -->
+                      <div class="col-sm-4">
+                        <button id="eventAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_event()">Add</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="eventEditBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.edit_event()">Edit</button>
+                      </div>
+                      <div class="col-sm-4">
+                        <button id="eventDelBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.del_event()">Delete</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="row">
@@ -653,13 +665,13 @@
                     </div>
                     <div class="row"> <!--Buttons -->
                       <div class="col-sm-4">
-                        <button id="eventTagAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_event()">Add</button>
+                        <button id="eventTagAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_eventTag()">Add</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="eventTagEditBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.edit_event()">Edit</button>
+                        <button id="eventTagEditBtn" type="button" class="btn btn-block" disabled=true onclick="currEdit.edit_eventTag()">Edit</button>
                       </div>
                       <div class="col-sm-4">
-                        <button id="eventTagDelBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.del_event()">Delete</button>
+                        <button id="eventTagDelBtn" type="button" class="btn btn-block" disabled=true  onclick="currEdit.del_eventTag()">Delete</button>
                       </div>
                     </div>
                   </div>

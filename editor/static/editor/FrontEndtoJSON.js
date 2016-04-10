@@ -36,7 +36,8 @@ function toJSONClass() {
     this.happatKey = 0;
     this.involvKey = 0;
     
-
+    //Collection of event tags that will be stored in an event object
+    this.eventTags = [];
 
     //hashMap to contain input received from the user  
     this.hashJSON = [];
@@ -148,38 +149,8 @@ function toJSONClass() {
         var isKey = document.getElementById('eventKeyBox').checked;
         var isSecret = document.getElementById('eventSecretBox').checked;
         var eventSnip = document.getElementById('snippet').value;
-        var secretSnip = document.getElemeentById('secretSnippet').value;
+        var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
-        
-
-        /*
-        var tagType = document.getElementById('').value;
-        var tagTarget = document.getElementById('').value;
-        */
-
-        var eventTags = [];
-
-/*
-        //Populate the eventTags array with the different eleme
-        for(element in tagTable){
-            
-            //get the tagType
-
-
-            //actually instantiate the object
-            var tagObj = {
-                //tagmodel:currModel
-                //tagpk:tagKey;
-                //targetpk:TARGETBOX.pk
-                tagType: document.getElementById('typeTagSel').value,
-                            
-            }
-            
-            eventTags.push(tagObj);
-
-            //this.tagKey++;
-        }
-*/
 
 //TODO: Why name? Why no secret snippet in fixture?
         //Create an event object to match with the fixture.json format
@@ -205,7 +176,7 @@ function toJSONClass() {
                 }
             },
 
-            tags:eventTags
+            tags:this.eventTags
 
 
         };
@@ -214,9 +185,11 @@ function toJSONClass() {
         //to determine this objects location
         this.hashJSON[this.hashKey] = eventObj;
 
-         
+        //Update the events table with the new event object 
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
-        newEventElement.innerHTML = eventName;
+        eventNameCell = newLocElement.insertCell(0);
+        eventNameCell.innerHTML = eventObj.fields.name;
+
         
         this.eventKey++;
         this.hashKey++;
@@ -259,6 +232,77 @@ function toJSONClass() {
             document.getElementById("eventsTableBody").deleteRow(eventKey);
 
         }
+    }
+
+    this.add_eventTag = function(){
+        
+        var tagTypeinput = document.getElementById('typeTagSel').value;
+        var currModel = '';
+        var currTagKey = 0;
+        var currTargetKey = 0;
+        var selTarget = document.getElementById('targetSel').value;
+
+//TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
+//when table is populated.
+
+        //The current target key can be found using the hashMap
+        var key = 0;
+        while(selTarget != this.hashJSON[key].fields.name)
+        {
+            key++;
+        }
+        //If the selected target is found in hashJSON then you have the key
+        //info needed for the target pk
+        currTargetKey = selTarget;
+
+
+        //check if user type is character or location and match values based on result
+        
+        //If selected index=0, then character was selected and involved tag is used
+        if(tagType.selectedIndex == 0){
+            currModel = 'editor.involved';
+            currTagKey= this.involvKey;
+            this.involvKey++;
+        }
+
+        else{
+            currModel = 'editor.location';
+            currTagKey = this.happatKey;
+            this.happatKey++;
+        }       
+
+        //The event tag object 
+        var eventTagObj = {
+
+            tagmodel:currModel,
+            tagpk:currTagKey,
+            targetpk:currTargetKey
+        };
+
+        //Update the table with the new tag element 
+        var newEventTagElement = document.getElementById("eventTagTable").insertRow(0);
+        TagNum = newEventTagElement.insertCell(0);
+        TargetNum = newEventTagElement.insertCell(1);
+        TagNum.innerHTML = eventTagObj.tagpk;
+        TargetNum.innerHTML = eventTagObj.targetpk;
+
+        //TODO Figure out how to get the eventTagObj into the eventObj
+        //Issue here is that it doesn't work if another event isn't added...
+        //Need to talk about this..
+        this.eventTags.push(eventTagObj);
+
+        //MAYBE...
+        //this.hashJSON[MostRecentEvent].tags.push(eventTagObj);
+        
+    }
+
+
+    this.edit_eventTag = function(){
+
+    }
+
+    this.del_eventTag = function(){
+
     }
 
 
@@ -381,10 +425,74 @@ function toJSONClass() {
             //Else, it's some other event object 
             else{
 
+                var currJSONobj = this.hashJSON[key];
                 //first create the event object
+                //Matching all fields as specified in fixture.json
+                JSONevent = {
+                    "model": currJSONobj.model,
+                    "pk": currJSONobj.pk,
+                    "fields": {
+                        "turn": currJSONobj.fields.turn
+                    }
+                };
+                finalarr.push(JSONevent);
+
                 //then create the description object 
+                JSONdesc = {
+                    "model": currJSONobj.description.descmodel,
+                    "pk": currJSONobj.description.descpk,
+                    "fields": {
+                        "text": currJSONobj.description.snippet,
+                        "hidden": currJSONobj.description.secret
+                    }
+                };
+                finalarr.push(JSONdesc);
+
                 //then create the described by objects
-                //then iterate through the tags and create those objects 
+                JSONdescby = {
+                    "model": currJSONobj.description.describedby.descbymodel,
+                    "pk": currJSONobj.description.describedby.descbypk,
+                    "fields": {
+                        "event_id": currJSONobj.pk,
+                        "description_id": currJSONobj.description.pk
+                    }
+                };
+                finalarr.push(JSONdescby);
+
+                //Iterate through the tags and create those objects
+                var JSONtag = {};
+                for(var element in currJSONobj.tags){
+
+                    //The tags can only be involved or happened at, so match those
+                    //formats based on the model
+                    if(currJSONobj.tags[element].tagmodel == 'editor.involved'){
+
+                        JSONtag = {
+                            "model": currJSONobj.tags[element].tagmodel,
+                            "pk": currJSONobj.tags[element].tagpk,
+                            "fields": {
+                                "event_id": currJSONobj.pk,
+                                "character_id": currJSONobj.tags[element].targetpk
+                            }
+                        };
+
+                    }
+
+                    else{
+
+                         JSONtag = {
+                            "model": currJSONobj.tags[element].tagmodel,
+                            "pk": currJSONobj.tags[element].tagpk,
+                            "fields": {
+                                "event_id": currJSONobj.pk,
+                                "location_id": currJSONobj.tags[element].targetpk
+                            }
+                        };                       
+                    }
+
+                    finalarr.push(JSONtag);
+                }
+
             }
         }
 

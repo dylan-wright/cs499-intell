@@ -167,7 +167,7 @@ function toJSONClass() {
                 descmodel:'editor.description',
                 descpk:this.descKey,
                 key: isKey,
-                secret: isSecret
+                secret: isSecret,
                 snippet: eventSnip,
                 secretSnippet: secretSnip,
                 describedby:{
@@ -187,7 +187,7 @@ function toJSONClass() {
 
         //Update the events table with the new event object 
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
-        eventNameCell = newLocElement.insertCell(0);
+        eventNameCell = newEventElement.insertCell(0);
         eventNameCell.innerHTML = eventObj.fields.name;
 
         
@@ -236,7 +236,7 @@ function toJSONClass() {
 
     this.add_eventTag = function(){
         
-        var tagTypeinput = document.getElementById('typeTagSel').value;
+        var tagTypeinput = document.getElementById('tagTypeSel').value;
         var currModel = '';
         var currTagKey = 0;
         var currTargetKey = 0;
@@ -244,6 +244,9 @@ function toJSONClass() {
 
 //TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
 //when table is populated.
+
+
+//TODO: Find easiest way to find the the primary key of the target?
 
         //The current target key can be found using the hashMap
         var key = 0;
@@ -266,7 +269,7 @@ function toJSONClass() {
         }
 
         else{
-            currModel = 'editor.location';
+            currModel = 'editor.happenedat';
             currTagKey = this.happatKey;
             this.happatKey++;
         }       

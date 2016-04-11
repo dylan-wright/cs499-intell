@@ -74,6 +74,36 @@ var Snippets = (function () {
     for (i = 0; i < models.length; i++) {
       addSnippet(models[i]);
     }
+    return models;
+  }
+
+  /*  getCharacters
+   *    send ajax request to server requesting JSON
+   *    characters
+   */
+  function getCharacters () {
+    var csrftoken = Cookies.get("csrftoken");
+    var xhttp = new XMLHttpRequest();
+    //TODO: make async true
+    xhttp.open("GET", "get_characters/", false);
+    xhttp.send();
+    response = xhttp.responseText;
+    characters = JSON.parse(response);
+    return characters;
+  }
+
+  /*  getLocations
+   *    send ajax request to server requesting JSON
+   *    locations
+   */
+  function getLocations () {
+      var xhttp = new XMLHttpRequest();
+      //TODO: make async true
+      xhttp.open("GET", "get_locations/", false);
+      xhttp.send();
+      response = xhttp.responseText;
+      locations = JSON.parse(response);
+      return locations;
   }
 
   return {
@@ -86,6 +116,10 @@ var Snippets = (function () {
       bindUIActions();
       clearSnippets();
       getSnippets();
-    }
+    },
+
+    characters: getCharacters(),
+    locations: getLocations(),
+    descriptions: getSnippets(),
   };
 })();

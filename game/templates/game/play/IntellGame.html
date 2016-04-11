@@ -102,6 +102,7 @@
                   <label class="control-label col-sm-2" for="agentSel">
                     Agent:
                   </label>
+                  <p id="agentWarn" class="bg-danger"></p>
                   <div class="col-sm-5">
                     <select class="form-control" id="agentSel">
                       <option value="none"></option>
@@ -186,10 +187,14 @@
           <h4 class="modal-title">Tail Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing tail action</p>
-          <button type="submit" class="btn btn-default" id="confirmTail">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="tailCharSel">Select a character</label>
+            <select class="form-control" id="tailCharSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmTail">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -209,10 +214,14 @@
           <h4 class="modal-title">Investigate Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing investigate action</p>
-          <button type="submit" class="btn btn-default" id="confirmInvestigate">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="investigateLocSel">Select a location</label>
+            <select class="form-control" id="investigateLocSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmInvestigate">
+              Choose
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -227,10 +236,14 @@
           <h4 class="modal-title">Check Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing check action</p>
-          <button type="submit" class="btn btn-default" id="confirmCheck">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="checkDescSel">Select a snippet</label>
+            <select class="form-control" id="checkDescSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmCheck">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -250,10 +263,19 @@
           <h4 class="modal-title">Misinform Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing misinform action</p>
-          <button type="submit" class="btn btn-default" id="confirmMisinf">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="misinfChar">Select a character</label>
+            <select class="form-control" id="misinfCharSel">
+            </select>
+            <label for="misinfLoc">Select a location</label>
+            <select class="form-control" id="misinfLocSel">
+            </select>
+            <label for="misinfDesc">Provide a description</label>
+            <textarea class="form-control" rows="4" id="misinfDescText"></textarea>
+            <button type="submit" class="btn btn-default" id="confirmMisinf">
+              Choose
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -291,10 +313,14 @@
           <h4 class="modal-title">Apprehend Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing apprehend action</p>
-          <button type="submit" class="btn btn-default" id="confirmApprehend">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="apprehendCharSel">Select a character</label>
+            <select class="form-control" id="apprehendCharSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmApprehend">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -337,10 +363,14 @@
           <h4 class="modal-title">Terminate Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing terminate action</p>
-          <button type="submit" class="btn btn-default" id="confirmTerminate">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="terminateAgentSel">
+            <select class="form-control" id="terminateAgentSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmTerminate">
+              Choose
+            </button>
+          </select>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">

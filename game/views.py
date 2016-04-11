@@ -260,3 +260,49 @@ def get_snippets(request, pk):
                 data += [describedby.description]
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
+
+'''
+get_characters
+    used by the front end to get character data to
+    update screen
+
+    url         /game/play/pk/get_characters/
+'''
+@login_required
+def get_characters(request, pk):
+    game  = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        events = game.get_snippets()
+        data = []
+        pks = []
+        for event in events.all():
+            involveds = event.involved_set.all()
+            for involved in involveds:
+                if involved.character.pk not in pks:
+                    pks += [involved.character.pk]
+                    data += [involved.character]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")
+
+'''
+get_locations
+    used by the front end to get location data to
+    update screen
+
+    url         /game/play/pk/get_locations/
+'''
+@login_required
+def get_locations(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        events = game.get_snippets()
+        data = []
+        pks = []
+        for event in events.all():
+            happenedats = event.happenedat_set.all()
+            for happenedat in happenedats:
+                if happenedat.location.pk not in pks:
+                    pks += [happenedat.location.pk]
+                    data += [happenedat.location]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")

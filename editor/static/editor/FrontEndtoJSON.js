@@ -23,22 +23,41 @@
  *      point_num - number of INTELL points provided initially
  *      author - author name
  *
- *      hashKey -
- *      charKey - 
- *      eventKey - 
- *      locKey -
- *      descKey -
- *      descbyKey - 
- *      happatKey - 
- *      involvKey -
+ *      hashKey - used to identify where an object is located in hashJSON
+ *      charKey - Keeps track of char objects
+ *      eventKey - Keeps track of event objects   
+ *      locKey - Keeps track of location objects   
+ *      descKey - Keeps track of char description objects   
+ *      descbyKey - Keeps track of describedby (relationship) objects   
+ *      happatKey - Keeps track of happenedat (relationship)  objects   
+ *      involvKey - Keeps track of involved (relationship)  objects    
  *
- *      eventTags[] -
- *      hashJSON[] - 
-
-
+ *      eventTags[] - collection of event tags stored in the event object
+ *      charHash[] - arrays for tab keys 
+ *      eventHash[] - ""
+ *      hashJSON[] - Primary hashMap that is used to contain all of the objects
+ *          created by the user and send, so that they can be sent to the back
+ *          end
+ *
  *    methods
- *    action modal methods
+ *      add_char, edit_char, del_char - methods used to interract with char tab
+ *      add_event, edit_event, del_event - methods used to interract with the 
+ *          top half of the edit tab
+ *      add_eventTag, edit_eventTag, del_eventTag - methods used to interract 
+ *          with the bottom half of the event tab. 
+ #      add_loc, edit_loc, del_loc -  methods used to interract with the location
+ *          tab
+ #      
+ *      submitJSON - Method that takes the hashJSON method, generates a JSON
+ *          message and then sends the results to the back end database
  *
+ #      populateTagTargets - Small helper method that populates the "Target" 
+ *          field based on the previously created objects and the Tag Type
+ *      selChar - event listener that would change tab fields based on the 
+ *          char element selected on the character tag
+ *      selLoc - similar to selChar, but for location tab instead
+ *      selEvent, selTag - similar to the previous tabs but are used to interract
+ *          with both tables in the event tab.
  */
 
 /* In progress:
@@ -48,9 +67,18 @@
  *
  *  Also, there are still some issues with the saveJSON method that are currently
  *  being worked out.
- *           
+ *
+ *  For the record, most functions other than the add methods are still subject
+ *  change and will likely to do so prior to the completion of this project
  */
 
+
+/*
+
+    toJSONClass() - Class that is used to instantiate and keep track of all of 
+    the objects created by the user. 
+
+*/
 
 function toJSONClass() {
 
@@ -208,7 +236,6 @@ function toJSONClass() {
         //TODO: add some input validation based event tags 
 
 
-//TODO: Why name? Why no secret snippet in fixture?
         //Create an event object to match with the fixture.json format
         var eventObj = {
             model:"editor.event",
@@ -299,12 +326,32 @@ function toJSONClass() {
         var currTargetKey = 0;
         var selTarget = document.getElementById('targetSel').value;
 
-//TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
-//when table is populated.
+		//TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
+		//when table is populated.
+
+       //Could use a for loop that simply looks through every one of the objects 		
+       //and then breaks when it finds it		
+        for(var key in this.hashJSON){		
+             		
+             //go through each json object until the desired target is found		
+             if(this.hashJSON[key].fields.name != null){		
+                 		
+                 if(selTarget == this.hashJSON[key].fields.name)		
+ 		
+                     //bad programmer		
+                     //once the target is found assign it to currTargetKey		
+                     currTargetKey = selTarget;		
+                     break;		
+             }		
+ 		
+         }		
+ 		
+ 		
+ 		
+        //might be able to store the target.pk else somehow. 
 
 
-//TODO: Find easiest way to find the the primary key of the target?
-
+/*
         //The current target key can be found using the hashMap
         var key = 0;
         while(selTarget != this.hashJSON[key].fields.name)
@@ -314,7 +361,7 @@ function toJSONClass() {
         //If the selected target is found in hashJSON then you have the key
         //info needed for the target pk
         currTargetKey = selTarget;
-
+*/
 
         //check if user type is character or location and match values based on result
         
@@ -322,7 +369,7 @@ function toJSONClass() {
         if(tagType.selectedIndex == 0){
             currModel = 'editor.involved';
             currTagKey= this.involvKey;
-            this.involvKey++;
+            this.invlvKey++;
             //this.hashKey++;
         }
 
@@ -348,21 +395,17 @@ function toJSONClass() {
         TagNum.innerHTML = eventTagObj.tagpk;
         TargetNum.innerHTML = eventTagObj.targetpk;
 
-        //TODO Figure out how to get the eventTagObj into the eventObj
-        //Issue here is that it doesn't work if another event isn't added...
-        //Need to talk about this..
         this.eventTags.push(eventTagObj);
 
-        //MAYBE...
-        //this.hashJSON[MostRecentEvent].tags.push(eventTagObj);
         
     }
 
-
+	//IN PROGRESS
     this.edit_eventTag = function(){
 
     }
 
+	//IN PROGRESS
     this.del_eventTag = function(){
 
     }

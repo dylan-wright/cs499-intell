@@ -369,7 +369,7 @@ function toJSONClass() {
         if(tagType.selectedIndex == 0){
             currModel = 'editor.involved';
             currTagKey= this.involvKey;
-            this.invlvKey++;
+            this.involvKey++;
             //this.hashKey++;
         }
 

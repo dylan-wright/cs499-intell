@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^play/(?P<pk>[0-9]+)/get_snippets/$', views.get_snippets, name="get_snippets"),
     url(r'^play/(?P<pk>[0-9]+)/get_characters/$', views.get_characters, name="get_characters"),
     url(r'^play/(?P<pk>[0-9]+)/get_locations/$', views.get_locations, name="get_locations"),
+    url(r'^play/(?P<pk>[0-9]+)/get_agents/$', views.get_agents, name="get_agents"),
 ]

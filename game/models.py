@@ -40,7 +40,6 @@ class Player(models.Model):
         agent = Agent(name="", alive=True, action=action, player=self)
         agent.save()
 
-
 '''
 Game
     used to represent a particular game. 

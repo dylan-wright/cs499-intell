@@ -192,6 +192,22 @@ submit_action
 @login_required
 def submit_action(request, pk):
     if request.method == "POST":
+        #route to player
+        game = Game.objects.get(pk=pk)
+        if user in game.get_users():
+            player = game.players.get(user=request.user)
+            actionDict= json.loads(request.body)
+
+            #does player control?
+            agent = Agent.objects.get(pk=actionDict["agent"])
+            if agent in player.agent_set.all():
+                #what action
+                actionName = actionDict["action"]
+                action = Action(acttype=actionName)
+                if actionName not in ["recruit", "research"]:
+                    #(what target)
+                    targetKey = actionDict["target"]
+
         context = {"response": request.body}
     elif request.method == "GET":
         context = {"response": ""}
@@ -304,5 +320,22 @@ def get_locations(request, pk):
                 if happenedat.location.pk not in pks:
                     pks += [happenedat.location.pk]
                     data += [happenedat.location]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")
+
+'''
+get_agents
+    used by front end to get agent data to
+    update screen
+
+    url         /game/play/pk/get_agents
+'''
+@login_required
+def get_agents(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        data = []
+        for player in game.players.all():
+            data += player.agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")

@@ -191,7 +191,8 @@
             <label for="tailCharSel">Select a character</label>
             <select class="form-control" id="tailCharSel">
             </select>
-            <button type="submit" class="btn btn-default" id="confirmTail">
+            <button type="submit" class="btn btn-default" id="confirmTail"
+                    data-dismiss="modal">
               Choose
             </button>
           </div>
@@ -218,10 +219,16 @@
             <label for="investigateLocSel">Select a location</label>
             <select class="form-control" id="investigateLocSel">
             </select>
-            <button type="submit" class="btn btn-default" id="confirmInvestigate">
+            <button type="submit" class="btn btn-default" id="confirmInvestigate"
+                    data-dismiss="modal">
               Choose
             </button>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -240,7 +247,8 @@
             <label for="checkDescSel">Select a snippet</label>
             <select class="form-control" id="checkDescSel">
             </select>
-            <button type="submit" class="btn btn-default" id="confirmCheck">
+            <button type="submit" class="btn btn-default" id="confirmCheck"
+                    data-dismiss="modal">
               Choose
             </button>
           </div>
@@ -272,10 +280,16 @@
             </select>
             <label for="misinfDesc">Provide a description</label>
             <textarea class="form-control" rows="4" id="misinfDescText"></textarea>
-            <button type="submit" class="btn btn-default" id="confirmMisinf">
+            <button type="submit" class="btn btn-default" id="confirmMisinf"
+                    data-dismiss="modal">
               Choose
             </button>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -291,7 +305,8 @@
         </div>
         <div class="modal-body">
           <p>Confirm choosing recruit action</p>
-          <button type="submit" class="btn btn-default" id="confirmRecruit">
+          <button type="submit" class="btn btn-default" id="confirmRecruit"
+                  data-dismiss="modal">
             Choose
           </button>
         </div>
@@ -317,7 +332,8 @@
             <label for="apprehendCharSel">Select a character</label>
             <select class="form-control" id="apprehendCharSel">
             </select>
-            <button type="submit" class="btn btn-default" id="confirmApprehend">
+            <button type="submit" class="btn btn-default" id="confirmApprehend"
+                    data-dismiss="modal">
               Choose
             </button>
           </div>
@@ -341,7 +357,8 @@
         </div>
         <div class="modal-body">
           <p>Confirm choosing research action</p>
-          <button type="submit" class="btn btn-default" id="confirmResearch">
+          <button type="submit" class="btn btn-default" id="confirmResearch"
+                  data-dismiss="modal">
             Choose
           </button>
         </div>
@@ -367,7 +384,8 @@
             <label for="terminateAgentSel">
             <select class="form-control" id="terminateAgentSel">
             </select>
-            <button type="submit" class="btn btn-default" id="confirmTerminate">
+            <button type="submit" class="btn btn-default" id="confirmTerminate"
+                    data-dismiss="modal">
               Choose
             </button>
           </select>

@@ -189,8 +189,10 @@ var Actions = (function () {
     //TODO: make async true (add handler)
     xhttp.open("POST", "submit_action/", false);
     xhttp.setRequestHeader("X-CSRFtoken", csrftoken);
-    xhttp.send(actionJSON());
+    var request = actionJSON();
+    xhttp.send(request);
     var response = xhttp.responseText;
+    //return request == response;
   };
 
   /*  verifyAgentSelected
@@ -305,8 +307,7 @@ var Actions = (function () {
   };
   function terminate () {
     if (verifyAgentSelected()) {
-    /*
-      var agents = Snippets.agents;
+      var agents = getAgents();
       var option;
       var i;
       for (i = 0; i < agents.length; i+=1) {
@@ -315,10 +316,19 @@ var Actions = (function () {
         option.value = agents[i].pk;
         settings.terminateAgentSel.add(option);
       }
-    */
       $("#terminateModal").modal();
     }
   };
+
+  function getAgents () {
+    var xhttp = new XMLHttpRequest();
+    //TODO: make async true
+    xhttp.open("GET", "get_agents/", false);
+    xhttp.send();
+    response = xhttp.responseText;
+    agents = JSON.parse(response);
+    return agents;
+  }
   
   return {
     /*  init

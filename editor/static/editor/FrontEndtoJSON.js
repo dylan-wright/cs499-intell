@@ -324,29 +324,34 @@ function toJSONClass() {
         var currModel = '';
         var currTagKey = 0;
         var currTargetKey = 0;
+        var selTag = '';
         var selTarget = document.getElementById('targetSel').value;
 
 		//TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
 		//when table is populated.
 
        //Could use a for loop that simply looks through every one of the objects 		
-       //and then breaks when it finds it		
+       //and then breaks when it finds it	
         for(var key in this.hashJSON){		
              		
              //go through each json object until the desired target is found		
              if(this.hashJSON[key].fields.name != null){		
-                 		
+                 	
+                 console.log(this.hashJSON[key].fields.name);
+                 console.log(selTarget);
                  if(selTarget == this.hashJSON[key].fields.name)		
  		
                      //bad programmer		
                      //once the target is found assign it to currTargetKey		
-                     currTargetKey = selTarget;		
-                     break;		
+                     currTargetKey = this.hashJSON[key].fields.pk;	
+                     break;
              }		
  		
          }		
  		
  		
+
+
  		
         //might be able to store the target.pk else somehow. 
 
@@ -366,8 +371,9 @@ function toJSONClass() {
         //check if user type is character or location and match values based on result
         
         //If selected index=0, then character was selected and involved tag is used
-        if(tagType.selectedIndex == 0){
+        if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
+            selTag = 'involved';
             currTagKey= this.involvKey;
             this.involvKey++;
             //this.hashKey++;
@@ -375,6 +381,7 @@ function toJSONClass() {
 
         else{
             currModel = 'editor.happenedat';
+            selTag = 'happened at';
             currTagKey = this.happatKey;
             this.happatKey++;
             //this.hashKey++;
@@ -388,12 +395,14 @@ function toJSONClass() {
             targetpk: currTargetKey
         };
 
+        console.log(eventTagObj);
+
         //Update the table with the new tag element 
-        var newEventTagElement = document.getElementById("eventTagTable").insertRow(0);
-        TagNum = newEventTagElement.insertCell(0);
-        TargetNum = newEventTagElement.insertCell(1);
-        TagNum.innerHTML = eventTagObj.tagpk;
-        TargetNum.innerHTML = eventTagObj.targetpk;
+        var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
+        TagName = newEventTagElement.insertCell(0);
+        TargetName = newEventTagElement.insertCell(1);
+        TagName.innerHTML = selTag;
+        TargetName.innerHTML = selTarget;
 
         this.eventTags.push(eventTagObj);
 
@@ -633,6 +642,7 @@ function toJSONClass() {
         //clear the selector options list
         targetSel.innerHTML = '';
 
+
         //loop through each element in hashJSON and find the
 		//characters or locations depending on which is selected in tagType
         for(var key in this.hashJSON)
@@ -768,7 +778,7 @@ function selEvent(eventObj) {
     this.prevEvent = currRow;
 	
 	//load the selected eventObj tags into the global tags array
-	this.currEdit.eventTags = eventOgj.tags;
+	this.currEdit.eventTags = eventObj.tags;
 	
 	document.getElementById('eventsTagBody').innerHTML = '';
 	

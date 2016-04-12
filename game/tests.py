@@ -179,12 +179,88 @@ class ProcessActionsTestCase(TestCase):
                     
 
     def test_tail_action(self):
-        '''test single action - tail'''
+        '''test tail action'''
         game = Game.objects.all()[0]
-        #targeting character 1
-        action = Action(acttype="tail", acttarget=1)
+        ted = Character.objects.get(name="Ted Kaczynski")
+        #targeting character ted kazinski
+        action = Action(acttype="tail", acttarget=ted.pk)
         action.save()
         #using player 1's 1st agent (only at this point)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_investigate_action(self):
+        '''test investigate action'''
+        game = Game.objects.all()[0]
+        seattle = Location.objects.get(name="Seattle")
+        #targeting location seattle
+        action = Action(acttype="investigate", acttarget=seattle.pk)
+        action.save()
+        #using player 1's 1st agent (only at this point)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_check_action(self):
+        '''test check info action'''
+        game = Game.objects.all()[0]
+        reserv_cairo = Description.objects.get(text__contains="reservations for Cairo")
+        #targeting description "Ata hari makes ...."
+        action = Action(acttype="check", acttarget=reserv_cairo.pk)
+        action.save()
+        #using player 1's 1st agent
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_misinf_action(self):
+        '''test create misinf action'''
+        game = Game.objects.all()[0]
+
+    def test_recruit_action(self):
+        '''test recruit agent action'''
+        game = Game.objects.all()[0]
+        action = Action(acttype="recruit")
+        action.save()
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_apprehend_action(self):
+        '''test apprehend character action'''
+        game = Game.objects.all()[0]
+        ted = Character.objects.get(name="Ted Kaczynski")
+        action = Action(acttype="apprehend", acttarget=ted.pk)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_research_action(self):
+        '''test research action'''
+        game = Game.objects.all()[0]
+        action = Action(acttype="research")
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+    def test_terminate__action(self):
+        '''test terminate agent action'''
+        game = Game.objects.all()[0]
+        p2_agent = game.players.all()[1].agent_set.all()[0]
+        action = Action(acttype="terminate", target=p2_agent.pk)
         agent = game.players.all()[0].agent_set.all()[0]
         agent.action = action
         agent.save()

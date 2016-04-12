@@ -156,9 +156,8 @@ class Game(models.Model):
                          Location: lambda: events.filter(happenedat=HappenedAt.objects.filter(location=target)),
                          Description: lambda: events.filter(describedby=DescribedBy.objects.filter(describedby=target)),
                         }[target_table]()
-                print(event)
-                if event in events.all():
-                    return True
+                if len(event) == 1:
+                    return event[0] in events.all()
                 else:
                     return False
             else:

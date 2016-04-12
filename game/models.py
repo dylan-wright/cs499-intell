@@ -76,9 +76,16 @@ class Game(models.Model):
     turn = models.IntegerField(default=0)
     next_turn = models.DateTimeField(null=True)
     turn_length = models.DurationField(default=timedelta(days=1))
+    
+    #TODO: make these configured in game create?
+    #       would require more fields default values are same
+    ACTION_COSTS = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
+                    "recruit": 3, "apprehend": 5, "terminate": 5, 
+                    "research": -2}
+
 
     def __str__(self):
-        return "Game created by %s using scenario %s"%(self.creator.first_name, self.scenario.name)
+        return "Game using scenario %s"%(self.scenario.name)
 
     def detail_html(self):
         return "scenario: "+str(self.scenario)
@@ -118,6 +125,47 @@ class Game(models.Model):
         
     
     '''
+    is_target_valid
+        I:  an action
+        O:  bool representing if the action is valid (acttarget exists in
+            the appropriate table in the appropriate game
+    '''
+    def is_target_valid(self, action):
+        acttype = action.acttype
+        acttarget = action.acttarget
+
+        #determine target table
+        #this is evil TODO: change it to if/elif/else
+        target_table = {"tail": Character,
+                        "investigate": Location,
+                        "check": Description,
+                        "misinf": None,
+                        "recruit": None,
+                        "apprehend": Character,
+                        "research": None,
+                        "terminate": Agent}[acttype]
+
+        if target_table != None:
+            targets = target_table.objects.filter(pk=acttarget)
+            #should only match one target
+            if len(targets) == 1:
+                target = targets[0]
+                #is the target in the scenario for this game
+                events = self.scenario.event_set.all()
+                event = {Character: lambda: events.filter(involved=Involved.objects.filter(character=target)),
+                         Location: lambda: events.filter(happenedat=HappenedAt.objects.filter(location=target)),
+                         Description: lambda: events.filter(describedby=DescribedBy.objects.filter(describedby=target)),
+                        }[target_table]()
+                print(event)
+                if event in events.all():
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
+    '''
     start_next_turn
         I:
         O:  increment turn counter, proccess actions, produce snippets,
@@ -135,7 +183,14 @@ class Game(models.Model):
 
         #TODO: decide on order of agents?
         for agent in agents_to_proc:
-            agent.process()
+            acttype = agent.action.acttype
+            if acttype in self.ACTION_COSTS.keys():
+                #can player afford it?
+                if agent.player.points >= self.ACTION_COSTS[acttype]:
+                    #is the target valid?
+                    if self.is_target_valid(agent.action):
+                        perform_action(agent.action)
+
 
         #next turn time
         self.next_turn += self.turn_length
@@ -176,11 +231,17 @@ class Game(models.Model):
 Action
     model tracking an action's target(s)/info
 
-    id      -   auto gen primary key
-    acttype -   type of action TODO: fix this
+    id          -   auto gen primary key
+    acttype     -   type of action TODO: fix this
+    acttarget   -   target of action
+                    is the pk of the intended target game processing step
+                    should determine if target is legal
 '''
 class Action(models.Model):
     acttype = models.CharField(max_length=64) #this is obviously not right
+    acttarget = models.IntegerField(default=-1)
+
+
     
     def __str__(self):
         return "Action %s"%(self.acttype)

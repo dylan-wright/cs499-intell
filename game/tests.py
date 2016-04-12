@@ -21,6 +21,7 @@ from django.test import TestCase
 from .models import *
 from editor.models import Scenario
 from django.contrib.auth.models import User
+from django.test import Client
 
 # Create your tests here.
 '''
@@ -138,3 +139,54 @@ class PlayerTestCase(TestCase):
 
         self.assertEqual(len(Player.objects.all()), 1)
         self.assertEqual(player.user.username, "user1")
+
+'''
+ProcessActionsTestCase
+    used to test action processing
+'''
+class ProcessActionsTestCase(TestCase):
+    def setUp(self):
+        u1 = User(username="user1", first_name="Test 1")
+        u2 = User(username="user2", first_name="Test 2")
+        u3 = User(username="user3", first_name="Test 3")
+        
+        u1.save()
+        u2.save()
+        u3.save()
+
+        p1 = Player(user=u1)
+        p2 = Player(user=u2)
+        p3 = Player(user=u3)
+
+        p1.save()
+        p2.save()
+        p3.save()
+
+        #fixture scenario
+        c = Client()
+        file_in = open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = c.post("/editor/accept_ajax_scenario/",
+                          content_type="application/json",
+                          data=body)
+        game = Game(scenario=Scenario.objects.all()[0])
+        game.save()
+        game.add_player(p1)
+        game.add_player(p2)
+        game.add_player(p3)
+        game.start()
+                    
+
+    def test_tail_action(self):
+        '''test single action - tail'''
+        game = Game.objects.all()[0]
+        #targeting character 1
+        action = Action(acttype="tail", acttarget=1)
+        action.save()
+        #using player 1's 1st agent (only at this point)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)

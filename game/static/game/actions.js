@@ -192,6 +192,12 @@ var Actions = (function () {
     var request = actionJSON();
     xhttp.send(request);
     var response = xhttp.responseText;
+
+    //TODO remove this
+    var d = document.createElement("div");
+    d.innerHTML = response;
+    settings.agentWarn.insertAdjacentElement("beforeBegin", d);
+
     //return request == response;
   };
 

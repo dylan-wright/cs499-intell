@@ -323,53 +323,32 @@ function toJSONClass() {
         var tagTypeinput = document.getElementById('tagTypeSel').value;
         var currModel = '';
         var currTagKey = 0;
-        var currTargetKey = 0;
+        var currTarget;
         var selTag = '';
         var selTarget = document.getElementById('targetSel').value;
 
-		//TODO: FIX THIS LATER. Either by changing the hashMap or by provided more info
-		//when table is populated.
 
-       //Could use a for loop that simply looks through every one of the objects 		
-       //and then breaks when it finds it	
-        for(var key in this.hashJSON){		
-             		
-             //go through each json object until the desired target is found		
-             if(this.hashJSON[key].fields.name != null){		
-                 	
-                 console.log(this.hashJSON[key].fields.name);
-                 console.log(selTarget);
-                 if(selTarget == this.hashJSON[key].fields.name)		
- 		
-                     //bad programmer		
-                     //once the target is found assign it to currTargetKey		
-                     currTargetKey = this.hashJSON[key].fields.pk;	
-                     break;
-             }		
- 		
-         }		
- 		
- 		
-
-
- 		
-        //might be able to store the target.pk else somehow. 
-
-
-/*
-        //The current target key can be found using the hashMap
-        var key = 0;
-        while(selTarget != this.hashJSON[key].fields.name)
-        {
-            key++;
+        //Iterate through the charactr/location hash arrays to find the key
+        //with the desired target name in order to get the pk of that object
+        var key;
+        //Check if we need to check through character or location obejcts 
+        if(tagTypeinput == 'Character'){
+            for(key in this.charHash){
+                if(this.hashJSON[this.charHash[key]].fields.name == selTarget){
+                    currTarget = this.hashJSON[this.charHash[key]];
+                }
+            }
         }
-        //If the selected target is found in hashJSON then you have the key
-        //info needed for the target pk
-        currTargetKey = selTarget;
-*/
 
-        //check if user type is character or location and match values based on result
+        else{
+            for(key in this.locHash){
+                if(this.hashJSON[this.locHash[key]].fields.name == selTarget){
+                    currTarget = this.hashJSON[this.locHash[key]];
+                }
+            }
+        }
         
+        //check if user type is character or location and match values based on result
         //If selected index=0, then character was selected and involved tag is used
         if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
@@ -392,7 +371,7 @@ function toJSONClass() {
 
             tagmodel: currModel,
             tagpk: currTagKey,
-            targetpk: currTargetKey
+            targetpk: currTarget.pk
         };
 
         console.log(eventTagObj);
@@ -662,7 +641,7 @@ function toJSONClass() {
         }
     }   
 
-
+//possibly issue here?
 }
 
 //instantiate the toJSONClass to utilize the needed methods
@@ -827,6 +806,7 @@ function selTag(tagObj) {
     if (this.prevLoc != null && this.prevLoc != currRow) {
         document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
     }
+
     this.prevLoc = currRow;
 }
 

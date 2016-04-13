@@ -177,6 +177,13 @@ class Game(models.Model):
         else:
             #any invalid acttype will throw a key error
             return True
+    '''
+    perform_action
+        I:  action to perform
+        O:  performs action returns true if action processed 
+    '''
+    def perform_action(self, action):
+        pass
             
     '''
     start_next_turn

@@ -209,7 +209,7 @@ def submit_action(request, pk):
                     #(what target)
                     targetKey = actionDict["target"]
                     action = Action(acttype=actionName, acttarget=targetKey)
-                    action.save()
+                action.save()
 
         context = {"response": request.body}
         print()

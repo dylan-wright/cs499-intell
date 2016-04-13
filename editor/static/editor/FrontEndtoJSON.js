@@ -325,6 +325,7 @@ function toJSONClass() {
         var currTagKey = 0;
         var currTarget;
         var selTag = '';
+        var selTargetText = '';
         var selTarget = document.getElementById('targetSel');
 
 
@@ -374,14 +375,12 @@ function toJSONClass() {
             targetpk: currTarget.pk
         };
 
-        console.log(eventTagObj);
-
         //Update the table with the new tag element 
         var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
         TagName = newEventTagElement.insertCell(0);
         TargetName = newEventTagElement.insertCell(1);
         TagName.innerHTML = selTag;
-        TargetName.innerHTML = selTarget.textContent;
+        TargetName.innerHTML = currTarget.fields.name;
 
         this.eventTags.push(eventTagObj);
 

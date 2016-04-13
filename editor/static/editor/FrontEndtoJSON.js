@@ -247,6 +247,7 @@ function toJSONClass() {
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
+		var currTags = this.eventTags;
 	
         //TODO: add some input validation based event tags 
 
@@ -274,7 +275,7 @@ function toJSONClass() {
                 }
             },
 
-            tags:this.eventTags
+            tags:currTags
 
 
         };
@@ -351,7 +352,7 @@ function toJSONClass() {
 
     this.add_eventTag = function(){
         
-        var tagTypeinput = document.getElementById('tagTypeSel').value;
+        var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
         var currModel = '';
         var currTagKey = 0;
         var currTarget;
@@ -363,15 +364,13 @@ function toJSONClass() {
         //with the desired target name in order to get the pk of that object
         var key;
         //Check if we need to check through character or location obejcts 
-        if(tagTypeinput == 'Character'){
+        if(tagTypeinput == 0){
             for(key in this.charHash){
                 if(this.hashJSON[this.charHash[key]].pk == selTarget.value){
                     currTarget = this.hashJSON[this.charHash[key]];
                 }
             }
         }
-
-
         else{
             for(key in this.locHash){
                 if(this.hashJSON[this.locHash[key]].pk == selTarget.value){
@@ -380,7 +379,7 @@ function toJSONClass() {
             }
         }
         
-        //check if user type is character or location and match values based on result
+        //check if tag type is character or location and match values based on result
         //If selected index=0, then character was selected and involved tag is used
         if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
@@ -426,7 +425,7 @@ function toJSONClass() {
 
         this.eventTags.push(eventTagObj);
 
-        
+        document.getElementById('targetSel') = "";
     }
 
 	//IN PROGRESS

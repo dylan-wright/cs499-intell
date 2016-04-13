@@ -247,7 +247,7 @@ function toJSONClass() {
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
-		var currTags = this.eventTags;
+		
 	
         //TODO: add some input validation based event tags 
 
@@ -275,7 +275,7 @@ function toJSONClass() {
                 }
             },
 
-            tags:currTags
+            tags:this.eventTags.slice()
 
 
         };
@@ -425,7 +425,7 @@ function toJSONClass() {
 
         this.eventTags.push(eventTagObj);
 
-        document.getElementById('targetSel') = "";
+        //document.getElementById('targetSel') = "";
     }
 
 	//IN PROGRESS

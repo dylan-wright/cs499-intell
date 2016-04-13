@@ -211,6 +211,10 @@ class ProcessActionsTestCase(TestCase):
         self.assertEqual(valid, True)
         
         #check that points deducted correctly
+        #first turn involving ted is 9
+        game.turn = 9
+        game.save()
+
         point_count = player.points
         knowledge_count = len(player.get_knowledge())
         game.perform_action(action)
@@ -220,6 +224,9 @@ class ProcessActionsTestCase(TestCase):
         #new knowledge?
         self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
 
+        game.turn = 0
+        game.save()
+
         #create a character not in the scenario
         michael = Character(name="Michael", key=False, notes="")
         michael.save()
@@ -227,6 +234,7 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
+
 
     def test_investigate_action(self):
         '''test investigate action'''
@@ -244,6 +252,10 @@ class ProcessActionsTestCase(TestCase):
         self.assertEqual(valid, True)
 
         #check that points deducted correctly
+        #first seattle turn is 7
+        game.turn = 8
+        game.save()
+
         point_count = player.points
         knowledge_count = len(player.get_knowledge())
         game.perform_action(action)
@@ -252,6 +264,9 @@ class ProcessActionsTestCase(TestCase):
                          point_count-game.ACTION_COSTS["investigate"])
         #new knowledge?
         self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
+
+        game.turn = 0
+        game.save()
 
         #create a location not in the scenario
         moon = Location(name="The Moon", x=0, y=0)

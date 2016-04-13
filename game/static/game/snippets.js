@@ -40,11 +40,12 @@ var Snippets = (function () {
   /*  addSnippet
    *    add snippet to the table
    */
-  function addSnippet (snippet) {
-    var tbody = settings.snippetTable.children[0];
+  function addSnippet (event, snippet) {
+    var tbody = settings.snippetTable.children[1];
     var row = tbody.insertRow(0);
     var textCell = row.insertCell(0)
     textCell.innerHTML = snippet.fields.text;
+    row.insertCell(0).innerHTML = event.fields.turn;
   }
 
   /*  clearSnippets
@@ -71,8 +72,8 @@ var Snippets = (function () {
     response = xhttp.responseText;
     models = JSON.parse(response);
     var i;
-    for (i = 0; i < models.length; i++) {
-      addSnippet(models[i]);
+    for (i = 0; i < models.length; i+=2) {
+      addSnippet(models[i], models[i+1]);
     }
     return models;
   }

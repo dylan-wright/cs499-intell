@@ -284,7 +284,7 @@ def get_snippets(request, pk):
         for event in events.all():
             describedbys = event.describedby_set.all()
             for describedby in describedbys:
-                data += [describedby.description]
+                data += [event, describedby.description]
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
 

@@ -7,12 +7,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static "game/game.css" %}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <script src="{% static "game/js.cookie-2.1.0.min.js" %}"></script>
 </head>
 <body>
-{{ username }}
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-6">
@@ -41,15 +41,15 @@
             <div class="panel-heading">
               <h4>INTELL</h4>
             </div>
-            <div class="panel-body">
-              <table border="1" id="messagesDisplay">
-                <thead>
-                  <tr><td>Turn</td><td>Text</td></tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
+              <div class="table-responsive">
+                <table class="table table-striped" id="messagesDisplay">
+                  <thead>
+                    <tr><th>Turn</th><th>Text</th></tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
           </div>
         </div>
       </div>
@@ -83,16 +83,13 @@
           <div class="panel-heading">
             <h4>Info</h4>
           </div>
-          <div class="panel-body">
-            <!--use list + style id-->
-            <!--Insert snippets into paragraph tags? -->
-            <table border="1" id="snippetTable">
-              <tr><td>Snippet Text</td></tr>
-              {% for snippet in snippets %}
-              <tr><td>{{ snippet }}</td></tr>
-              {% empty %}
-              <tr><td>No snippets to display</td></tr>
-              {% endfor %}
+          <div class="table-responsive">
+            <table class="table table-striped" id="snippetTable">
+              <thead><tr><th>Turn</th><th>Description</th></tr></thead>
+                <!--use list + style id-->
+                <!--Insert snippets into paragraph tags? -->
+              <tbody>
+              </tbody>
             </table>
           </div>
         </div>

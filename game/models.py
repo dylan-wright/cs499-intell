@@ -282,17 +282,48 @@ class Game(models.Model):
             for involved in involveds.all():
                 if involved.event.turn < self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
-                                event=involved.event)
+                                          event=involved.event)
                     knowledge.save()
+                    describedbys = DescribedBy.objects.filter(event=involved.event)
+                    for describedby in describedbys.all():
+                        if describedby.description.hidden:
+                            message = Message()
+                            message.player = player
+                            message.turn=self.turn
+                            #TODO fix this
+                            message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
+                                                                            describedby.description)
+                            message.save()
         elif action.acttype == "investigate":
             happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
             for happenedat in happenedats:
                 if happenedat.event.turn < self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
-                                event=happenedat.event)
+                                          event=happenedat.event)
                     knowledge.save()
+                    describedbys = DescribedBy.objects.filter(event=happenedat.event)
+                    for describedby in describedbys.all():
+                        if describedby.description.hidden:
+                            message = Message()
+                            message.player = player
+                            message.turn = self.turn
+                            #TODO fix this
+                            message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
+                                                                                      describedby.description)
+                            message.save()
         elif action.acttype == "check":
-            pass
+            describedby = DescribedBy.objects.get(description__id=action.acttarget)
+            if describedby.event.turn < self.turn:
+                knowledge = Knowledge(player=player, turn=self.turn,
+                                      event=describedby.event)
+                knowledge.save()
+                if describedby.event.misinf:
+                    messsage = Message()
+                    message.player = player
+                    message.turn = self.turn
+                    #TODO: fix this
+                    message.text = "The informationt that '%s' has been proven to be false"%(Description.objects.get(pk=action.acttarget))
+                    message.save()
         elif action.acttype == "misinf":
             pass
         elif action.acttype == "recruit":

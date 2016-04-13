@@ -27,9 +27,11 @@ var Status = (function () {
     timerDisplay: document.getElementById("timerDisplay"),
     turnDisplay: document.getElementById("turnDisplay"),
     pointsDisplay: document.getElementById("pointsDisplay"),
+    messagesDisplay: document.getElementById("messagesDisplay"),
     timer: null,
     turn: null,
     points: null,
+    messages: null,
   };
 
   
@@ -49,6 +51,20 @@ var Status = (function () {
     settings.turnDisplay.innerHTML = settings.turn;
     settings.pointsDisplay.innerHTML = settings.points;
     settings.timerDisplay.timer = settings.timer;
+
+    //populate the message table
+    while (settings.messagesDisplay.children[1].rows.length != 0) {
+      settings.messagesDisplay.children[1].deleteRow(0);
+    }
+    var i;
+    var td, tr;
+    for (i = 0; i < settings.messages.length; i+=1) {
+      tr = settings.messagesDisplay.children[1].insertRow(0);
+      td = tr.insertCell(0);
+      td.innerHTML = settings.messages[i].fields.text;
+      td = tr.insertCell(0);
+      td.innerHTML = settings.messages[i].fields.turn;
+    }
   };
 
   /*  getStatus
@@ -64,6 +80,7 @@ var Status = (function () {
     settings.turn = statusJSON.turn;
     settings.points = statusJSON.points;
     settings.timer = statusJSON.timer;
+    settings.messages = JSON.parse(statusJSON.messages);
   };
   
   return {
@@ -73,8 +90,6 @@ var Status = (function () {
      *    called by global js initializer
      */
     init: function () {
-      //for ease of actions
-      //s = this.settings;
       //connect events
       bindUIActions();
       updateStatus();

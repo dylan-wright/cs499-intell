@@ -258,7 +258,11 @@ def get_status(request, pk):
         player = game.players.get(user=request.user)
         points = player.points
         turn = game.turn
-        data = {"points": points, "turn": turn, "timer": game.time_till()}
+        messages = Message.objects.filter(player=player)
+        data = {"points": points, 
+                "turn": turn, 
+                "timer": game.time_till(),
+                "messages": serializers.serialize("json", messages)}
         return HttpResponse(json.dumps(data), content_type="application_json")
 
 '''
@@ -343,3 +347,4 @@ def get_agents(request, pk):
             data += player.agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
+

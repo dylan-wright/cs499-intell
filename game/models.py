@@ -152,18 +152,32 @@ class Game(models.Model):
                 target = targets[0]
                 #is the target in the scenario for this game
                 events = self.scenario.event_set.all()
-                event = {Character: lambda: events.filter(involved=Involved.objects.filter(character=target)),
-                         Location: lambda: events.filter(happenedat=HappenedAt.objects.filter(location=target)),
-                         Description: lambda: events.filter(describedby=DescribedBy.objects.filter(describedby=target)),
-                        }[target_table]()
-                if len(event) == 1:
-                    return event[0] in events.all()
+                if target_table == Character:
+                    #find events involving the character in this game
+                    event_qset = events.filter(involved=Involved.objects.filter(character=target))
+                elif target_table == Location:
+                    #find events happenedat the location in this game
+                    event_qset = events.filter(happenedat=HappenedAt.objects.filter(location=target))
+                elif target_table == Description:
+                    #find events describedby the description in this game
+                    event_qset = events.filter(describedby=DescribedBy.objects.filter(description=target))
+                elif target_table == Agent:
+                    #find agents in this game
+                    agent_qset = Agent.objects.filter(player__in=self.players.all())
+                    return target in agent_qset.all()
+                else:
+                    return False
+
+                if len(event_qset) == 1:
+                    return event_qset[0] in event_qset.all()
                 else:
                     return False
             else:
                 return False
         else:
-            return False
+            #any invalid acttype will throw a key error
+            return True
+            
     '''
     start_next_turn
         I:

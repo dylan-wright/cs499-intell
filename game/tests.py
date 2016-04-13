@@ -240,6 +240,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         ted = Character.objects.get(name="Ted Kaczynski")
         action = Action(acttype="apprehend", acttarget=ted.pk)
+        action.save()
         agent = game.players.all()[0].agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -250,6 +251,7 @@ class ProcessActionsTestCase(TestCase):
         '''test research action'''
         game = Game.objects.all()[0]
         action = Action(acttype="research")
+        action.save()
         agent = game.players.all()[0].agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -260,7 +262,8 @@ class ProcessActionsTestCase(TestCase):
         '''test terminate agent action'''
         game = Game.objects.all()[0]
         p2_agent = game.players.all()[1].agent_set.all()[0]
-        action = Action(acttype="terminate", target=p2_agent.pk)
+        action = Action(acttype="terminate", acttarget=p2_agent.pk)
+        action.save()
         agent = game.players.all()[0].agent_set.all()[0]
         agent.action = action
         agent.save()

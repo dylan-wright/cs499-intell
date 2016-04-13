@@ -192,7 +192,27 @@ submit_action
 @login_required
 def submit_action(request, pk):
     if request.method == "POST":
+        print()
+        #route to player
+        game = Game.objects.get(pk=pk)
+        if request.user in game.get_users():
+            player = game.players.get(user=request.user)
+            actionDict= json.loads(str(request.body)[2:-1])
+
+            #does player control?
+            agent = Agent.objects.get(pk=actionDict["agent"])
+            if agent in player.agent_set.all():
+                #what action
+                actionName = actionDict["action"]
+                action = Action(acttype=actionName)
+                if actionName not in ["recruit", "research"]:
+                    #(what target)
+                    targetKey = actionDict["target"]
+                    action = Action(acttype=actionName, acttarget=targetKey)
+                action.save()
+
         context = {"response": request.body}
+        print()
     elif request.method == "GET":
         context = {"response": ""}
     return render(request, "game/play/submit_action.html", context)
@@ -258,5 +278,68 @@ def get_snippets(request, pk):
             describedbys = event.describedby_set.all()
             for describedby in describedbys:
                 data += [describedby.description]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")
+
+'''
+get_characters
+    used by the front end to get character data to
+    update screen
+
+    url         /game/play/pk/get_characters/
+'''
+@login_required
+def get_characters(request, pk):
+    game  = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        events = game.get_snippets()
+        data = []
+        pks = []
+        for event in events.all():
+            involveds = event.involved_set.all()
+            for involved in involveds:
+                if involved.character.pk not in pks:
+                    pks += [involved.character.pk]
+                    data += [involved.character]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")
+
+'''
+get_locations
+    used by the front end to get location data to
+    update screen
+
+    url         /game/play/pk/get_locations/
+'''
+@login_required
+def get_locations(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        events = game.get_snippets()
+        data = []
+        pks = []
+        for event in events.all():
+            happenedats = event.happenedat_set.all()
+            for happenedat in happenedats:
+                if happenedat.location.pk not in pks:
+                    pks += [happenedat.location.pk]
+                    data += [happenedat.location]
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")
+
+'''
+get_agents
+    used by front end to get agent data to
+    update screen
+
+    url         /game/play/pk/get_agents
+'''
+@login_required
+def get_agents(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        data = []
+        for player in game.players.all():
+            data += player.agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")

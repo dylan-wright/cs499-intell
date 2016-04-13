@@ -12,6 +12,15 @@
                     test_start_game
                 PlayerTestCase
                     test_create_player
+                ProcessActionTestCase
+                    test_tail_action
+                    test_investigate_action
+                    test_check_action
+                    test_misinf_action <- not implemented
+                    test_recruit_action
+                    test_apprehend_action
+                    test_research_action
+                    test_terminate_action
 
         TODO: add other model test cases
         TODO: add routing/templates/view test cases
@@ -21,6 +30,7 @@ from django.test import TestCase
 from .models import *
 from editor.models import Scenario
 from django.contrib.auth.models import User
+from django.test import Client
 
 # Create your tests here.
 '''
@@ -138,3 +148,189 @@ class PlayerTestCase(TestCase):
 
         self.assertEqual(len(Player.objects.all()), 1)
         self.assertEqual(player.user.username, "user1")
+
+'''
+ProcessActionsTestCase
+    used to test action processing
+        test_tail_action
+        test_investigate_action
+        test_check_action
+        test_misinf_action <- not implemented
+        test_recruit_action
+        test_apprehend_action
+        test_research_action
+        test_terminate_action
+'''
+class ProcessActionsTestCase(TestCase):
+    def setUp(self):
+        u1 = User(username="user1", first_name="Test 1")
+        u2 = User(username="user2", first_name="Test 2")
+        u3 = User(username="user3", first_name="Test 3")
+        
+        u1.save()
+        u2.save()
+        u3.save()
+
+        p1 = Player(user=u1)
+        p2 = Player(user=u2)
+        p3 = Player(user=u3)
+
+        p1.save()
+        p2.save()
+        p3.save()
+
+        #fixture scenario
+        c = Client()
+        file_in = open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = c.post("/editor/accept_ajax_scenario/",
+                          content_type="application/json",
+                          data=body)
+        game = Game(scenario=Scenario.objects.all()[0])
+        game.save()
+        game.add_player(p1)
+        game.add_player(p2)
+        game.add_player(p3)
+        game.start()
+                    
+
+    def test_tail_action(self):
+        '''test tail action'''
+        game = Game.objects.all()[0]
+        ted = Character.objects.get(name="Ted Kaczynski")
+        #targeting character ted kazinski
+        action = Action(acttype="tail", acttarget=ted.pk)
+        action.save()
+        #using player 1's 1st agent (only at this point)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #create a character not in the scenario
+        michael = Character(name="Michael", key=False, notes="")
+        michael.save()
+        action.acttarget = michael.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
+    def test_investigate_action(self):
+        '''test investigate action'''
+        game = Game.objects.all()[0]
+        seattle = Location.objects.get(name="Seattle")
+        #targeting location seattle
+        action = Action(acttype="investigate", acttarget=seattle.pk)
+        action.save()
+        #using player 1's 1st agent (only at this point)
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #create a location not in the scenario
+        moon = Location(name="The Moon", x=0, y=0)
+        moon.save()
+        action.acttarget = moon.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
+    def test_check_action(self):
+        '''test check info action'''
+        game = Game.objects.all()[0]
+        reserv_cairo = Description.objects.get(text__contains="reservations for Cairo")
+        #targeting description "Ata hari makes ...."
+        action = Action(acttype="check", acttarget=reserv_cairo.pk)
+        action.save()
+        #using player 1's 1st agent
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #create a description not in the scenario
+        jogging = Description(text="Someone went jogging", hidden=False,
+                              name="Jogging", key=False)
+        jogging.save()
+        action.acttarget = jogging.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
+    def test_misinf_action(self):
+        '''test create misinf action'''
+        game = Game.objects.all()[0]
+        self.assertEqual(True, False)
+
+    def test_recruit_action(self):
+        '''test recruit agent action'''
+        game = Game.objects.all()[0]
+        action = Action(acttype="recruit")
+        action.save()
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #recruit never fails
+
+    def test_apprehend_action(self):
+        '''test apprehend character action'''
+        game = Game.objects.all()[0]
+        ted = Character.objects.get(name="Ted Kaczynski")
+        action = Action(acttype="apprehend", acttarget=ted.pk)
+        action.save()
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+        
+        #create a character not in the scenario
+        michael = Character(name="Michael", key=False, notes="")
+        michael.save()
+        action.acttarget = michael.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
+    def test_research_action(self):
+        '''test research action'''
+        game = Game.objects.all()[0]
+        action = Action(acttype="research")
+        action.save()
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #research will never fail
+
+    def test_terminate__action(self):
+        '''test terminate agent action'''
+        game = Game.objects.all()[0]
+        p2_agent = game.players.all()[1].agent_set.all()[0]
+        action = Action(acttype="terminate", acttarget=p2_agent.pk)
+        action.save()
+        agent = game.players.all()[0].agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
+
+        #create agent not belonging to a player
+        dummy_action = Action(acttype="research")
+        dummy_action.save()
+        agent = Agent(name="", action=dummy_action)
+        agent.save()
+        action.acttarget = agent.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)

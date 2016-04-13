@@ -52,7 +52,7 @@ var Actions = (function () {
 
       confirmTail: document.getElementById("confirmTail"),
       confirmInvestigate: document.getElementById("confirmInvestigate"),
-      confirmCheck: document.getElementById("confirmInvestigate"),
+      confirmCheck: document.getElementById("confirmCheck"),
       confirmMisinf: document.getElementById("confirmMisinf"),
       confirmRecruit: document.getElementById("confirmRecruit"),
       confirmApprehend: document.getElementById("confirmApprehend"),
@@ -61,6 +61,17 @@ var Actions = (function () {
     },
     activeButton: document.getElementById("researchBtn"),
     agentSelect: document.getElementById("agentSel"),
+    agentWarn: document.getElementById("agentWarn"),
+
+    tailCharSel: document.getElementById("tailCharSel"),
+    investigateLocSel: document.getElementById("investigateLocSel"),
+    checkDescSel: document.getElementById("checkDescSel"),
+    misinfCharSel: document.getElementById("misinfCharSel"),
+    misinfLocSel: document.getElementById("misinfLocSel"),
+    misinfDescText: document.getElementById("misinfDescText"),
+    apprehendCharSel: document.getElementById("apprehendCharSel"),
+    terminateAgentSel: document.getElementById("terminateAgentSel"),
+    actionTarget: null,
   };
 
   /*  bindUIActions
@@ -104,28 +115,38 @@ var Actions = (function () {
 
     //buttons in a modal
     settings.buttons.confirmTail.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = settings.tailCharSel.value;
+      sendAction();
     });
     settings.buttons.confirmInvestigate.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = settings.investigateLocSel.value;
+      sendAction();
     });
     settings.buttons.confirmCheck.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = settings.checkDescSel.value;
+      sendAction();
     });
     settings.buttons.confirmMisinf.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = {"location": settings.misinfLocSel.value,
+                               "character": settings.misinfCharSel.value,
+                               "description": settings.misinfDescText.value};
+      sendAction();
     });
     settings.buttons.confirmRecruit.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = null;
+      sendAction();
     });
     settings.buttons.confirmApprehend.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = settings.apprehendCharSel.value;
+      sendAction();
     });
     settings.buttons.confirmResearch.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = null;
+      sendAction();
     });
     settings.buttons.confirmTerminate.addEventListener("click", function() {
-      sendAction()
+      settings.actionTarget = settings.terminateAgentSel.value;
+      sendAction();
     });
   };
 
@@ -153,6 +174,7 @@ var Actions = (function () {
     retObj = {
       "agent": settings.agentSelect.value,
       "action": settings.activeButton.id.slice(0,-3),
+      "target": settings.actionTarget,
     };
     return JSON.stringify(retObj);
   };
@@ -167,37 +189,152 @@ var Actions = (function () {
     //TODO: make async true (add handler)
     xhttp.open("POST", "submit_action/", false);
     xhttp.setRequestHeader("X-CSRFtoken", csrftoken);
-    xhttp.send(actionJSON());
+    var request = actionJSON();
+    xhttp.send(request);
     var response = xhttp.responseText;
+
+    //TODO remove this
+    var d = document.createElement("div");
+    d.innerHTML = response;
+    settings.agentWarn.insertAdjacentElement("beforeBegin", d);
+
+    //return request == response;
   };
+
+  /*  verifyAgentSelected
+   *    check if an agent has been selected
+   *    if not, warn the user
+   *    called before opening modals for actions
+   */
+  function verifyAgentSelected () {
+    if (settings.agentSelect.value == "none") {
+      settings.agentWarn.innerHTML = "Select an agent";
+      return false;
+    } else {
+      settings.agentWarn.innerHTML = "";
+      return true;
+    }
+  }
 
   /*  button click handlers
    *    all open a modal
+   *    should also check for agent selected
+   *    some must create a select dropdown
    */
   function tail () {
-    $("#tailModal").modal();
+    if (verifyAgentSelected()) {
+      //load charcters into select
+      var characters = Snippets.characters;
+      var option;
+      var i;
+      for (i = 0; i < characters.length; i+=1) {
+        option = document.createElement("option");
+        option.text = characters[i].fields.name;
+        option.value = characters[i].pk;
+        settings.tailCharSel.add(option);
+      }
+      $("#tailModal").modal();
+    }
   };
   function investigate () {
-    $("#investigateModal").modal();
+    if (verifyAgentSelected()) {
+      //load locations into select
+      var locations = Snippets.locations;
+      var option;
+      var i;
+      for (i = 0; i < locations.length; i+=1) {
+        option = document.createElement("option");
+        option.text = locations[i].fields.name;
+        option.value = locations[i].pk;
+        settings.investigateLocSel.add(option);
+      }
+      $("#investigateModal").modal();
+    }
   };
   function check () {
-    $("#checkModal").modal();
+    if (verifyAgentSelected()) {
+      //load descriptions into select
+      var descriptions = Snippets.descriptions;
+      var option;
+      var i;
+      for (i = 0; i < descriptions.length; i+=1) {
+        option = document.createElement("option");
+        option.text = descriptions[i].fields.text;
+        option.value = descriptions[i].pk;
+        settings.checkDescSel.add(option);
+      }
+      $("#checkModal").modal();
+    }
   };
   function misinf () {
-    $("#misinfModal").modal();
+    if (verifyAgentSelected()) {
+      var characters = Snippets.characters;
+      var locations = Snippets.locations;
+      var option;
+      var i;
+      for (i = 0; i < characters.length; i+=1) {
+        option = document.createElement("option");
+        option.text = characters[i].fields.name;
+        option.value = characters[i].pk;
+        settings.misinfCharSel.add(option);
+      }
+      for (i = 0; i < locations.length; i+=1) {
+        option = document.createElement("option");
+        option.text = locations[i].fields.name;
+        option.value = locations[i].pk;
+        settings.misinfLocSel.add(option);
+      }
+      $("#misinfModal").modal();
+    }
   };
   function recruit () {
-    $("#recruitModal").modal();
+    if (verifyAgentSelected()) {
+      $("#recruitModal").modal();
+    }
   };
   function apprehend () {
-    $("#apprehendModal").modal();
+    if (verifyAgentSelected()) {
+      var characters = Snippets.characters;
+      var option;
+      var i;
+      for (i = 0; i < characters.length; i+=1) {
+        option = document.createElement("option");
+        option.text = characters[i].fields.name;
+        option.value = characters[i].pk;
+        settings.apprehendCharSel.add(option);
+      }
+      $("#apprehendModal").modal();
+    }
   };
   function research () {
-    $("#researchModal").modal();
+    if (verifyAgentSelected()) {
+      $("#researchModal").modal();
+    }
   };
   function terminate () {
-    $("#terminateModal").modal();
+    if (verifyAgentSelected()) {
+      var agents = getAgents();
+      var option;
+      var i;
+      for (i = 0; i < agents.length; i+=1) {
+        option = document.createElement("option");
+        option.text = agents[i].fields.name;
+        option.value = agents[i].pk;
+        settings.terminateAgentSel.add(option);
+      }
+      $("#terminateModal").modal();
+    }
   };
+
+  function getAgents () {
+    var xhttp = new XMLHttpRequest();
+    //TODO: make async true
+    xhttp.open("GET", "get_agents/", false);
+    xhttp.send();
+    response = xhttp.responseText;
+    agents = JSON.parse(response);
+    return agents;
+  }
   
   return {
     /*  init

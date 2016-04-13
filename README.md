@@ -17,6 +17,13 @@ Repurpose to frontend application which sends scenario back to be verified and a
 2. Login
 3. Managment
 
+### Testing:
+As of 4-13 I've installed python-coverage to help guide test case 
+creation. Usage:
+```bash
+coverage --source='.' manage.py test
+coverage report
+```
 ## Cool Links Yo :100: :
 * django docs: https://docs.djangoproject.com/en/dev/
 * guide to this format: https://guides.github.com/features/mastering-markdown/

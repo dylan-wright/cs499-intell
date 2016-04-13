@@ -210,6 +210,15 @@ class Game(models.Model):
                     #is the target valid?
                     if self.is_target_valid(agent.action):
                         perform_action(agent.action)
+                    else:
+                        #action target invalid
+                        pass
+                else:
+                    #player has too few points
+                    pass
+            else:
+                #action does not exist
+                pass
 
 
         #next turn time

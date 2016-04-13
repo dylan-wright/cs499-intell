@@ -227,6 +227,8 @@ var Actions = (function () {
       var characters = Snippets.characters;
       var option;
       var i;
+
+      clearSelect(settings.tailCharSel);
       for (i = 0; i < characters.length; i+=1) {
         option = document.createElement("option");
         option.text = characters[i].fields.name;
@@ -242,6 +244,8 @@ var Actions = (function () {
       var locations = Snippets.locations;
       var option;
       var i;
+
+      clearSelect(settings.investigateLocSel);
       for (i = 0; i < locations.length; i+=1) {
         option = document.createElement("option");
         option.text = locations[i].fields.name;
@@ -257,6 +261,8 @@ var Actions = (function () {
       var descriptions = Snippets.descriptions;
       var option;
       var i;
+
+      clearSelect(settings.checkDescSel);
       for (i = 0; i < descriptions.length; i+=1) {
         option = document.createElement("option");
         option.text = descriptions[i].fields.text;
@@ -272,12 +278,16 @@ var Actions = (function () {
       var locations = Snippets.locations;
       var option;
       var i;
+
+      clearSelect(settings.misinfCharSel);
       for (i = 0; i < characters.length; i+=1) {
         option = document.createElement("option");
         option.text = characters[i].fields.name;
         option.value = characters[i].pk;
         settings.misinfCharSel.add(option);
       }
+
+      clearSelect(settings.misinfLocSel);
       for (i = 0; i < locations.length; i+=1) {
         option = document.createElement("option");
         option.text = locations[i].fields.name;
@@ -297,6 +307,7 @@ var Actions = (function () {
       var characters = Snippets.characters;
       var option;
       var i;
+      clearSelect(settings.apprehendCharSel);
       for (i = 0; i < characters.length; i+=1) {
         option = document.createElement("option");
         option.text = characters[i].fields.name;
@@ -316,6 +327,7 @@ var Actions = (function () {
       var agents = getAgents();
       var option;
       var i;
+      clearSelect(settings.terminateAgentSel);
       for (i = 0; i < agents.length; i+=1) {
         option = document.createElement("option");
         option.text = agents[i].fields.name;
@@ -334,6 +346,12 @@ var Actions = (function () {
     response = xhttp.responseText;
     agents = JSON.parse(response);
     return agents;
+  }
+
+  function clearSelect (select) {
+    while (select.length != 0) {
+      select.remove(0);
+    }
   }
   
   return {

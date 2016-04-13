@@ -203,11 +203,22 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="tail", acttarget=ted.pk)
         action.save()
         #using player 1's 1st agent (only at this point)
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+        
+        #check that points deducted correctly
+        point_count = player.points
+        knowledge_count = len(player.get_knowledge())
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["tail"])
+        #new knowledge?
+        self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
 
         #create a character not in the scenario
         michael = Character(name="Michael", key=False, notes="")
@@ -225,11 +236,22 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="investigate", acttarget=seattle.pk)
         action.save()
         #using player 1's 1st agent (only at this point)
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+
+        #check that points deducted correctly
+        point_count = player.points
+        knowledge_count = len(player.get_knowledge())
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["investigate"])
+        #new knowledge?
+        self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
 
         #create a location not in the scenario
         moon = Location(name="The Moon", x=0, y=0)
@@ -247,11 +269,19 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="check", acttarget=reserv_cairo.pk)
         action.save()
         #using player 1's 1st agent
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+
+        #check that points deducted correctly
+        point_count = player.points
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["check"])
 
         #create a description not in the scenario
         jogging = Description(text="Someone went jogging", hidden=False,
@@ -265,20 +295,40 @@ class ProcessActionsTestCase(TestCase):
     def test_misinf_action(self):
         '''test create misinf action'''
         game = Game.objects.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         self.assertEqual(True, False)
+
+        #check that points deducted correctly
+        point_count = player.points
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["misinf"])
 
     def test_recruit_action(self):
         '''test recruit agent action'''
         game = Game.objects.all()[0]
         action = Action(acttype="recruit")
         action.save()
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
-        #recruit never fails
+        #test that player has an additional agent after performing action
+        agent_count = len(player.agent_set.all())
+        game.perform_action(action)
+        self.assertEqual(len(player.agent_set.all()), 
+                         agent_count+1)
+        #check that points deducted correctly
+        point_count = player.points
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["recruit"])
+
 
     def test_apprehend_action(self):
         '''test apprehend character action'''
@@ -286,11 +336,19 @@ class ProcessActionsTestCase(TestCase):
         ted = Character.objects.get(name="Ted Kaczynski")
         action = Action(acttype="apprehend", acttarget=ted.pk)
         action.save()
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+        
+        #check that points deducted correctly
+        point_count = player.points
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["apprehend"])
         
         #create a character not in the scenario
         michael = Character(name="Michael", key=False, notes="")
@@ -305,13 +363,19 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="research")
         action.save()
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
-        #research will never fail
+        #test that the player has additionalk points after performing action
+        point_count = player.points
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["research"])
 
     def test_terminate__action(self):
         '''test terminate agent action'''
@@ -319,11 +383,19 @@ class ProcessActionsTestCase(TestCase):
         p2_agent = game.players.all()[1].agent_set.all()[0]
         action = Action(acttype="terminate", acttarget=p2_agent.pk)
         action.save()
-        agent = game.players.all()[0].agent_set.all()[0]
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+    
+        #check that points deducted correctly
+        point_count = player.points
+        game.perform_action(action)
+        player.refresh_from_db()
+        self.assertEqual(player.points, 
+                         point_count-game.ACTION_COSTS["terminate"])
 
         #create agent not belonging to a player
         dummy_action = Action(acttype="research")

@@ -40,6 +40,14 @@ class Player(models.Model):
         agent = Agent(name="", alive=True, action=action, player=self)
         agent.save()
 
+    '''
+    get_knowledge
+        returns the QuerySet of all Knowledge objects associated with
+        the player
+    '''
+    def get_knowledge(self):
+        return Knowledge.objects.filter(player=self).all()
+
 '''
 Game
     used to represent a particular game. 
@@ -206,10 +214,13 @@ class Game(models.Model):
             acttype = agent.action.acttype
             if acttype in self.ACTION_COSTS.keys():
                 #can player afford it?
+                #TODO: player with multiple agents - can they afford
+                #       all actions? if not how to decide?
+                #       first (agent) come first served?
                 if agent.player.points >= self.ACTION_COSTS[acttype]:
                     #is the target valid?
                     if self.is_target_valid(agent.action):
-                        perform_action(agent.action)
+                        self.perform_action(agent.action)
                     else:
                         #action target invalid
                         pass
@@ -226,6 +237,56 @@ class Game(models.Model):
 
         #store in db
         self.save()
+
+    
+    '''
+    perform_action
+        I:  an action that has been verified
+        O:  action performed, knowledge created,
+            side effects effected
+
+        If the action is valid (assumed) then the action will 
+        succeed (oh hello hubris)
+
+        TODO: tail, investigate, check, misinf, apprehend, terminate
+    '''
+    def perform_action(self, action):
+        player = action.agent_set.all()[0].player
+
+        if action.acttype == "tail":
+            involveds = Involved.objects.filter(character__id=action.acttarget)
+            for involved in involveds.all():
+                if involved.event.turn < self.turn:
+                    knowledge = Knowledge(player=player, turn=self.turn,
+                                event=involved.event)
+                    knowledge.save()
+        elif action.acttype == "investigate":
+            happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
+            for happenedat in happenedats:
+                if happenedat.event.turn < self.turn:
+                    knowledge = Knowledge(player=player, turn=self.turn,
+                                event=happenedat.event)
+                    knowledge.save()
+        elif action.acttype == "check":
+            pass
+        elif action.acttype == "misinf":
+            pass
+        elif action.acttype == "recruit":
+            #player gets another agent
+            #TODO: test to ensure new agents cant act
+            #       also that dummy action created has no side effects
+            #       (should just be recorded as an invalid action by
+            #        game.Game.start_next_turn)
+            player.add_agent()
+        elif action.acttype == "apprehend":
+            pass
+        elif action.acttype == "research":
+            #only need to sub (negative) action cost from player
+            pass
+        elif action.acttype == "terminate":
+            pass
+        player.points -= self.ACTION_COSTS[action.acttype]
+        player.save()
 
     '''
     start
@@ -308,6 +369,7 @@ Knowledge
 class Knowledge(models.Model):
     event = models.ForeignKey(Event, null=True)
     turn = models.IntegerField()
+    player = models.ForeignKey(Player, null=True)
 
     def __str__(self):
         return "result of investigation of %s on turn %s"%(str(self.event), str(self.turn))

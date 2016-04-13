@@ -325,7 +325,7 @@ function toJSONClass() {
         var currTagKey = 0;
         var currTarget;
         var selTag = '';
-        var selTarget = document.getElementById('targetSel').value;
+        var selTarget = document.getElementById('targetSel');
 
 
         //Iterate through the charactr/location hash arrays to find the key
@@ -334,7 +334,7 @@ function toJSONClass() {
         //Check if we need to check through character or location obejcts 
         if(tagTypeinput == 'Character'){
             for(key in this.charHash){
-                if(this.hashJSON[this.charHash[key]].fields.name == selTarget){
+                if(this.hashJSON[this.charHash[key]].pk == selTarget.value){
                     currTarget = this.hashJSON[this.charHash[key]];
                 }
             }
@@ -342,7 +342,7 @@ function toJSONClass() {
 
         else{
             for(key in this.locHash){
-                if(this.hashJSON[this.locHash[key]].fields.name == selTarget){
+                if(this.hashJSON[this.locHash[key]].pk == selTarget.value){
                     currTarget = this.hashJSON[this.locHash[key]];
                 }
             }
@@ -381,7 +381,7 @@ function toJSONClass() {
         TagName = newEventTagElement.insertCell(0);
         TargetName = newEventTagElement.insertCell(1);
         TagName.innerHTML = selTag;
-        TargetName.innerHTML = selTarget;
+        TargetName.innerHTML = selTarget.textContent;
 
         this.eventTags.push(eventTagObj);
 
@@ -630,12 +630,15 @@ function toJSONClass() {
 			{
 				var tarOption = document.createElement("option");
 				tarOption.text = this.hashJSON[key].fields.name;
+                //adding code here to store the pk value
+                tarOption.value = this.hashJSON[key].pk;
 				targetSel.add(tarOption);
 			}
 			else if (this.hashJSON[key].model=="editor.location" && tagType.selectedIndex == 1)
 			{
 				var tarOption = document.createElement("option");
 				tarOption.text = this.hashJSON[key].fields.name;
+                tarOption.value = this.hashJSON[key].pk;
 				targetSel.add(tarOption);
 			}
         }

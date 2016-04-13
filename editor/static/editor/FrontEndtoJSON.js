@@ -89,6 +89,8 @@ function toJSONClass() {
         //Input validation?
         //figure out how to get values from the map for the location editor
         //Use onreadystatechange
+		//have the add buttons deselect from associated table
+		//have add/edit clear the input fields
 
     //Scenario properties
     this.name = 'NULL';
@@ -155,6 +157,15 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.charHash[this.charKey] = this.hashKey;
 		
+		//reset the highlighting for the selection
+		var table = document.getElementById('charsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
@@ -167,8 +178,12 @@ function toJSONClass() {
         this.hashKey++;
         this.charKey++;
 
-
-
+		//clear the input fields
+		document.getElementById('charNameBox').value = "";
+		document.getElementById('keyCharBox').checked = "";
+		document.getElementById('charComment').value = "";
+		
+		
     }
 
     this.edit_char = function() {
@@ -271,6 +286,15 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.eventHash[this.eventKey] = this.hashKey;
 
+		//reset the highlighting for the selection
+		var table = document.getElementById('eventsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         //Update the events table with the new event object 
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
         eventNameCell = newEventElement.insertCell(0);
@@ -281,6 +305,13 @@ function toJSONClass() {
 		
         this.eventKey++;
         this.hashKey++;
+		
+		document.getElementById('eventNameBox').value = "";
+        document.getElementById('eventKeyBox').checked = "";
+        document.getElementById('eventSecretBox').checked = "";
+        document.getElementById('snippet').value = "";
+        document.getElementById('secretSnippet').value = "";
+        document.getElementById('turnTagSel').value = "0";
     }
 
     this.edit_event = function() {
@@ -340,6 +371,7 @@ function toJSONClass() {
             }
         }
 
+
         else{
             for(key in this.locHash){
                 if(this.hashJSON[this.locHash[key]].pk == selTarget.value){
@@ -377,6 +409,15 @@ function toJSONClass() {
         console.log(eventTagObj);
 
         //Update the table with the new tag element 
+		
+		var table = document.getElementById('eventsTagBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
         TagName = newEventTagElement.insertCell(0);
         TargetName = newEventTagElement.insertCell(1);
@@ -428,6 +469,14 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.locHash[this.locKey] = this.hashKey;
 
+		var table = document.getElementById('locsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
         nameCell = newLocElement.insertCell(0);
         xCell = newLocElement.insertCell(1);
@@ -442,7 +491,10 @@ function toJSONClass() {
         
         this.locKey++;
         this.hashKey++;
-
+		
+		document.getElementById('locNameInput').value = "";
+        document.getElementById('locXinput').value = "";
+        document.getElementById('locYinput').value = "";
     }
 
     this.edit_loc = function() {
@@ -630,7 +682,6 @@ function toJSONClass() {
 			{
 				var tarOption = document.createElement("option");
 				tarOption.text = this.hashJSON[key].fields.name;
-                //adding code here to store the pk value
                 tarOption.value = this.hashJSON[key].pk;
 				targetSel.add(tarOption);
 			}
@@ -661,7 +712,6 @@ var prevTag;
 function selChar(charObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(charObj.pk);
     var currRow = charObj.pk;
     var totalRows = document.getElementById('charsTableBody').rows.length -1;
     
@@ -690,7 +740,6 @@ function selChar(charObj) {
 function selLoc(locObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(locObj.pk);
     var currRow = locObj.pk;
     var totalRows = document.getElementById('locsTableBody').rows.length -1;
     
@@ -727,7 +776,7 @@ function selEvent(eventObj) {
     var currRow = eventObj.pk;
     var totalRows = document.getElementById('eventsTableBody').rows.length -1;
     
-	var eventTags = eventObj.fields.tags;
+	//var eventTags = eventObj.fields.tags;
 	
     //Set fields to those associated with the selected object	
     document.getElementById('eventNameBox').value = eventObj.fields.name;
@@ -740,11 +789,11 @@ function selEvent(eventObj) {
 	//had to use jquery here to get the bootstrap object instead of the html
 	//recolapse/reshow the secret snippet text area if the secret box is checked
 	if(!eventObj.description.secret){
-		$('#secretCollapse').collapse('hide')
+		$('#secretCollapse').collapse('hide');
 	}
 	
 	else{
-		$('#secretCollapse').collapse('show')
+		$('#secretCollapse').collapse('show');
 	}
     
     //Enable the edit/delete buttons and highlight the selected row
@@ -762,20 +811,27 @@ function selEvent(eventObj) {
 	//load the selected eventObj tags into the global tags array
 	this.currEdit.eventTags = eventObj.tags;
 	
-	document.getElementById('eventsTagBody').innerHTML = '';
+	//clear the current table
+	var table = document.getElementById('eventsTagBody');
+	for(i = table.rows.length-1; i > 0; i--)
+	{
+		document.getElementById('eventsTagBody').deleteRow(-1);
+	}
+	//table.innerHTML='';
 	
 	//load the tags for the event into the tags table
+	console.log(eventObj);
 	for(tag in eventObj.tags){
 		//Update the event tags table with the event tags objects
         var newEventElement = document.getElementById("eventsTagBody").insertRow(0);
         tagTypeCell = newEventElement.insertCell(0);
 		tagTargetCell = newEventElement.insertCell(1);
         if(tag.tagmodel == "editor.involved"){
-			tagTypeCell.innerHTML = "Character";
+			tagTypeCell.innerHTML = "Involved";
 			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.charHash[targetpk]].fields.name;
 		}
 		else if(tag.tagmodel == "editor.happenedat"){
-			tagTypeCell.innerHTML = "Location";
+			tagTypeCell.innerHTML = "Happend At";
 			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.locHash[targetpk]].fields.name;
 		}
 	}

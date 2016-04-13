@@ -192,27 +192,30 @@ submit_action
 @login_required
 def submit_action(request, pk):
     if request.method == "POST":
-        print()
         #route to player
         game = Game.objects.get(pk=pk)
         if request.user in game.get_users():
             player = game.players.get(user=request.user)
-            actionDict= json.loads(str(request.body)[2:-1])
+            actionDict = json.loads(str(request.body)[2:-1])
 
             #does player control?
             agent = Agent.objects.get(pk=actionDict["agent"])
             if agent in player.agent_set.all():
+                print("Agent %s not in player agent set"%(agent))
                 #what action
                 actionName = actionDict["action"]
                 action = Action(acttype=actionName)
                 if actionName not in ["recruit", "research"]:
                     #(what target)
                     targetKey = actionDict["target"]
-                    action = Action(acttype=actionName, acttarget=targetKey)
+                    action.acttype = actionName 
+                    action.acttarget = targetKey
                 action.save()
+                agent.action = action
+                agent.save()
+                print("logging action %s"%(action))
 
         context = {"response": request.body}
-        print()
     elif request.method == "GET":
         context = {"response": ""}
     return render(request, "game/play/submit_action.html", context)

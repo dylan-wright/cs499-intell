@@ -12,6 +12,15 @@
                     test_start_game
                 PlayerTestCase
                     test_create_player
+                ProcessActionTestCase
+                    test_tail_action
+                    test_investigate_action
+                    test_check_action
+                    test_misinf_action <- not implemented
+                    test_recruit_action
+                    test_apprehend_action
+                    test_research_action
+                    test_terminate_action
 
         TODO: add other model test cases
         TODO: add routing/templates/view test cases
@@ -143,6 +152,14 @@ class PlayerTestCase(TestCase):
 '''
 ProcessActionsTestCase
     used to test action processing
+        test_tail_action
+        test_investigate_action
+        test_check_action
+        test_misinf_action <- not implemented
+        test_recruit_action
+        test_apprehend_action
+        test_research_action
+        test_terminate_action
 '''
 class ProcessActionsTestCase(TestCase):
     def setUp(self):
@@ -192,6 +209,14 @@ class ProcessActionsTestCase(TestCase):
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
+        #create a character not in the scenario
+        michael = Character(name="Michael", key=False, notes="")
+        michael.save()
+        action.acttarget = michael.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
     def test_investigate_action(self):
         '''test investigate action'''
         game = Game.objects.all()[0]
@@ -205,6 +230,14 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+
+        #create a location not in the scenario
+        moon = Location(name="The Moon", x=0, y=0)
+        moon.save()
+        action.acttarget = moon.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
 
     def test_check_action(self):
         '''test check info action'''
@@ -220,9 +253,19 @@ class ProcessActionsTestCase(TestCase):
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
+        #create a description not in the scenario
+        jogging = Description(text="Someone went jogging", hidden=False,
+                              name="Jogging", key=False)
+        jogging.save()
+        action.acttarget = jogging.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
+
     def test_misinf_action(self):
         '''test create misinf action'''
         game = Game.objects.all()[0]
+        self.assertEqual(True, False)
 
     def test_recruit_action(self):
         '''test recruit agent action'''
@@ -235,6 +278,8 @@ class ProcessActionsTestCase(TestCase):
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
+        #recruit never fails
+
     def test_apprehend_action(self):
         '''test apprehend character action'''
         game = Game.objects.all()[0]
@@ -246,6 +291,14 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+        
+        #create a character not in the scenario
+        michael = Character(name="Michael", key=False, notes="")
+        michael.save()
+        action.acttarget = michael.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)
 
     def test_research_action(self):
         '''test research action'''
@@ -258,6 +311,8 @@ class ProcessActionsTestCase(TestCase):
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
 
+        #research will never fail
+
     def test_terminate__action(self):
         '''test terminate agent action'''
         game = Game.objects.all()[0]
@@ -269,3 +324,13 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
+
+        #create agent not belonging to a player
+        dummy_action = Action(acttype="research")
+        dummy_action.save()
+        agent = Agent(name="", action=dummy_action)
+        agent.save()
+        action.acttarget = agent.pk
+        action.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, False)

@@ -32,6 +32,7 @@ var Status = (function () {
     turn: null,
     points: null,
     messages: null,
+    nextturn: null,
   };
 
   
@@ -81,7 +82,16 @@ var Status = (function () {
     settings.points = statusJSON.points;
     settings.timer = statusJSON.timer;
     settings.messages = JSON.parse(statusJSON.messages);
+    settings.nextturn = JSON.parse(statusJSON.next_turn_at);
   };
+
+  /*  update
+   *    interval function for displaying new info/checking if
+   *    server may have new info
+   */
+  function update () {
+    settings.timerDisplay.innerHTML = settings.nextturn - Math.round(Date.now()/1000);
+  }
   
   return {
     /*  init
@@ -93,6 +103,7 @@ var Status = (function () {
       //connect events
       bindUIActions();
       updateStatus();
+      window.setInterval(update, 1000);
     }
   };
 })();

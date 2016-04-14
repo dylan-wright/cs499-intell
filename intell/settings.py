@@ -133,4 +133,3 @@ MEDIA_ROOT = 'files/'
 CRONJOBS = [
     ('* * * * *', 'game.cron.check_games'),
 ]
-

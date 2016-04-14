@@ -265,6 +265,7 @@ def get_status(request, pk):
         data = {"points": points, 
                 "turn": turn, 
                 "timer": game.time_till(),
+                "next_turn_at": int(game.next_turn.timestamp()),
                 "messages": serializers.serialize("json", messages)}
         return HttpResponse(json.dumps(data), content_type="application_json")
 

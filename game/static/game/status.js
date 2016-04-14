@@ -82,7 +82,7 @@ var Status = (function () {
     settings.points = statusJSON.points;
     settings.timer = statusJSON.timer;
     settings.messages = JSON.parse(statusJSON.messages);
-    settings.nextturn = JSON.parse(statusJSON.next_turn_at);
+    settings.nextturn = statusJSON.next_turn_at;
   };
 
   /*  update
@@ -90,7 +90,16 @@ var Status = (function () {
    *    server may have new info
    */
   function update () {
-    settings.timerDisplay.innerHTML = settings.nextturn - Math.round(Date.now()/1000);
+    var time_till = settings.nextturn - Math.round(Date.now()/1000);
+    if (time_till < 1) {
+      settings.timerDisplay.innerHTML = 0;
+      //TODO: make sure this is sufficient for catching updates (query till
+      //        one appears?
+      updateStatus();
+      Snippets.update();
+    } else {
+      settings.timerDisplay.innerHTML = time_till;
+    }
   }
   
   return {

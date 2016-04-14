@@ -118,6 +118,10 @@ var Snippets = (function () {
       clearSnippets();
       getSnippets();
     },
+    update: function () {
+      clearSnippets();
+      getSnippets();
+    },
 
     characters: getCharacters(),
     locations: getLocations(),

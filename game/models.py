@@ -48,6 +48,14 @@ class Player(models.Model):
     def get_knowledge(self):
         return Knowledge.objects.filter(player=self).all()
 
+    '''
+    get_messages
+        returns QuerySet of all Message objects associated with
+        the player
+    '''
+    def get_messages(self):
+        return Message.objects.filter(player=self).all()
+
 '''
 Game
     used to represent a particular game. 
@@ -285,6 +293,7 @@ class Game(models.Model):
                                           event=involved.event)
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=involved.event)
+                    print("created knowledge")
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
                             message = Message()

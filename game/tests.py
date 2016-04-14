@@ -235,6 +235,59 @@ class ProcessActionsTestCase(TestCase):
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
 
+    def test_tail_succeed(self):
+        '''test a tail action that finds a hidden description'''
+        #add target event/descriptions/character
+        d_public = Description(name="public description",
+                               text="Anyone can see this",
+                               key=True,
+                               hidden=False)
+        d_public.save()
+        d_private = Description(name="private description",
+                                text="Must tail character/investigate location",
+                                key=True,
+                                hidden=False)
+        d_private.save()
+
+        event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)
+        event.save()
+
+        db_public = DescribedBy(event=event, description=d_public)
+        db_public.save()
+        db_private = DescribedBy(event=event, description=d_private)
+        db_public.save()
+
+        character = Character(name="Follow Me", key=True, notes="")
+        character.save()
+
+        involved = Involved(event=event, character=character)
+        involved.save()
+
+        #try to investigate
+        game = Game.objects.all()[0]
+        action = Action(acttype="tail", acttarget=character.pk)
+        action.save()
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        
+        #sanity check (other test should cover this)
+        self.assertEqual(game.is_target_valid(action), True)
+
+        #check that knowledge and message objects created
+        pre_knowledge = len(player.get_knowledge())
+        pre_messages = len(player.get_messages())
+
+        game.perform_action(action)
+        
+        player.refresh_from_db()
+
+        post_knowledge = len(player.get_knowledge())
+        post_messages = len(player.get_messages())
+
+        self.assertEqual(pre_knowledge+1, post_knowledge)
+        self.assertEqual(pre_messages+1, post_messages+1)
 
     def test_investigate_action(self):
         '''test investigate action'''

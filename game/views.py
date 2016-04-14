@@ -348,7 +348,22 @@ def get_agents(request, pk):
     if request.user in game.get_users():
         data = []
         for player in game.players.all():
-            data += player.agent_set.all()
+            if player.user != request.user:
+                data += player.agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
 
+'''
+get_own_agents
+    used by front end to get agent data for
+    one player
+
+    url         /game/play/pk/get_own_agents/
+'''
+@login_required
+def get_own_agents(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        data = game.players.get(user=request.user).agent_set.all()
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")

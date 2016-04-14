@@ -348,9 +348,32 @@ var Actions = (function () {
     return agents;
   }
 
+  function getOwnAgents () {
+    var xhttp = new XMLHttpRequest();
+    //TODO make async true
+    xhttp.open("GET", "get_own_agents/", false);
+    xhttp.send();
+    response = xhttp.responseText;
+    agents = JSON.parse(response);
+    return agents;
+  }
+
   function clearSelect (select) {
     while (select.length != 0) {
       select.remove(0);
+    }
+  }
+
+  function reloadAgentList () {
+    clearSelect (settings.agentSelect);
+    var agents = getOwnAgents();
+    var i;
+    var option;
+    for (i = 0; i < agents.length; i+=1) {
+      option = document.createElement("option");
+      option.value = agents[i].pk;
+      option.innerHTML = agents[i].fields.name;
+      settings.agentSelect.add(option);
     }
   }
   
@@ -363,6 +386,10 @@ var Actions = (function () {
     init: function () {
       //connect buttons to events
       bindUIActions();
+    },
+
+    update: function () {
+      reloadAgentList();
     }
   };
 })();

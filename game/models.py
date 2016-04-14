@@ -17,6 +17,7 @@ from editor.models import *
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
+from random import random
 
 # Create your models here.
 '''
@@ -98,7 +99,9 @@ class Game(models.Model):
     ACTION_COSTS = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
                     "recruit": 3, "apprehend": 5, "terminate": 5, 
                     "research": -2}
-
+    ACTION_SUCC_RATE = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
+                        "recruit": 1, "apprehend": .5, "terminate": .5,
+                        "research": 1}
 
     def __str__(self):
         return "Game using scenario %s"%(self.scenario.name)
@@ -285,6 +288,9 @@ class Game(models.Model):
     def perform_action(self, action):
         player = action.agent_set.all()[0].player
 
+        message = Message()
+        message.player = player
+        message.turn = self.turn
         if action.acttype == "tail":
             involveds = Involved.objects.filter(character__id=action.acttarget)
             for involved in involveds.all():
@@ -294,9 +300,6 @@ class Game(models.Model):
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=involved.event)
                     for describedby in describedbys.all():
-                        message = Message()
-                        message.player = player
-                        message.turn=self.turn
                         if describedby.description.hidden:
                             #TODO fix this
                             message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
@@ -313,9 +316,6 @@ class Game(models.Model):
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=happenedat.event)
                     for describedby in describedbys.all():
-                        message = Message()
-                        message.player = player
-                        message.turn = self.turn
                         if describedby.description.hidden:
                             #TODO fix this
                             message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
@@ -330,12 +330,11 @@ class Game(models.Model):
                                       event=describedby.event)
                 knowledge.save()
                 if describedby.event.misinf:
-                    message = Message()
-                    message.player = player
-                    message.turn = self.turn
                     #TODO: fix this
                     message.text = "The informationt that '%s' has been proven to be false"%(Description.objects.get(pk=action.acttarget))
-                    message.save()
+                else:
+                    message.text = "The infomration that '%s' has been provent to be true"%(Description.objects.get(pk=action.acttarget))
+                message.save()
         elif action.acttype == "misinf":
             pass
         elif action.acttype == "recruit":
@@ -345,13 +344,28 @@ class Game(models.Model):
             #       (should just be recorded as an invalid action by
             #        game.Game.start_next_turn)
             player.add_agent()
+            message.text = "Agent recruited"
+            message.save()
         elif action.acttype == "apprehend":
-            pass
+            character = Character.objects.get(pk=action.acttarget)
+            if (random() < self.ACTION_SUCC_RATE[action.acttype]):
+                if character.key:
+                    #TODO better endgame handling
+                    message.text = "%s captured. You win!"%(character)
+                else:
+                    message.text = "%s captured. They are not part of the plot"%(character)
+            else:
+                message.text = "%s escaped capture attempt"%(character)
+            message.save()
         elif action.acttype == "research":
             #only need to sub (negative) action cost from player
             pass
         elif action.acttype == "terminate":
-            pass
+            if (random() < self.ACTION_SUCC_RATE[action.acttype]):
+                message.text = "Opposing agent terminated"
+            else:
+                message.text = "Opposing agent not terminated"
+            message.save()
         player.points -= self.ACTION_COSTS[action.acttype]
         player.save()
 

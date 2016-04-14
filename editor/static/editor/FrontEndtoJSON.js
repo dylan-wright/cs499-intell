@@ -111,6 +111,9 @@ function toJSONClass() {
     this.happatKey = 0;
     this.involvKey = 0;
     
+    //Used for the event listeners 
+    this.currSelObj = {};
+
     //Collection of event tags that will be stored in an event object
     this.eventTags = [];
 
@@ -173,6 +176,7 @@ function toJSONClass() {
 
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
+        //newCharElement.addEventListener("click", function(){selChar(this.hashJSON[this.hashKey]);});
         		
         //incrememnt the keys associated with character object and hash location. 
         this.hashKey++;
@@ -182,8 +186,7 @@ function toJSONClass() {
 		document.getElementById('charNameBox').value = "";
 		document.getElementById('keyCharBox').checked = "";
 		document.getElementById('charComment').value = "";
-		
-		
+
     }
 
     this.edit_char = function() {
@@ -191,29 +194,38 @@ function toJSONClass() {
         var charName = document.getElementById('charNameBox').value;
         var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
-        
+    
 
-//TODO: Need to change the charKey so that it matches with the desired char
-//maybe using getElementById(table element).selected()["key"] or something
+        //Use key value to locate the object in the hashmap and then set  
+        //it to a new object using the hashmap
+        this.hashJSON[this.charHash[window.currSelObj.pk]] = {
+            model:"editor.character",
+            pk:window.currSelObj.pk,
+            fields:{
+                name: charName,
+                key: isKey,
+                notes: charNotes
+            }
+        };
 
-        //check that the entry already exists
-        if(this.hashKey in this.hashJSON){
-                //Use key value to locate the object in the hashmap and then set  
-                //it to a new object using the hashmap
-                this.hashJSON[this.hashKey] = {
-                    model:"editor.character",
-                    key:this.charKey,
-                    fields:{
-                        name: charName,
-                        key: isKey,
-                        notes: charNotes
-                    }
-                };
+        var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk]];
+        console.log(this.hashJSON[this.charHash[window.currSelObj.pk]]);
 
-            //also need to edit that specified value in the table 
-            var editCharElement = document.getElementById("charsTableBody").item(charKey);
-            editCharElement.innerHTML = charName;
-        }
+        //also need to edit that specified value in the table
+        //Trying to do this by deleting the old row and inserting a new one
+        var editCharElement = document.getElementById("charsTableBody");
+
+        //Find the position where things will be changed
+        var currPos = (editCharElement.rows.length-1) - window.currSelObj.pk;
+
+
+        editCharElement.deleteRow(currPos);
+        var newRow = editCharElement.insertRow(currPos);
+        cell = newRow.insertCell(0);
+        cell.innerHTML = charName;
+
+        //finally, place an event listener on the newly created row
+        newRow.addEventListener("click", function(){selChar(editCharObj);});
 
 
     }
@@ -450,6 +462,9 @@ function toJSONClass() {
         var locName = document.getElementById('locNameInput').value;
         var locCoordX = document.getElementById('locXinput').value;
         var locCoordY = document.getElementById('locYinput').value;
+
+
+        console.log(currSelObj);
 
         //Create a location object to match with the fixture.json format
         var locObj = {
@@ -713,12 +728,13 @@ function selChar(charObj) {
     var currRow = charObj.pk;
     var totalRows = document.getElementById('charsTableBody').rows.length -1;
     
+    
 
     //Set fields to those associated with the selected object
     document.getElementById('charNameBox').value = charObj.fields.name;
     document.getElementById('keyCharBox').checked = charObj.fields.key;
     document.getElementById('charComment').value = charObj.fields.notes;
-    
+
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('charEditBtn').disabled = false;
     document.getElementById('charDelBtn').disabled = false;
@@ -730,6 +746,11 @@ function selChar(charObj) {
         document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';
     }
     this.prevChar = currRow;
+
+    //set the current object to the currently selected one
+    window.currSelObj = charObj;
+    //console.log(window.currSelObj.pk);
+
 }
 
 /*

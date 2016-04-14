@@ -302,7 +302,7 @@ class Game(models.Model):
                             message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
                                                                             describedby.description)
                         else:
-                            message.text = "Tailing %s discovered nothing"
+                            message.text = "Tailing %s discovered nothing"%(Character.objects.get(pk=action.acttarget))
                         message.save()
         elif action.acttype == "investigate":
             happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
@@ -321,7 +321,7 @@ class Game(models.Model):
                             message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
                                                                                       describedby.description)
                         else:
-                            message.text = "Investigation into %s discovered nothing"
+                            message.text = "Investigation into %s discovered nothing"%(Location.objects.get(pk=action.acttarget))
                         message.save()
         elif action.acttype == "check":
             describedby = DescribedBy.objects.get(description__id=action.acttarget)

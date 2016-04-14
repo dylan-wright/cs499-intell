@@ -237,7 +237,7 @@ class Game(models.Model):
         agents_to_proc = []
         for player in self.players.all():
             #add agents to list
-            agents_to_proc += Agent.objects.filter(player=player)
+            agents_to_proc += Agent.objects.filter(player=player, alive=True)
 
         #TODO: decide on order of agents?
         for agent in agents_to_proc:
@@ -363,6 +363,8 @@ class Game(models.Model):
         elif action.acttype == "terminate":
             if (random() < self.ACTION_SUCC_RATE[action.acttype]):
                 message.text = "Opposing agent terminated"
+                agent = Agent.objects.get(pk=action.acttype)
+                agent.alive = False
             else:
                 message.text = "Opposing agent not terminated"
             message.save()

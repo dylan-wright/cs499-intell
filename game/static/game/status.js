@@ -94,14 +94,19 @@ var Status = (function () {
     //TODO resolve issue itself
     var time_till = settings.nextturn - Math.round(Date.now()/1000) + 60;
     if (time_till < 1) {
-      settings.timerDisplay.innerHTML = 0;
+      settings.timerDisplay.innerHTML = "00:00";
       //TODO: make sure this is sufficient for catching updates (query till
       //        one appears?
       updateStatus();
       Snippets.update();
       Actions.update()
     } else {
-      settings.timerDisplay.innerHTML = time_till;
+      var s = time_till % 60;
+      var m = Math.trunc(time_till/60) % 60;
+      var h = Math.trunc(time_till/3600) % 60;
+      settings.timerDisplay.innerHTML = (h < 10 ? "0"+h : h)+" : "+
+                                        (m < 10 ? "0"+m : m)+" : "+
+                                        (s < 10 ? "0"+s : s);
     }
   }
   

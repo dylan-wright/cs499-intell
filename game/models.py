@@ -294,14 +294,16 @@ class Game(models.Model):
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=involved.event)
                     for describedby in describedbys.all():
+                        message = Message()
+                        message.player = player
+                        message.turn=self.turn
                         if describedby.description.hidden:
-                            message = Message()
-                            message.player = player
-                            message.turn=self.turn
                             #TODO fix this
                             message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
                                                                             describedby.description)
-                            message.save()
+                        else:
+                            message.text = "Tailing %s discovered nothing"
+                        message.save()
         elif action.acttype == "investigate":
             happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
             for happenedat in happenedats:
@@ -311,14 +313,16 @@ class Game(models.Model):
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=happenedat.event)
                     for describedby in describedbys.all():
+                        message = Message()
+                        message.player = player
+                        message.turn = self.turn
                         if describedby.description.hidden:
-                            message = Message()
-                            message.player = player
-                            message.turn = self.turn
                             #TODO fix this
                             message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
                                                                                       describedby.description)
-                            message.save()
+                        else:
+                            message.text = "Investigation into %s discovered nothing"
+                        message.save()
         elif action.acttype == "check":
             describedby = DescribedBy.objects.get(description__id=action.acttarget)
             if describedby.event.turn < self.turn:

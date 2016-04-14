@@ -246,7 +246,7 @@ class ProcessActionsTestCase(TestCase):
         d_private = Description(name="private description",
                                 text="Must tail character/investigate location",
                                 key=True,
-                                hidden=False)
+                                hidden=True)
         d_private.save()
 
         event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)
@@ -340,7 +340,7 @@ class ProcessActionsTestCase(TestCase):
         d_private = Description(name="private description",
                                 text="Must tail character/investigate location",
                                 key=True,
-                                hidden=False)
+                                hidden=True)
         d_private.save()
 
         event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)

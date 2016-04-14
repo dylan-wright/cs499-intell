@@ -293,7 +293,6 @@ class Game(models.Model):
                                           event=involved.event)
                     knowledge.save()
                     describedbys = DescribedBy.objects.filter(event=involved.event)
-                    print("created knowledge")
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
                             message = Message()
@@ -327,7 +326,7 @@ class Game(models.Model):
                                       event=describedby.event)
                 knowledge.save()
                 if describedby.event.misinf:
-                    messsage = Message()
+                    message = Message()
                     message.player = player
                     message.turn = self.turn
                     #TODO: fix this

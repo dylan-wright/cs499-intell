@@ -287,7 +287,7 @@ class ProcessActionsTestCase(TestCase):
         post_messages = len(player.get_messages())
 
         self.assertEqual(pre_knowledge+1, post_knowledge)
-        self.assertEqual(pre_messages+1, post_messages+1)
+        self.assertEqual(pre_messages+1, post_messages)
 
     def test_investigate_action(self):
         '''test investigate action'''
@@ -328,6 +328,60 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
+    
+    def test_investigate_succeed(self):
+        '''test an investigate action that finds a hidden description'''
+        #add target event/descriptions/character
+        d_public = Description(name="public description",
+                               text="Anyone can see this",
+                               key=True,
+                               hidden=False)
+        d_public.save()
+        d_private = Description(name="private description",
+                                text="Must tail character/investigate location",
+                                key=True,
+                                hidden=False)
+        d_private.save()
+
+        event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)
+        event.save()
+
+        db_public = DescribedBy(event=event, description=d_public)
+        db_public.save()
+        db_private = DescribedBy(event=event, description=d_private)
+        db_public.save()
+
+        location = Location(name="Look here", x=0,y=0)
+        location.save()
+
+        happenedat = HappenedAt(event=event, location=location)
+        happenedat.save()
+
+        #try to investigate
+        game = Game.objects.all()[0]
+        action = Action(acttype="investigate", acttarget=location.pk)
+        action.save()
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        
+        #sanity check (other test should cover this)
+        self.assertEqual(game.is_target_valid(action), True)
+
+        #check that knowledge and message objects created
+        pre_knowledge = len(player.get_knowledge())
+        pre_messages = len(player.get_messages())
+
+        game.perform_action(action)
+        
+        player.refresh_from_db()
+
+        post_knowledge = len(player.get_knowledge())
+        post_messages = len(player.get_messages())
+
+        self.assertEqual(pre_knowledge+1, post_knowledge)
+        self.assertEqual(pre_messages+1, post_messages)
 
     def test_check_action(self):
         '''test check info action'''
@@ -359,6 +413,54 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
+
+    def test_check_succeed(self):
+        '''test check action finds bogus info'''
+        description = Description(name="bad info",
+                                  key=False,
+                                  hidden=False,
+                                  text="This is bs")
+        description.save()
+
+        character = Character.objects.get(name="Ted Kaczynski")
+        location = Location.objects.get(name="Seattle")
+
+        event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=True)
+        event.save()
+
+        describedby = DescribedBy(event=event, description=description)
+        happenedat = HappenedAt(event=event, location=location)
+        involved = Involved(event=event, character=character)
+        describedby.save()
+        happenedat.save()
+        involved.save()
+        
+        #try to check
+        game = Game.objects.all()[0]
+        action = Action(acttype="check", acttarget=description.pk)
+        action.save()
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
+        agent.action = action
+        agent.save()
+        
+        #sanity check (other test should cover this)
+        self.assertEqual(game.is_target_valid(action), True)
+
+        #check that knowledge and message objects created
+        pre_knowledge = len(player.get_knowledge())
+        pre_messages = len(player.get_messages())
+
+        game.perform_action(action)
+        
+        player.refresh_from_db()
+
+        post_knowledge = len(player.get_knowledge())
+        post_messages = len(player.get_messages())
+
+        self.assertEqual(pre_knowledge+1, post_knowledge)
+        self.assertEqual(pre_messages+1, post_messages)
+
 
     def test_misinf_action(self):
         '''test create misinf action'''

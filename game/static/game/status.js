@@ -92,9 +92,11 @@ var Status = (function () {
   function update () {
     //60 second padding for timing issue
     //TODO resolve issue itself
-    var time_till = settings.nextturn - Math.round(Date.now()/1000) + 60;
+    console.log("next "+settings.nextturn);
+    console.log("now  "+Math.round(Date.now()/1000));
+    var time_till = settings.nextturn - Math.round(Date.now()/1000);
     if (time_till < 1) {
-      settings.timerDisplay.innerHTML = "00:00";
+      settings.timerDisplay.innerHTML = "00 : 00 : 00";
       //TODO: make sure this is sufficient for catching updates (query till
       //        one appears?
       updateStatus();

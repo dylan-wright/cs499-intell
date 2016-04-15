@@ -18,6 +18,7 @@ from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
 from random import random
+import json
 
 # Create your models here.
 '''
@@ -96,10 +97,10 @@ class Game(models.Model):
     
     #TODO: make these configured in game create?
     #       would require more fields default values are same
-    ACTION_COSTS = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
+    ACTION_COSTS = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
                     "recruit": 3, "apprehend": 5, "terminate": 5, 
                     "research": -2}
-    ACTION_SUCC_RATE = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
+    ACTION_SUCC_RATE = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
                         "recruit": 1, "apprehend": .5, "terminate": .5,
                         "research": 1}
 
@@ -136,11 +137,9 @@ class Game(models.Model):
         now = make_aware(datetime.now())
         if self.next_turn != None:
             #otherwise get large ugly number of seconds
-            if now > self.next_turn:
-                return 0
-            else:
-                till = self.next_turn - now
-                return till.seconds
+            till = self.next_turn - now
+            print(till)
+            return till.seconds
         
     
     '''
@@ -163,7 +162,7 @@ class Game(models.Model):
             target_table = {"tail": Character,
                             "investigate": Location,
                             "check": Description,
-                            "misinf": None,
+                            "misInfo": None,
                             "recruit": None,
                             "apprehend": Character,
                             "research": None,
@@ -268,7 +267,11 @@ class Game(models.Model):
                 message.save()
 
         #next turn time
-        self.next_turn += self.turn_length
+        print()
+        print(self.next_turn)
+        self.next_turn = datetime.now() + self.turn_length
+        print(self.next_turn)
+        print()
 
         #store in db
         self.save()
@@ -283,7 +286,7 @@ class Game(models.Model):
         If the action is valid (assumed) then the action will 
         succeed (oh hello hubris)
 
-        TODO: tail, investigate, check, misinf, apprehend, terminate
+        TODO: tail, investigate, checInfomisinf, apprehend, terminate
     '''
     def perform_action(self, action):
         player = action.agent_set.all()[0].player
@@ -335,8 +338,30 @@ class Game(models.Model):
                 else:
                     message.text = "The infomration that '%s' has been provent to be true"%(Description.objects.get(pk=action.acttarget))
                 message.save()
-        elif action.acttype == "misinf":
-            pass
+        elif action.acttype == "misInfo":
+            target_dict = json.loads(action.actdict)
+            character_id = target_dict["character"]
+            location_id = target_dict["location"]
+            description_text = target_dict["description"]
+            
+            event = Event(turn=self.turn, misinf=True)
+            event.save()
+
+            description = Description(text=description_text,
+                                      key=False,
+                                      hidden=False)
+            description.save()
+
+            happenedat = HappenedAt(event=event,
+                                    location__id=location_id)
+            happenedat.save()
+            involved = Involved(event=event,
+                                character__id=character_id)
+            involved.save()
+            describedby = DescribedBy(event=event,
+                                      description=description)
+            describedby.save()
+            message.text = "Misinformation that '%s' succesfully diseminated"%(description_text)
         elif action.acttype == "recruit":
             #player gets another agent
             #TODO: test to ensure new agents cant act
@@ -413,9 +438,9 @@ Action
 class Action(models.Model):
     acttype = models.CharField(max_length=64) #this is obviously not right
     acttarget = models.IntegerField(default=-1)
+    #double text field length for safety
+    actdict = models.CharField(max_length=1024, null=True) 
 
-
-    
     def __str__(self):
         return "Action %s"%(self.acttype)
 '''

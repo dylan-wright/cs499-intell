@@ -224,7 +224,7 @@ var Actions = (function () {
   function tail () {
     if (verifyAgentSelected()) {
       //load charcters into select
-      var characters = Snippets.characters;
+      var characters = Snippets.getCharacters();
       var option;
       var i;
 
@@ -241,7 +241,7 @@ var Actions = (function () {
   function investigate () {
     if (verifyAgentSelected()) {
       //load locations into select
-      var locations = Snippets.locations;
+      var locations = Snippets.getLocations();
       var option;
       var i;
 
@@ -258,12 +258,12 @@ var Actions = (function () {
   function check () {
     if (verifyAgentSelected()) {
       //load descriptions into select
-      var descriptions = Snippets.descriptions;
+      var descriptions = Snippets.getDescriptions();
       var option;
       var i;
 
       clearSelect(settings.checkDescSel);
-      for (i = 0; i < descriptions.length; i+=1) {
+      for (i = 1; i < descriptions.length; i+=2) {
         option = document.createElement("option");
         option.text = descriptions[i].fields.text;
         option.value = descriptions[i].pk;
@@ -274,8 +274,8 @@ var Actions = (function () {
   };
   function misinf () {
     if (verifyAgentSelected()) {
-      var characters = Snippets.characters;
-      var locations = Snippets.locations;
+      var characters = Snippets.getCharacters();
+      var locations = Snippets.getLocations();
       var option;
       var i;
 
@@ -304,7 +304,7 @@ var Actions = (function () {
   };
   function apprehend () {
     if (verifyAgentSelected()) {
-      var characters = Snippets.characters;
+      var characters = Snippets.getCharacters();
       var option;
       var i;
       clearSelect(settings.apprehendCharSel);

@@ -201,11 +201,14 @@ def submit_action(request, pk):
             #does player control?
             agent = Agent.objects.get(pk=actionDict["agent"])
             if agent in player.agent_set.all():
-                print("Agent %s not in player agent set"%(agent))
                 #what action
                 actionName = actionDict["action"]
                 action = Action(acttype=actionName)
-                if actionName not in ["recruit", "research"]:
+                if actionName == "misInfo":
+                    target_dict = actionDict["target"]
+                    action.acttype = actionName
+                    action.actdict = json.dumps(target_dict)
+                elif actionName not in ["recruit", "research"]:
                     #(what target)
                     targetKey = actionDict["target"]
                     action.acttype = actionName 
@@ -267,6 +270,7 @@ def get_status(request, pk):
                 "timer": game.time_till(),
                 "next_turn_at": int(game.next_turn.timestamp()),
                 "messages": serializers.serialize("json", messages)}
+        print(game.time_till())
         return HttpResponse(json.dumps(data), content_type="application_json")
 
 '''

@@ -267,11 +267,7 @@ class Game(models.Model):
                 message.save()
 
         #next turn time
-        print()
-        print(self.next_turn)
-        self.next_turn = datetime.now() + self.turn_length
-        print(self.next_turn)
-        print()
+        self.next_turn = make_aware(datetime.now() + self.turn_length)
 
         #store in db
         self.save()

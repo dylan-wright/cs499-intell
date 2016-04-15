@@ -68,29 +68,12 @@ def games(request):
     if request.user.is_authenticated():
         context["loggedin"] = True
         context["user"] = request.user
+        context["form"] = GameForm()
     else:
         context["loggedin"] = False
 
     return render(request, "game/games.html", context)
 
-def games2(request):
-    #get current and pending games (started - True/False)
-    current = Game.objects.filter(started=True)
-    pending = Game.objects.filter(started=False)
-
-    #cotext for authenticated or not
-    context = {"current": current,
-               "pending": pending,}
-
-    #logged in users get additional info
-    #   join/play
-    if request.user.is_authenticated():
-        context["loggedin"] = True
-        context["user"] = request.user
-    else:
-        context["loggedin"] = False
-
-    return render(request, "game/games2.html", context)
 '''
 game_detail
     detail of a game id'd by primary key
@@ -288,7 +271,6 @@ def get_status(request, pk):
                 "timer": game.time_till(),
                 "next_turn_at": int(game.next_turn.timestamp()),
                 "messages": serializers.serialize("json", messages)}
-        print(game.time_till())
         return HttpResponse(json.dumps(data), content_type="application_json")
 
 '''

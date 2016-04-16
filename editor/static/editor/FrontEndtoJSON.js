@@ -100,16 +100,16 @@ function toJSONClass() {
 
     //Unique keys for each of the tabs to uniquely identify objects in the 
     //hashJSON structure
-    this.hashKey = 1;
-    this.charKey = 1;
-    this.eventKey = 1;
-    this.locKey = 1;
+    this.hashKey = 0;
+    this.charKey = 0;
+    this.eventKey = 0;
+    this.locKey = 0;
 
     //need event related keys as well...
-    this.descKey = 1;
-    this.descbyKey = 1;
-    this.happatKey = 1;
-    this.involvKey = 1;
+    this.descKey = 0;
+    this.descbyKey = 0;
+    this.happatKey = 0;
+    this.involvKey = 0;
     
     //Used for the event listeners 
     this.currSelObj = {};
@@ -198,7 +198,7 @@ function toJSONClass() {
 
         //Use key value to locate the object in the hashmap and then set  
         //it to a new object using the hashmap
-        this.hashJSON[this.charHash[window.currSelObj.pk-1]] = {
+        this.hashJSON[this.charHash[window.currSelObj.pk]] = {
             model:"editor.character",
             pk:window.currSelObj.pk,
             fields:{
@@ -208,15 +208,15 @@ function toJSONClass() {
             }
         };
 
-        var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk-1]];
-        console.log(this.hashJSON[this.charHash[window.currSelObj.pk-1]]);
+        var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk]];
+        console.log(this.hashJSON[this.charHash[window.currSelObj.pk]]);
 
         //also need to edit that specified value in the table
         //Trying to do this by deleting the old row and inserting a new one
         var editCharElement = document.getElementById("charsTableBody");
 
         //Find the position where things will be changed
-        var currPos = (editCharElement.rows.length-1) - window.currSelObj.pk-1;
+        var currPos = (editCharElement.rows.length-1) - window.currSelObj.pk;
 
 
         editCharElement.deleteRow(currPos);
@@ -236,29 +236,28 @@ function toJSONClass() {
         //Need to account for multiple variables when deleting a character
         //First need to update the charKey and charHash attributes 
         this.charKey--;
+        this.hashKey--;
 
-/*
-        for(var ctr = 0; ctr <= this.charKey; ctr++){
-        
-            
-            if(ctr == this.charHash[window.currSelObj.pk]){
-                continue;
+        //Store the pivot location so that the keys can be updated
+        var pivotLoc = window.currSelObj.pk;
+
+        //For each element in the character hash, check if the location is
+        //greater than the pivot
+        for(var iCharHash in this.charHash){
+            if(iCharHash > pivotLoc && iCharHash != pivotLoc){
+                //Need to reset 
+                //this.charHash[iCharObj.pk] = this.charHash[iCharObj.pk+1];
+                //decrement the pk of the object after the deleted value 
+                this.hashJSON[this.charHash[iCharHash]].pk--;
             }
-            else if(ctr > this.charHash[window.currSelOb.pk]){
-                
-            }
-        
         }
-*/
 
         //delete the actual object using the splice method
-        console.log('Before object Deletion: ', this.hashJSON);
-        this.hashJSON.splice(this.charHash[window.currSelObj.pk-1], 1);
-        console.log('After object Deletion: ', this.hashJSON);
+        this.hashJSON.splice(this.charHash[window.currSelObj.pk], 1);
 
         //remove the element the charHash as well to lineup with hashJSON
         //console.log('Before charHash deletion', this.charHash);
-        this.charHash.splice(window.currSelObj.pk-1, 1);
+        this.charHash.splice(window.currSelObj.pk, 1);
         //console.log('After charHash deletion', this.charHash);
         //Do we want to reacclimate the values so that it always starts at 0?
         //If so, TODO: Use algorithim to decrement each to the pk elements 
@@ -266,7 +265,7 @@ function toJSONClass() {
 
         //finally delete the table element
         var delCharElement = document.getElementById("charsTableBody");
-        var currPos = (delCharElement.rows.length-1) - window.currSelObj.pk-1;
+        var currPos = (delCharElement.rows.length-1) - window.currSelObj.pk;
         delCharElement.deleteRow(currPos);
         //TODO: Fix some stuff that changes in the selChar event handler with
         //prevChar indexing
@@ -738,16 +737,15 @@ function toJSONClass() {
         }
     }   
 
-//possibly issue here?
 }
 
 //instantiate the toJSONClass to utilize the needed methods
 var currEdit = new toJSONClass();
 
-var prevChar;
-var prevLoc;
-var prevEvent;
-var prevTag;
+var prevChar =0;
+var prevLoc =0;
+var prevEvent=0;
+var prevTag=0;
 
 /*
     Used to handle highlighting and row selection for the character table
@@ -755,9 +753,12 @@ var prevTag;
 function selChar(charObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    var currRow = charObj.pk-1;
-    var totalRows = document.getElementById('charsTableBody').rows.length -1;
-    
+    var currRow = charObj.pk;
+    var totalRows = document.getElementById('charsTableBody').rows.length-1;
+    //Need to account for case in which the preevious character is deleted
+    if(prevChar>totalRows){
+        prevChar = totalRows;
+    }
     
 
     //Set fields to those associated with the selected object
@@ -789,8 +790,8 @@ function selChar(charObj) {
 function selLoc(locObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    var currRow = locObj.pk-1;
-    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+    var currRow = locObj.pk;
+    var totalRows = document.getElementById('locsTableBody').rows.length;
     
 
     //Set fields to those associated with the selected object
@@ -822,7 +823,7 @@ function selEvent(eventObj) {
 
     //Store current/total rows in order to determine which row is hilighted
     console.log(eventObj.pk);
-    var currRow = eventObj.pk-1;
+    var currRow = eventObj.pk;
     var totalRows = document.getElementById('eventsTableBody').rows.length -1;
     
 	//var eventTags = eventObj.fields.tags;
@@ -895,7 +896,7 @@ function selTag(tagObj) {
 
     //Store current/total rows in order to determine which row is hilighted
     console.log(locObj.pk);
-    var currRow = locObj.pk-1;
+    var currRow = locObj.pk;
     var totalRows = document.getElementById('locsTableBody').rows.length -1;
     
 

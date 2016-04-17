@@ -84,7 +84,6 @@ function toJSONClass() {
 
 
     //TODO:
-        //Get add Event working
         //Get the edit/delete buttons working  
         //Input validation?
         //figure out how to get values from the map for the location editor
@@ -209,7 +208,7 @@ function toJSONClass() {
         };
 
         var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk]];
-        console.log(this.hashJSON[this.charHash[window.currSelObj.pk]]);
+        //console.log(this.hashJSON[this.charHash[window.currSelObj.pk]]);
 
         //also need to edit that specified value in the table
         //Trying to do this by deleting the old row and inserting a new one
@@ -493,8 +492,6 @@ function toJSONClass() {
         var locCoordY = document.getElementById('locYinput').value;
 
 
-        console.log(currSelObj);
-
         //Create a location object to match with the fixture.json format
         var locObj = {
             model:"editor.location",
@@ -541,35 +538,76 @@ function toJSONClass() {
 
     this.edit_loc = function() {
        
-        var locName = "test";
-        var locCoordX = 0;
-        var locCoordY = 0;
+        var locName = document.getElementById('locNameInput').value;
+        var locCoordX = document.getElementById('locXinput').value;
+        var locCoordY = document.getElementById('locYinput').value;
         
-        //check that the entry already exists
-        if(this.hashKey in this.hashJSON){
-                this.hashJSON[hashKey] = {
-                    model:"editor.location",
-                    pk:locKey,
-                    fields:{
-                        name: locName,
-                        x: locCoordX,
-                        y: locCoordY
-                    }
-                };
+        //Replace the currently selected object with the new fields
+        this.hashJSON[this.locHash[window.currSelObj.pk]] = {
+            model:"editor.location",
+                pk:window.currSelObj.pk,
+                fields:{
+                    name: locName,
+                    x: locCoordX,
+                    y: locCoordY
+            }
+        };
 
-            var editLocElement = document.getElementById("locsTableBody").item(locKey);
-            editLocElement.innerHTML = locName;
 
-        }
+        var editLocObj = this.hashJSON[this.locHash[window.currSelObj.pk]];
+        console.log(editLocObj);
 
+        //Store a reference to the table object
+        var editLocElement = document.getElementById("locsTableBody");
+        //Find the current position in order to update the table
+        var currPos =(editLocElement.rows.length-1) - window.currSelObj.pk;
+        
+        //delete the old row
+        editLocElement.deleteRow(currPos);
+        
+        //Create a new row
+        var newRow = editLocElement.insertRow(currPos);
+        nameCell = newRow.insertCell(0);
+        xCell = newRow.insertCell(1);
+        yCell = newRow.insertCell(2);
+
+        //Assign the object values to the different fields
+        nameCell.innerHTML = locName;
+        xCell.innerHTML = locCoordX;
+        yCell.innerHTML = locCoordY;
+
+        //add an eventlistener to the new row
+        newRow.addEventListener("click", function(){selLoc(editLocObj);});
     }
 
+
     this.del_loc = function() {
-        
-        if(this.locKey in this.hashJSON){
-            delete this.hashJSON[this.hashKey];
-            document.getElementById("locsTableBody").deleteRow(this.locKey);
+
+        //Decrement the keys associated with a locaiton
+        this.locKey--;
+        this.hashKey--;
+
+        //Store the pivot to update the keys
+        var pivotLoc = window.currSelObj.pk;
+
+        //Check values after pivot and decrement them
+        for(var iLocHash in this. locHash){
+            if(iLocHash > pivotLoc && iLocHash != pivotLoc){
+                this.hashJSON[this.locHash[iLocHash]].pk--;
+            }
         }
+
+        //Delete the object in hashJSON
+        this.hashJSON.splice(this.locHash[window.currSelObj.pk], 1);
+
+        //Delete the object in the locHash array
+        this.locHash.splice(window.currSelObj.pk,1);
+
+        //Finally, delete the actual row 
+        var delLocElement = document.getElementById("locsTableBody");
+        var currPos = (delLocElement.rows.length-1) - window.currSelObj.pk;
+        delLocElement.deleteRow(currPos);
+
     }
 
 
@@ -791,8 +829,12 @@ function selLoc(locObj) {
 
     //Store current/total rows in order to determine which row is hilighted
     var currRow = locObj.pk;
-    var totalRows = document.getElementById('locsTableBody').rows.length;
-    
+    var totalRows = document.getElementById('locsTableBody').rows.length -1;
+   
+    //Account the case where previous location was deleted
+    if(prevLoc>totalRows){
+        prevLoc = totalRows;
+    }
 
     //Set fields to those associated with the selected object
     document.getElementById('locNameInput').value = locObj.fields.name;
@@ -813,7 +855,11 @@ function selLoc(locObj) {
 		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[1].style.backgroundColor='white';
 		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[2].style.backgroundColor='white';
     }
+
     this.prevLoc = currRow;
+    //set current object to the currently selected one
+    window.currSelObj = locObj;
+    
 }
 
 /*

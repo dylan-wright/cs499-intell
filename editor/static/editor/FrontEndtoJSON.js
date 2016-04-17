@@ -56,7 +56,7 @@
  *      selChar - event listener that would change tab fields based on the 
  *          char element selected on the character tag
  *      selLoc - similar to selChar, but for location tab instead
- *      selEvent, selTag - similar to the previous tabs but are used to interract
+ *      selEvent, selEventTag - similar to the previous tabs but are used to interract
  *          with both tables in the event tab.
  */
 
@@ -393,6 +393,7 @@ function toJSONClass() {
     this.add_eventTag = function(){
         
         var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
+        var tagType = '';
         var currModel = '';
         var currTagKey = 0;
         var currTarget;
@@ -425,6 +426,7 @@ function toJSONClass() {
         if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
             selTag = 'involved';
+            tagType = 'Character';
             currTagKey= this.involvKey;
             this.involvKey++;
             //this.hashKey++;
@@ -433,6 +435,7 @@ function toJSONClass() {
         else{
             currModel = 'editor.happenedat';
             selTag = 'happened at';
+            tagType = 'Location';
             currTagKey = this.happatKey;
             this.happatKey++;
             //this.hashKey++;
@@ -443,7 +446,9 @@ function toJSONClass() {
 
             tagmodel: currModel,
             tagpk: currTagKey,
-            targetpk: currTarget.pk
+            targetpk: currTarget.pk,
+            tagtypeinput:tagType,
+            targetinput:selTarget
         };
 
         //Update the table with the new tag element 
@@ -462,13 +467,20 @@ function toJSONClass() {
         TagName.innerHTML = selTag;
         TargetName.innerHTML = currTarget.fields.name;
 
+        //enable row selection 
+        newEventTagElement.addEventListener("click", function(){selEventTag(eventTagObj);});
+
+        //Push the event tag to the event object 
         this.eventTags.push(eventTagObj);
 
-        //document.getElementById('targetSel') = "";
     }
 
-	//IN PROGRESS
     this.edit_eventTag = function(){
+
+        //var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
+        //var selTarget = document.getElementById('targetSel').selectedIndex;
+        
+
 
     }
 
@@ -938,30 +950,34 @@ function selEvent(eventObj) {
     Used to handle highlighting and row selection for the event tag table
 */
 
-function selTag(tagObj) {
+function selEventTag(tagObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(locObj.pk);
-    var currRow = locObj.pk;
+    //console.log(tagObj.pk);
+    var currRow = tagObj.pk;
     var totalRows = document.getElementById('locsTableBody').rows.length -1;
     
+    if(prevTag>totalRows){
+        prevTag = totalRows;
+    }
 
     //Set fields to those associated with the selected object
-    document.getElementById('locNameInput').value = locObj.fields.name;
-    document.getElementById('locXinput').value = locObj.fields.x;
-    document.getElementById('locYinput').value = locObj.fields.y;
+    document.getElementById('tagTypeSel').value = tagObj.tagtypeinput;
+    document.getElementById('targetSel').value = tagObj.targetinput;
     
     //Enable the edit/delete buttons and highlight the selected row
-    document.getElementById('locEditBtn').disabled = false;
-    document.getElementById('locDelBtn').disabled = false;
+    document.getElementById('eventTagEditBtn').disabled = false;
+    document.getElementById('eventTagDelBtn').disabled = false;
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    if (this.prevLoc != null && this.prevLoc != currRow) {
-        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    document.getElementById('eventsTageBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevTag != null && this.prevTag != currRow) {
+        document.getElementById('eventsTagBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
     }
 
-    this.prevLoc = currRow;
+    this.prevTag = currRow;
+    //Might need to fix this
+    window.currSelObj = tagObj;
 }
 

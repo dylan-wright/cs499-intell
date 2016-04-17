@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_crontab',
+    'django_jenkins'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -133,3 +134,7 @@ CRONJOBS = [
     ('* * * * *', 'game.cron.check_games'),
 ]
 
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+)

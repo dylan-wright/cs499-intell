@@ -127,6 +127,7 @@ Event
 class Event(models.Model):
     turn = models.IntegerField()
     scenario = models.ForeignKey("Scenario", null=True)
+    misinf = models.BooleanField(default=False)
 
     def __str__(self):
         return "Event on turn "+str(self.turn)

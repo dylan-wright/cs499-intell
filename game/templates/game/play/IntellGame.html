@@ -7,12 +7,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static "game/game.css" %}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <script src="{% static "game/js.cookie-2.1.0.min.js" %}"></script>
 </head>
 <body>
-{{ username }}
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-6">
@@ -39,8 +39,17 @@
         <div class="col-sm-12">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h4>INTELL</h4>
+              <h4>INTELL <a href="/game/games">Back to game list</a></h4>
             </div>
+              <div class="table-responsive">
+                <table class="table table-striped" id="messagesDisplay">
+                  <thead>
+                    <tr><th>Turn</th><th>Text</th></tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
           </div>
         </div>
       </div>
@@ -74,16 +83,13 @@
           <div class="panel-heading">
             <h4>Info</h4>
           </div>
-          <div class="panel-body">
-            <!--use list + style id-->
-            <!--Insert snippets into paragraph tags? -->
-            <table border="1" id="snippetTable">
-              <tr><td>Snippet Text</td></tr>
-              {% for snippet in snippets %}
-              <tr><td>{{ snippet }}</td></tr>
-              {% empty %}
-              <tr><td>No snippets to display</td></tr>
-              {% endfor %}
+          <div class="table-responsive">
+            <table class="table table-striped" id="snippetTable">
+              <thead><tr><th>Turn</th><th>Description</th></tr></thead>
+                <!--use list + style id-->
+                <!--Insert snippets into paragraph tags? -->
+              <tbody>
+              </tbody>
             </table>
           </div>
         </div>
@@ -102,6 +108,7 @@
                   <label class="control-label col-sm-2" for="agentSel">
                     Agent:
                   </label>
+                  <p id="agentWarn" class="bg-danger"></p>
                   <div class="col-sm-5">
                     <select class="form-control" id="agentSel">
                       <option value="none"></option>
@@ -186,10 +193,15 @@
           <h4 class="modal-title">Tail Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing tail action</p>
-          <button type="submit" class="btn btn-default" id="confirmTail">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="tailCharSel">Select a character</label>
+            <select class="form-control" id="tailCharSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmTail"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -209,9 +221,19 @@
           <h4 class="modal-title">Investigate Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing investigate action</p>
-          <button type="submit" class="btn btn-default" id="confirmInvestigate">
-            Choose
+          <div class="form-group">
+            <label for="investigateLocSel">Select a location</label>
+            <select class="form-control" id="investigateLocSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmInvestigate"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
           </button>
         </div>
       </div>
@@ -227,10 +249,15 @@
           <h4 class="modal-title">Check Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing check action</p>
-          <button type="submit" class="btn btn-default" id="confirmCheck">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="checkDescSel">Select a snippet</label>
+            <select class="form-control" id="checkDescSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmCheck"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -250,9 +277,24 @@
           <h4 class="modal-title">Misinform Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing misinform action</p>
-          <button type="submit" class="btn btn-default" id="confirmMisinf">
-            Choose
+          <div class="form-group">
+            <label for="misinfChar">Select a character</label>
+            <select class="form-control" id="misinfCharSel">
+            </select>
+            <label for="misinfLoc">Select a location</label>
+            <select class="form-control" id="misinfLocSel">
+            </select>
+            <label for="misinfDesc">Provide a description</label>
+            <textarea class="form-control" rows="4" id="misinfDescText"></textarea>
+            <button type="submit" class="btn btn-default" id="confirmMisinf"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancel
           </button>
         </div>
       </div>
@@ -269,7 +311,8 @@
         </div>
         <div class="modal-body">
           <p>Confirm choosing recruit action</p>
-          <button type="submit" class="btn btn-default" id="confirmRecruit">
+          <button type="submit" class="btn btn-default" id="confirmRecruit"
+                  data-dismiss="modal">
             Choose
           </button>
         </div>
@@ -291,10 +334,15 @@
           <h4 class="modal-title">Apprehend Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing apprehend action</p>
-          <button type="submit" class="btn btn-default" id="confirmApprehend">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="apprehendCharSel">Select a character</label>
+            <select class="form-control" id="apprehendCharSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmApprehend"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -315,7 +363,8 @@
         </div>
         <div class="modal-body">
           <p>Confirm choosing research action</p>
-          <button type="submit" class="btn btn-default" id="confirmResearch">
+          <button type="submit" class="btn btn-default" id="confirmResearch"
+                  data-dismiss="modal">
             Choose
           </button>
         </div>
@@ -337,10 +386,15 @@
           <h4 class="modal-title">Terminate Action</h4>
         </div>
         <div class="modal-body">
-          <p>Confirm choosing terminate action</p>
-          <button type="submit" class="btn btn-default" id="confirmTerminate">
-            Choose
-          </button>
+          <div class="form-group">
+            <label for="terminateAgentSel">
+            <select class="form-control" id="terminateAgentSel">
+            </select>
+            <button type="submit" class="btn btn-default" id="confirmTerminate"
+                    data-dismiss="modal">
+              Choose
+            </button>
+          </select>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -351,9 +405,13 @@
     </div>
   </div>
   </div>
+
+  <!--#include virtual="gameinstr.html"-->
+
 </body>
 <script src="{% static "game/actions.js" %}"></script>
 <script src="{% static "game/status.js" %}"></script>
 <script src="{% static "game/snippets.js" %}"></script>
 <script src="{% static "game/game.js" %}"></script>
+
 </html>

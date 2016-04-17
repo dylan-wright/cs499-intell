@@ -27,9 +27,12 @@ var Status = (function () {
     timerDisplay: document.getElementById("timerDisplay"),
     turnDisplay: document.getElementById("turnDisplay"),
     pointsDisplay: document.getElementById("pointsDisplay"),
+    messagesDisplay: document.getElementById("messagesDisplay"),
     timer: null,
     turn: null,
     points: null,
+    messages: null,
+    nextturn: null,
   };
 
   
@@ -49,6 +52,20 @@ var Status = (function () {
     settings.turnDisplay.innerHTML = settings.turn;
     settings.pointsDisplay.innerHTML = settings.points;
     settings.timerDisplay.timer = settings.timer;
+
+    //populate the message table
+    while (settings.messagesDisplay.children[1].rows.length != 0) {
+      settings.messagesDisplay.children[1].deleteRow(0);
+    }
+    var i;
+    var td, tr;
+    for (i = 0; i < settings.messages.length; i+=1) {
+      tr = settings.messagesDisplay.children[1].insertRow(0);
+      td = tr.insertCell(0);
+      td.innerHTML = settings.messages[i].fields.text;
+      td = tr.insertCell(0);
+      td.innerHTML = settings.messages[i].fields.turn;
+    }
   };
 
   /*  getStatus
@@ -64,7 +81,36 @@ var Status = (function () {
     settings.turn = statusJSON.turn;
     settings.points = statusJSON.points;
     settings.timer = statusJSON.timer;
+    settings.messages = JSON.parse(statusJSON.messages);
+    settings.nextturn = statusJSON.next_turn_at;
   };
+
+  /*  update
+   *    interval function for displaying new info/checking if
+   *    server may have new info
+   */
+  function update () {
+    //60 second padding for timing issue
+    //TODO resolve issue itself
+    console.log("next "+settings.nextturn);
+    console.log("now  "+Math.round(Date.now()/1000));
+    var time_till = settings.nextturn - Math.round(Date.now()/1000);
+    if (time_till < 1) {
+      settings.timerDisplay.innerHTML = "00 : 00 : 00";
+      //TODO: make sure this is sufficient for catching updates (query till
+      //        one appears?
+      updateStatus();
+      Snippets.update();
+      Actions.update()
+    } else {
+      var s = time_till % 60;
+      var m = Math.trunc(time_till/60) % 60;
+      var h = Math.trunc(time_till/3600) % 60;
+      settings.timerDisplay.innerHTML = (h < 10 ? "0"+h : h)+" : "+
+                                        (m < 10 ? "0"+m : m)+" : "+
+                                        (s < 10 ? "0"+s : s);
+    }
+  }
   
   return {
     /*  init
@@ -73,11 +119,10 @@ var Status = (function () {
      *    called by global js initializer
      */
     init: function () {
-      //for ease of actions
-      //s = this.settings;
       //connect events
       bindUIActions();
       updateStatus();
+      window.setInterval(update, 1000);
     }
   };
 })();

@@ -56,7 +56,7 @@
  *      selChar - event listener that would change tab fields based on the 
  *          char element selected on the character tag
  *      selLoc - similar to selChar, but for location tab instead
- *      selEvent, selTag - similar to the previous tabs but are used to interract
+ *      selEvent, selEventTag - similar to the previous tabs but are used to interract
  *          with both tables in the event tab.
  */
 
@@ -84,11 +84,12 @@ function toJSONClass() {
 
 
     //TODO:
-        //Get add Event working
         //Get the edit/delete buttons working  
         //Input validation?
         //figure out how to get values from the map for the location editor
         //Use onreadystatechange
+		//have the add buttons deselect from associated table
+		//have add/edit clear the input fields
 
     //Scenario properties
     this.name = 'NULL';
@@ -109,6 +110,9 @@ function toJSONClass() {
     this.happatKey = 0;
     this.involvKey = 0;
     
+    //Used for the event listeners 
+    this.currSelObj = {};
+
     //Collection of event tags that will be stored in an event object
     this.eventTags = [];
 
@@ -155,6 +159,15 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.charHash[this.charKey] = this.hashKey;
 		
+		//reset the highlighting for the selection
+		var table = document.getElementById('charsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         //Need to add the character object to the table as well...
         var newCharElement = document.getElementById("charsTableBody").insertRow(0);
         cell = newCharElement.insertCell(0);
@@ -162,12 +175,16 @@ function toJSONClass() {
 
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
+        //newCharElement.addEventListener("click", function(){selChar(this.hashJSON[this.hashKey]);});
         		
         //incrememnt the keys associated with character object and hash location. 
         this.hashKey++;
         this.charKey++;
 
-
+		//clear the input fields
+		document.getElementById('charNameBox').value = "";
+		document.getElementById('keyCharBox').checked = "";
+		document.getElementById('charComment').value = "";
 
     }
 
@@ -176,46 +193,84 @@ function toJSONClass() {
         var charName = document.getElementById('charNameBox').value;
         var isKey = document.getElementById('keyCharBox').checked;
         var charNotes = document.getElementById('charComment').value;
-        
+    
 
-//TODO: Need to change the charKey so that it matches with the desired char
-//maybe using getElementById(table element).selected()["key"] or something
+        //Use key value to locate the object in the hashmap and then set  
+        //it to a new object using the hashmap
+        this.hashJSON[this.charHash[window.currSelObj.pk]] = {
+            model:"editor.character",
+            pk:window.currSelObj.pk,
+            fields:{
+                name: charName,
+                key: isKey,
+                notes: charNotes
+            }
+        };
 
-        //check that the entry already exists
-        if(this.hashKey in this.hashJSON){
-                //Use key value to locate the object in the hashmap and then set  
-                //it to a new object using the hashmap
-                this.hashJSON[this.hashKey] = {
-                    model:"editor.character",
-                    key:this.charKey,
-                    fields:{
-                        name: charName,
-                        key: isKey,
-                        notes: charNotes
-                    }
-                };
+        var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk]];
+        //console.log(this.hashJSON[this.charHash[window.currSelObj.pk]]);
 
-            //also need to edit that specified value in the table 
-            var editCharElement = document.getElementById("charsTableBody").item(charKey);
-            editCharElement.innerHTML = charName;
-        }
+        //also need to edit that specified value in the table
+        //Trying to do this by deleting the old row and inserting a new one
+        var editCharElement = document.getElementById("charsTableBody");
+
+        //Find the position where things will be changed
+        var currPos = (editCharElement.rows.length-1) - window.currSelObj.pk;
+
+
+        editCharElement.deleteRow(currPos);
+        var newRow = editCharElement.insertRow(currPos);
+        cell = newRow.insertCell(0);
+        cell.innerHTML = charName;
+
+        //finally, place an event listener on the newly created row
+        newRow.addEventListener("click", function(){selChar(editCharObj);});
 
 
     }
 
     this.del_char = function() {
+        
 
-    //TODO: Again, need to fix things here...
-        //Check that the key is in hashJSON and delete it if so. 
-        if(this.hashKey in this.hashJSON){
-            delete this.hashJSON[this.hashKey];
+        //Need to account for multiple variables when deleting a character
+        //First need to update the charKey and charHash attributes 
+        this.charKey--;
+        this.hashKey--;
 
-            //delete the row from the table as well
-            document.getElementById("charsTableBody").deleteRow(charKey);
+        //Store the pivot location so that the keys can be updated
+        var pivotLoc = window.currSelObj.pk;
+
+        //For each element in the character hash, check if the location is
+        //greater than the pivot
+        for(var iCharHash in this.charHash){
+            if(iCharHash > pivotLoc && iCharHash != pivotLoc){
+                //Need to reset 
+                //this.charHash[iCharObj.pk] = this.charHash[iCharObj.pk+1];
+                //decrement the pk of the object after the deleted value 
+                this.hashJSON[this.charHash[iCharHash]].pk--;
+            }
         }
+
+        //delete the actual object using the splice method
+        this.hashJSON.splice(this.charHash[window.currSelObj.pk], 1);
+
+        //remove the element the charHash as well to lineup with hashJSON
+        //console.log('Before charHash deletion', this.charHash);
+        this.charHash.splice(window.currSelObj.pk, 1);
+        //console.log('After charHash deletion', this.charHash);
+        //Do we want to reacclimate the values so that it always starts at 0?
+        //If so, TODO: Use algorithim to decrement each to the pk elements 
+        //if the element is greater than the deleted element
+
+        //finally delete the table element
+        var delCharElement = document.getElementById("charsTableBody");
+        var currPos = (delCharElement.rows.length-1) - window.currSelObj.pk;
+        delCharElement.deleteRow(currPos);
+        //TODO: Fix some stuff that changes in the selChar event handler with
+        //prevChar indexing
+
     }
 
-    
     /*
         add_event takes no arguments and is called when the add button is selected
         in the event tab.
@@ -232,6 +287,7 @@ function toJSONClass() {
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
+		
 	
         //TODO: add some input validation based event tags 
 
@@ -259,7 +315,7 @@ function toJSONClass() {
                 }
             },
 
-            tags:this.eventTags
+            tags:this.eventTags.slice()
 
 
         };
@@ -271,6 +327,15 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.eventHash[this.eventKey] = this.hashKey;
 
+		//reset the highlighting for the selection
+		var table = document.getElementById('eventsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         //Update the events table with the new event object 
         var newEventElement = document.getElementById("eventsTableBody").insertRow(0);
         eventNameCell = newEventElement.insertCell(0);
@@ -281,6 +346,13 @@ function toJSONClass() {
 		
         this.eventKey++;
         this.hashKey++;
+		
+		document.getElementById('eventNameBox').value = "";
+        document.getElementById('eventKeyBox').checked = "";
+        document.getElementById('eventSecretBox').checked = "";
+        document.getElementById('snippet').value = "";
+        document.getElementById('secretSnippet').value = "";
+        document.getElementById('turnTagSel').value = "0";
     }
 
     this.edit_event = function() {
@@ -320,39 +392,41 @@ function toJSONClass() {
 
     this.add_eventTag = function(){
         
-        var tagTypeinput = document.getElementById('tagTypeSel').value;
+        var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
+        var tagType = '';
         var currModel = '';
         var currTagKey = 0;
         var currTarget;
         var selTag = '';
-        var selTarget = document.getElementById('targetSel').value;
+        var selTargetText = '';
+        var selTarget = document.getElementById('targetSel');
 
 
         //Iterate through the charactr/location hash arrays to find the key
         //with the desired target name in order to get the pk of that object
         var key;
         //Check if we need to check through character or location obejcts 
-        if(tagTypeinput == 'Character'){
+        if(tagTypeinput == 0){
             for(key in this.charHash){
-                if(this.hashJSON[this.charHash[key]].fields.name == selTarget){
+                if(this.hashJSON[this.charHash[key]].pk == selTarget.value){
                     currTarget = this.hashJSON[this.charHash[key]];
                 }
             }
         }
-
         else{
             for(key in this.locHash){
-                if(this.hashJSON[this.locHash[key]].fields.name == selTarget){
+                if(this.hashJSON[this.locHash[key]].pk == selTarget.value){
                     currTarget = this.hashJSON[this.locHash[key]];
                 }
             }
         }
         
-        //check if user type is character or location and match values based on result
+        //check if tag type is character or location and match values based on result
         //If selected index=0, then character was selected and involved tag is used
         if(document.getElementById('tagTypeSel').selectedIndex == 0){
             currModel = 'editor.involved';
             selTag = 'involved';
+            tagType = 'Character';
             currTagKey= this.involvKey;
             this.involvKey++;
             //this.hashKey++;
@@ -361,6 +435,7 @@ function toJSONClass() {
         else{
             currModel = 'editor.happenedat';
             selTag = 'happened at';
+            tagType = 'Location';
             currTagKey = this.happatKey;
             this.happatKey++;
             //this.hashKey++;
@@ -371,25 +446,41 @@ function toJSONClass() {
 
             tagmodel: currModel,
             tagpk: currTagKey,
-            targetpk: currTarget.pk
+            targetpk: currTarget.pk,
+            tagtypeinput:tagType,
+            targetinput:selTarget
         };
 
-        console.log(eventTagObj);
-
         //Update the table with the new tag element 
+		
+		var table = document.getElementById('eventsTagBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         var newEventTagElement = document.getElementById("eventsTagBody").insertRow(0);
         TagName = newEventTagElement.insertCell(0);
         TargetName = newEventTagElement.insertCell(1);
         TagName.innerHTML = selTag;
-        TargetName.innerHTML = selTarget;
+        TargetName.innerHTML = currTarget.fields.name;
 
+        //enable row selection 
+        newEventTagElement.addEventListener("click", function(){selEventTag(eventTagObj);});
+
+        //Push the event tag to the event object 
         this.eventTags.push(eventTagObj);
 
-        
     }
 
-	//IN PROGRESS
     this.edit_eventTag = function(){
+
+        //var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
+        //var selTarget = document.getElementById('targetSel').selectedIndex;
+        
+
 
     }
 
@@ -412,6 +503,7 @@ function toJSONClass() {
         var locCoordX = document.getElementById('locXinput').value;
         var locCoordY = document.getElementById('locYinput').value;
 
+
         //Create a location object to match with the fixture.json format
         var locObj = {
             model:"editor.location",
@@ -428,6 +520,14 @@ function toJSONClass() {
 		//put the value into the hash array for later use
 		this.locHash[this.locKey] = this.hashKey;
 
+		var table = document.getElementById('locsTableBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		
         var newLocElement = document.getElementById("locsTableBody").insertRow(0);
         nameCell = newLocElement.insertCell(0);
         xCell = newLocElement.insertCell(1);
@@ -442,40 +542,84 @@ function toJSONClass() {
         
         this.locKey++;
         this.hashKey++;
-
+		
+		document.getElementById('locNameInput').value = "";
+        document.getElementById('locXinput').value = "";
+        document.getElementById('locYinput').value = "";
     }
 
     this.edit_loc = function() {
        
-        var locName = "test";
-        var locCoordX = 0;
-        var locCoordY = 0;
+        var locName = document.getElementById('locNameInput').value;
+        var locCoordX = document.getElementById('locXinput').value;
+        var locCoordY = document.getElementById('locYinput').value;
         
-        //check that the entry already exists
-        if(this.hashKey in this.hashJSON){
-                this.hashJSON[hashKey] = {
-                    model:"editor.location",
-                    pk:locKey,
-                    fields:{
-                        name: locName,
-                        x: locCoordX,
-                        y: locCoordY
-                    }
-                };
+        //Replace the currently selected object with the new fields
+        this.hashJSON[this.locHash[window.currSelObj.pk]] = {
+            model:"editor.location",
+                pk:window.currSelObj.pk,
+                fields:{
+                    name: locName,
+                    x: locCoordX,
+                    y: locCoordY
+            }
+        };
 
-            var editLocElement = document.getElementById("locsTableBody").item(locKey);
-            editLocElement.innerHTML = locName;
 
-        }
+        var editLocObj = this.hashJSON[this.locHash[window.currSelObj.pk]];
+        console.log(editLocObj);
 
+        //Store a reference to the table object
+        var editLocElement = document.getElementById("locsTableBody");
+        //Find the current position in order to update the table
+        var currPos =(editLocElement.rows.length-1) - window.currSelObj.pk;
+        
+        //delete the old row
+        editLocElement.deleteRow(currPos);
+        
+        //Create a new row
+        var newRow = editLocElement.insertRow(currPos);
+        nameCell = newRow.insertCell(0);
+        xCell = newRow.insertCell(1);
+        yCell = newRow.insertCell(2);
+
+        //Assign the object values to the different fields
+        nameCell.innerHTML = locName;
+        xCell.innerHTML = locCoordX;
+        yCell.innerHTML = locCoordY;
+
+        //add an eventlistener to the new row
+        newRow.addEventListener("click", function(){selLoc(editLocObj);});
     }
 
+
     this.del_loc = function() {
-        
-        if(this.locKey in this.hashJSON){
-            delete this.hashJSON[this.hashKey];
-            document.getElementById("locsTableBody").deleteRow(this.locKey);
+
+        //Decrement the keys associated with a locaiton
+        this.locKey--;
+        this.hashKey--;
+
+        //Store the pivot to update the keys
+        var pivotLoc = window.currSelObj.pk;
+
+        //Check values after pivot and decrement them
+        for(var iLocHash in this. locHash){
+            if(iLocHash > pivotLoc && iLocHash != pivotLoc){
+                this.hashJSON[this.locHash[iLocHash]].pk--;
+            }
         }
+
+        //Delete the object in hashJSON
+        this.hashJSON.splice(this.locHash[window.currSelObj.pk], 1);
+
+        //Delete the object in the locHash array
+        this.locHash.splice(window.currSelObj.pk,1);
+
+        //Finally, delete the actual row 
+        var delLocElement = document.getElementById("locsTableBody");
+        var currPos = (delLocElement.rows.length-1) - window.currSelObj.pk;
+        delLocElement.deleteRow(currPos);
+
     }
 
 
@@ -630,27 +774,28 @@ function toJSONClass() {
 			{
 				var tarOption = document.createElement("option");
 				tarOption.text = this.hashJSON[key].fields.name;
+                tarOption.value = this.hashJSON[key].pk;
 				targetSel.add(tarOption);
 			}
 			else if (this.hashJSON[key].model=="editor.location" && tagType.selectedIndex == 1)
 			{
 				var tarOption = document.createElement("option");
 				tarOption.text = this.hashJSON[key].fields.name;
+                tarOption.value = this.hashJSON[key].pk;
 				targetSel.add(tarOption);
 			}
         }
     }   
 
-//possibly issue here?
 }
 
 //instantiate the toJSONClass to utilize the needed methods
 var currEdit = new toJSONClass();
 
-var prevChar;
-var prevLoc;
-var prevEvent;
-var prevTag;
+var prevChar =0;
+var prevLoc =0;
+var prevEvent=0;
+var prevTag=0;
 
 /*
     Used to handle highlighting and row selection for the character table
@@ -658,16 +803,19 @@ var prevTag;
 function selChar(charObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(charObj.pk);
     var currRow = charObj.pk;
-    var totalRows = document.getElementById('charsTableBody').rows.length -1;
+    var totalRows = document.getElementById('charsTableBody').rows.length-1;
+    //Need to account for case in which the preevious character is deleted
+    if(prevChar>totalRows){
+        prevChar = totalRows;
+    }
     
 
     //Set fields to those associated with the selected object
     document.getElementById('charNameBox').value = charObj.fields.name;
     document.getElementById('keyCharBox').checked = charObj.fields.key;
     document.getElementById('charComment').value = charObj.fields.notes;
-    
+
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('charEditBtn').disabled = false;
     document.getElementById('charDelBtn').disabled = false;
@@ -679,6 +827,11 @@ function selChar(charObj) {
         document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';
     }
     this.prevChar = currRow;
+
+    //set the current object to the currently selected one
+    window.currSelObj = charObj;
+    //console.log(window.currSelObj.pk);
+
 }
 
 /*
@@ -687,10 +840,13 @@ function selChar(charObj) {
 function selLoc(locObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(locObj.pk);
     var currRow = locObj.pk;
     var totalRows = document.getElementById('locsTableBody').rows.length -1;
-    
+   
+    //Account the case where previous location was deleted
+    if(prevLoc>totalRows){
+        prevLoc = totalRows;
+    }
 
     //Set fields to those associated with the selected object
     document.getElementById('locNameInput').value = locObj.fields.name;
@@ -711,7 +867,11 @@ function selLoc(locObj) {
 		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[1].style.backgroundColor='white';
 		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[2].style.backgroundColor='white';
     }
+
     this.prevLoc = currRow;
+    //set current object to the currently selected one
+    window.currSelObj = locObj;
+    
 }
 
 /*
@@ -724,7 +884,7 @@ function selEvent(eventObj) {
     var currRow = eventObj.pk;
     var totalRows = document.getElementById('eventsTableBody').rows.length -1;
     
-	var eventTags = eventObj.fields.tags;
+	//var eventTags = eventObj.fields.tags;
 	
     //Set fields to those associated with the selected object	
     document.getElementById('eventNameBox').value = eventObj.fields.name;
@@ -737,11 +897,11 @@ function selEvent(eventObj) {
 	//had to use jquery here to get the bootstrap object instead of the html
 	//recolapse/reshow the secret snippet text area if the secret box is checked
 	if(!eventObj.description.secret){
-		$('#secretCollapse').collapse('hide')
+		$('#secretCollapse').collapse('hide');
 	}
 	
 	else{
-		$('#secretCollapse').collapse('show')
+		$('#secretCollapse').collapse('show');
 	}
     
     //Enable the edit/delete buttons and highlight the selected row
@@ -759,20 +919,27 @@ function selEvent(eventObj) {
 	//load the selected eventObj tags into the global tags array
 	this.currEdit.eventTags = eventObj.tags;
 	
-	document.getElementById('eventsTagBody').innerHTML = '';
+	//clear the current table
+	var table = document.getElementById('eventsTagBody');
+	for(i = table.rows.length-1; i > 0; i--)
+	{
+		document.getElementById('eventsTagBody').deleteRow(-1);
+	}
+	//table.innerHTML='';
 	
 	//load the tags for the event into the tags table
+	console.log(eventObj);
 	for(tag in eventObj.tags){
 		//Update the event tags table with the event tags objects
         var newEventElement = document.getElementById("eventsTagBody").insertRow(0);
         tagTypeCell = newEventElement.insertCell(0);
 		tagTargetCell = newEventElement.insertCell(1);
         if(tag.tagmodel == "editor.involved"){
-			tagTypeCell.innerHTML = "Character";
+			tagTypeCell.innerHTML = "Involved";
 			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.charHash[targetpk]].fields.name;
 		}
 		else if(tag.tagmodel == "editor.happenedat"){
-			tagTypeCell.innerHTML = "Location";
+			tagTypeCell.innerHTML = "Happend At";
 			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.locHash[targetpk]].fields.name;
 		}
 	}
@@ -783,30 +950,34 @@ function selEvent(eventObj) {
     Used to handle highlighting and row selection for the event tag table
 */
 
-function selTag(tagObj) {
+function selEventTag(tagObj) {
 
     //Store current/total rows in order to determine which row is hilighted
-    console.log(locObj.pk);
-    var currRow = locObj.pk;
+    //console.log(tagObj.pk);
+    var currRow = tagObj.pk;
     var totalRows = document.getElementById('locsTableBody').rows.length -1;
     
+    if(prevTag>totalRows){
+        prevTag = totalRows;
+    }
 
     //Set fields to those associated with the selected object
-    document.getElementById('locNameInput').value = locObj.fields.name;
-    document.getElementById('locXinput').value = locObj.fields.x;
-    document.getElementById('locYinput').value = locObj.fields.y;
+    document.getElementById('tagTypeSel').value = tagObj.tagtypeinput;
+    document.getElementById('targetSel').value = tagObj.targetinput;
     
     //Enable the edit/delete buttons and highlight the selected row
-    document.getElementById('locEditBtn').disabled = false;
-    document.getElementById('locDelBtn').disabled = false;
+    document.getElementById('eventTagEditBtn').disabled = false;
+    document.getElementById('eventTagDelBtn').disabled = false;
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    if (this.prevLoc != null && this.prevLoc != currRow) {
-        document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
+    document.getElementById('eventsTageBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    if (this.prevTag != null && this.prevTag != currRow) {
+        document.getElementById('eventsTagBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
     }
 
-    this.prevLoc = currRow;
+    this.prevTag = currRow;
+    //Might need to fix this
+    window.currSelObj = tagObj;
 }
 

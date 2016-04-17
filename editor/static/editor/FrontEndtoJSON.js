@@ -664,6 +664,7 @@ function toJSONClass() {
 
             //if element is a character/location then just push as is
             if(currModel == "editor.character" || currModel == "editor.location"){ 
+                this.hashJSON[key].pk = null;
                 finalarr.push(this.hashJSON[key]);
             }
 
@@ -675,7 +676,8 @@ function toJSONClass() {
                 //Matching all fields as specified in fixture.json
                 JSONevent = {
                     "model": currJSONobj.model,
-                    "pk": ++currJSONobj.pk,
+                    //"pk": currJSONobj.pk,
+                    "pk": null,
                     "fields": {
                         "turn": currJSONobj.fields.turn
                     }
@@ -685,7 +687,8 @@ function toJSONClass() {
                 //then create the description object 
                 JSONdesc = {
                     "model": currJSONobj.description.descmodel,
-                    "pk": ++currJSONobj.description.descpk,
+                    //"pk": currJSONobj.description.descpk,
+                    "pk": null,
                     "fields": {
                         "text": currJSONobj.description.snippet,
                         "hidden": currJSONobj.description.secret
@@ -696,10 +699,11 @@ function toJSONClass() {
                 //then create the described by objects
                 JSONdescby = {
                     "model": currJSONobj.description.describedby.descbymodel,
-                    "pk": ++currJSONobj.description.describedby.descbypk,
+                    //"pk": currJSONobj.description.describedby.descbypk,
+                    "pk": null,
                     "fields": {
-                        "event_id": ++currJSONobj.pk,
-                        "description_id": ++currJSONobj.description.pk
+                        "event_id": currJSONobj.pk,
+                        "description_id": currJSONobj.description.descpk
                     }
                 };
                 finalarr.push(JSONdescby);
@@ -714,10 +718,11 @@ function toJSONClass() {
 
                         JSONtag = {
                             "model": currJSONobj.tags[element].tagmodel,
-                            "pk": ++currJSONobj.tags[element].tagpk,
+                            //"pk": currJSONobj.tags[element].tagpk,
+                            "pk": null, 
                             "fields": {
-                                "event_id": ++currJSONobj.pk,
-                                "character_id": ++currJSONobj.tags[element].targetpk
+                                "event_id": currJSONobj.pk,
+                                "character_id": currJSONobj.tags[element].targetpk
                             }
                         };
 
@@ -727,10 +732,11 @@ function toJSONClass() {
 
                          JSONtag = {
                             "model": currJSONobj.tags[element].tagmodel,
-                            "pk": ++currJSONobj.tags[element].tagpk,
+                            //"pk": currJSONobj.tags[element].tagpk,
+                            "pk": null, 
                             "fields": {
-                                "event_id": ++currJSONobj.pk,
-                                "location_id": ++currJSONobj.tags[element].targetpk
+                                "event_id": currJSONobj.pk,
+                                "location_id": currJSONobj.tags[element].targetpk
                             }
                         };                       
                     }
@@ -747,8 +753,8 @@ function toJSONClass() {
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
-        xhttp.open('POST', "../accept_ajax_scenario/", false);
-        //xhttp.open('POST', "../dump_request/", false);
+        //xhttp.open('POST', "../accept_ajax_scenario/", false);
+        xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
 
 

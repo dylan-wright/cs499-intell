@@ -27,6 +27,9 @@ var Snippets = (function () {
    */
   var settings = {
     snippetTable: document.getElementById("snippetTable"),
+    descriptions: null,
+    locations: null,
+    characters: null,
   };
 
   /*  bindUIActions
@@ -113,14 +116,18 @@ var Snippets = (function () {
      *    ui actions
      *    called by global js initializer
      */
+    getCharacters: getCharacters,
+    getLocations: getLocations,
+    getDescriptions: getSnippets,
     init: function () {
       bindUIActions();
       clearSnippets();
       getSnippets();
     },
+    update: function () {
+      clearSnippets();
+      getSnippets();
+    },
 
-    characters: getCharacters(),
-    locations: getLocations(),
-    descriptions: getSnippets(),
   };
 })();

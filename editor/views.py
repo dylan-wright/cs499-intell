@@ -325,7 +325,8 @@ def register(request):
     return render(request, "registration/register.html", context)
 
 def dump_session(request):
-    context = {"session": request.session.items}
+    context = {"session": request.session.items,
+               "user": request.user}
     return render(request, "editor/dump_session.html", context)
 
 @csrf_exempt

@@ -134,3 +134,7 @@ CRONJOBS = [
     ('* * * * *', 'game.cron.check_games'),
 ]
 
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+)

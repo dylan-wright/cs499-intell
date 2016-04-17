@@ -1,41 +1,122 @@
 {% load staticfiles %}
-
-<table border="1">
-<tr>
-  <td>Turn</td>
-  <td>Game Owner</td>
-  <td>Turn Timer</td>
-</tr>
-{% for game in current %}
-<tr>
-  <td>{{ game.turn }}</td>
-  <td>{{ game.creator }}</td>
-  <td>{{ game.time_till }}</td>
-  {% if loggedin and user in game.get_users  %}
-  <td><a href="../play/{{ game.id }}">Play Game</a></td>
-  {% elif loggedin %}
-  <td>Not in game</td>
-  {% else %}
-  <td><a href="/login/?next=/game/games">Log in</a> to play</td>
-  {% endif %}
-</tr>
-{% endfor %}
-<tr>
-  <td>Game Owner</td>
-  <td>Players</td>
-  <td>Start In</td>
-</tr>
-{% for game in pending %}
-<tr>
-  <td>{{ game.creator }}</td>
-  <td>{{ game.players }}</td>
-  <td>{{ game.time_till }}</td>
-  {% if loggedin %}
-  <td><a href="{{ game.id }}/join">Join Game</a></td>
-  {% else %}
-  <td>Log in to join</td>
-  {% endif %}
-</tr>
-{% endfor %}
-</table>
-<p><a href="create/">Create Game</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Game Select</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Current Games</h3>
+      </div>
+      <div class="panel-body">  
+        <div id="currGamesTable" class="table-responsive">
+          <table class="table table-hover, table-bordered">
+            <thead>
+              <tr>
+                <th>Turn</th>
+                <th>Game Owner</th>
+                <th>Turn Timer</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for game in current %}
+              <tr><td>{{ game.turn }}</td>
+                  <td>{{ game.creator }}</td>
+                  <td>{{ game.time_till }}</td>
+              </tr>
+            {% empty %}
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Pending Games</h3>
+      </div>
+      <div class="panel-body">  
+        <div id="pendGamesTable" class="table-responsive">
+          <table class="table table-hover, table-bordered">
+            <thead>
+              <tr>
+                <th>Game Owner</th>
+                <th>Players</th>
+                <th>Starts in</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for game in pending %}
+              <tr><td>{{ game.creator }}</td>
+                  <td>{{ game.players }}</td>
+                  <td>{{ game.time_till }}</td>
+              </tr>
+            {% empty %}
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-sm-5"></div>
+          <div class="col-sm-2">
+            <div class="btn-group btn-group-justified"> <!--Prev/Next-->
+              <div class="btn-group">
+                <button id="prevBtn" type="button" class="btn btn-default">Previous</button>
+              </div>
+              <div class="btn-group">
+                <button id="nextBtn" type="button" class="btn btn-default">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+      <div class="btn-group btn-group-justified"> <!--Prev/Next-->
+        <div class="btn-group">
+          <button id="joinBtn" type="button" class="btn btn-default">Join</button>
+        </div>
+        <div class="btn-group"> <!--Create button triggers dialog-->
+          <button id="createBtn" type="button" class="btn btn-default" data-toggle="modal" data-target="#gameModal">Create</button>
+        </div>
+      </div>
+      <div class="row">
+        <button id="playBtn" type="button" class="btn btn-default btn-block">Play</button>
+      </div>
+    </div>
+  </div>
+  
+  <!--Create Modal-->
+  <div class="modal fade" id ="gameModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Game Parameters</h4>
+      </div>
+      <div class="modal-body">
+            {% include "game/games/create.html" %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Create</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+</body>
+<script src="{% static "game/waiting.js" %}"></script>

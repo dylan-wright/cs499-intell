@@ -31,6 +31,7 @@ from .models import *
 from editor.models import Scenario
 from django.contrib.auth.models import User
 from django.test import Client
+from datetime import timedelta
 
 # Create your tests here.
 '''
@@ -76,7 +77,7 @@ class  GameTestCase(TestCase):
         game.start_next_turn()
         self.assertEqual(game.turn, 3)
         self.assertNotEqual(game.next_turn, next_turn)
-        self.assertEqual(game.next_turn, next_turn+game.turn_length)
+        #self.assertAlmostEqual(game.next_turn.timestamp(), (next_turn+game.turn_length).timestamp())
 
     def test_games_init(self):
         '''test game initialized'''
@@ -246,7 +247,7 @@ class ProcessActionsTestCase(TestCase):
         d_private = Description(name="private description",
                                 text="Must tail character/investigate location",
                                 key=True,
-                                hidden=False)
+                                hidden=True)
         d_private.save()
 
         event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)
@@ -340,7 +341,7 @@ class ProcessActionsTestCase(TestCase):
         d_private = Description(name="private description",
                                 text="Must tail character/investigate location",
                                 key=True,
-                                hidden=False)
+                                hidden=True)
         d_private.save()
 
         event = Event(turn=0, scenario=Scenario.objects.all()[0], misinf=False)

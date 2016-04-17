@@ -68,6 +68,7 @@ def games(request):
     if request.user.is_authenticated():
         context["loggedin"] = True
         context["user"] = request.user
+        context["form"] = GameForm()
     else:
         context["loggedin"] = False
 
@@ -94,7 +95,7 @@ def game_detail(request, pk):
     #POST - if poster is owner then start game early
     elif request.method == "POST":
         game = Game.objects.get(pk=pk)
-        if game.owner == request.user:
+        if game.creator == request.user:
             game.start()
         #return to games
         return HttpResponseRedirect("../")
@@ -201,11 +202,14 @@ def submit_action(request, pk):
             #does player control?
             agent = Agent.objects.get(pk=actionDict["agent"])
             if agent in player.agent_set.all():
-                print("Agent %s not in player agent set"%(agent))
                 #what action
                 actionName = actionDict["action"]
                 action = Action(acttype=actionName)
-                if actionName not in ["recruit", "research"]:
+                if actionName == "misInfo":
+                    target_dict = actionDict["target"]
+                    action.acttype = actionName
+                    action.actdict = json.dumps(target_dict)
+                elif actionName not in ["recruit", "research"]:
                     #(what target)
                     targetKey = actionDict["target"]
                     action.acttype = actionName 
@@ -265,6 +269,7 @@ def get_status(request, pk):
         data = {"points": points, 
                 "turn": turn, 
                 "timer": game.time_till(),
+                "next_turn_at": int(game.next_turn.timestamp()),
                 "messages": serializers.serialize("json", messages)}
         return HttpResponse(json.dumps(data), content_type="application_json")
 
@@ -347,7 +352,22 @@ def get_agents(request, pk):
     if request.user in game.get_users():
         data = []
         for player in game.players.all():
-            data += player.agent_set.all()
+            if player.user != request.user:
+                data += player.agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
 
+'''
+get_own_agents
+    used by front end to get agent data for
+    one player
+
+    url         /game/play/pk/get_own_agents/
+'''
+@login_required
+def get_own_agents(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user in game.get_users():
+        data = game.players.get(user=request.user).agent_set.all()
+        json = serializers.serialize("json", data)
+        return HttpResponse(json, content_type="application_json")

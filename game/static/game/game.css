@@ -2,3 +2,9 @@
     height: 200px !important;
     overflow: scroll;
 }
+
+#timerDisplay {
+    font-family: monospace;
+    color: red;
+    text-align:  center;
+}

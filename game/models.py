@@ -17,6 +17,8 @@ from editor.models import *
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
+from random import random
+import json
 
 # Create your models here.
 '''
@@ -95,10 +97,12 @@ class Game(models.Model):
     
     #TODO: make these configured in game create?
     #       would require more fields default values are same
-    ACTION_COSTS = {"tail": 1, "investigate": 1, "misinf": 1, "check": 1,
+    ACTION_COSTS = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
                     "recruit": 3, "apprehend": 5, "terminate": 5, 
                     "research": -2}
-
+    ACTION_SUCC_RATE = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
+                        "recruit": 1, "apprehend": .5, "terminate": .5,
+                        "research": 1}
 
     def __str__(self):
         return "Game using scenario %s"%(self.scenario.name)
@@ -133,11 +137,9 @@ class Game(models.Model):
         now = make_aware(datetime.now())
         if self.next_turn != None:
             #otherwise get large ugly number of seconds
-            if now > self.next_turn:
-                return 0
-            else:
-                till = self.next_turn - now
-                return till.seconds
+            till = self.next_turn - now
+            print(till)
+            return till.seconds
         
     
     '''
@@ -160,7 +162,7 @@ class Game(models.Model):
             target_table = {"tail": Character,
                             "investigate": Location,
                             "check": Description,
-                            "misinf": None,
+                            "misInfo": None,
                             "recruit": None,
                             "apprehend": Character,
                             "research": None,
@@ -234,7 +236,7 @@ class Game(models.Model):
         agents_to_proc = []
         for player in self.players.all():
             #add agents to list
-            agents_to_proc += Agent.objects.filter(player=player)
+            agents_to_proc += Agent.objects.filter(player=player, alive=True)
 
         #TODO: decide on order of agents?
         for agent in agents_to_proc:
@@ -265,7 +267,7 @@ class Game(models.Model):
                 message.save()
 
         #next turn time
-        self.next_turn += self.turn_length
+        self.next_turn = make_aware(datetime.now() + self.turn_length)
 
         #store in db
         self.save()
@@ -280,11 +282,14 @@ class Game(models.Model):
         If the action is valid (assumed) then the action will 
         succeed (oh hello hubris)
 
-        TODO: tail, investigate, check, misinf, apprehend, terminate
+        TODO: tail, investigate, checInfomisinf, apprehend, terminate
     '''
     def perform_action(self, action):
         player = action.agent_set.all()[0].player
 
+        message = Message()
+        message.player = player
+        message.turn = self.turn
         if action.acttype == "tail":
             involveds = Involved.objects.filter(character__id=action.acttarget)
             for involved in involveds.all():
@@ -295,13 +300,12 @@ class Game(models.Model):
                     describedbys = DescribedBy.objects.filter(event=involved.event)
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
-                            message = Message()
-                            message.player = player
-                            message.turn=self.turn
                             #TODO fix this
                             message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
                                                                             describedby.description)
-                            message.save()
+                        else:
+                            message.text = "Tailing %s discovered nothing"%(Character.objects.get(pk=action.acttarget))
+                        message.save()
         elif action.acttype == "investigate":
             happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
             for happenedat in happenedats:
@@ -312,13 +316,12 @@ class Game(models.Model):
                     describedbys = DescribedBy.objects.filter(event=happenedat.event)
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
-                            message = Message()
-                            message.player = player
-                            message.turn = self.turn
                             #TODO fix this
                             message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
                                                                                       describedby.description)
-                            message.save()
+                        else:
+                            message.text = "Investigation into %s discovered nothing"%(Location.objects.get(pk=action.acttarget))
+                        message.save()
         elif action.acttype == "check":
             describedby = DescribedBy.objects.get(description__id=action.acttarget)
             if describedby.event.turn < self.turn:
@@ -326,14 +329,35 @@ class Game(models.Model):
                                       event=describedby.event)
                 knowledge.save()
                 if describedby.event.misinf:
-                    message = Message()
-                    message.player = player
-                    message.turn = self.turn
                     #TODO: fix this
                     message.text = "The informationt that '%s' has been proven to be false"%(Description.objects.get(pk=action.acttarget))
-                    message.save()
-        elif action.acttype == "misinf":
-            pass
+                else:
+                    message.text = "The infomration that '%s' has been provent to be true"%(Description.objects.get(pk=action.acttarget))
+                message.save()
+        elif action.acttype == "misInfo":
+            target_dict = json.loads(action.actdict)
+            character_id = target_dict["character"]
+            location_id = target_dict["location"]
+            description_text = target_dict["description"]
+            
+            event = Event(turn=self.turn, misinf=True)
+            event.save()
+
+            description = Description(text=description_text,
+                                      key=False,
+                                      hidden=False)
+            description.save()
+
+            happenedat = HappenedAt(event=event,
+                                    location__id=location_id)
+            happenedat.save()
+            involved = Involved(event=event,
+                                character__id=character_id)
+            involved.save()
+            describedby = DescribedBy(event=event,
+                                      description=description)
+            describedby.save()
+            message.text = "Misinformation that '%s' succesfully diseminated"%(description_text)
         elif action.acttype == "recruit":
             #player gets another agent
             #TODO: test to ensure new agents cant act
@@ -341,13 +365,30 @@ class Game(models.Model):
             #       (should just be recorded as an invalid action by
             #        game.Game.start_next_turn)
             player.add_agent()
+            message.text = "Agent recruited"
+            message.save()
         elif action.acttype == "apprehend":
-            pass
+            character = Character.objects.get(pk=action.acttarget)
+            if (random() < self.ACTION_SUCC_RATE[action.acttype]):
+                if character.key:
+                    #TODO better endgame handling
+                    message.text = "%s captured. You win!"%(character)
+                else:
+                    message.text = "%s captured. They are not part of the plot"%(character)
+            else:
+                message.text = "%s escaped capture attempt"%(character)
+            message.save()
         elif action.acttype == "research":
             #only need to sub (negative) action cost from player
             pass
         elif action.acttype == "terminate":
-            pass
+            if (random() < self.ACTION_SUCC_RATE[action.acttype]):
+                message.text = "Opposing agent terminated"
+                agent = Agent.objects.get(pk=action.acttype)
+                agent.alive = False
+            else:
+                message.text = "Opposing agent not terminated"
+            message.save()
         player.points -= self.ACTION_COSTS[action.acttype]
         player.save()
 
@@ -393,9 +434,9 @@ Action
 class Action(models.Model):
     acttype = models.CharField(max_length=64) #this is obviously not right
     acttarget = models.IntegerField(default=-1)
+    #double text field length for safety
+    actdict = models.CharField(max_length=1024, null=True) 
 
-
-    
     def __str__(self):
         return "Action %s"%(self.acttype)
 '''

@@ -763,6 +763,11 @@ function toJSONClass() {
         xhttp.open('POST', "../accept_ajax_scenario/", false);
         //xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
+    
+        var response = xhttp.responseText;
+        var dict = JSON.parse(response);
+        console.log(dict);
+        Graph.getData(dict.tables, JSON.parse(dict.schema), JSON.parse(dict.dump), dict.split);
 
 
         //Print out the results of the dump in the dump location at the bottom

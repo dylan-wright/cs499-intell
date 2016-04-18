@@ -282,8 +282,8 @@ function toJSONClass() {
        
         //Get values stored in the current fields 
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').checked;
-        var isSecret = document.getElementById('eventSecretBox').checked;
+        var isKey = document.getElementById('eventKeyBoxIn').checked;
+        var isSecret = document.getElementById('eventSecretBoxIn').checked;
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
@@ -346,6 +346,8 @@ function toJSONClass() {
 		
         this.eventKey++;
         this.hashKey++;
+        this.descKey++;
+        this.descbyKey++;
 		
 		document.getElementById('eventNameBox').value = "";
         document.getElementById('eventKeyBox').checked = "";
@@ -662,7 +664,15 @@ function toJSONClass() {
 
             //if element is a character/location then just push as is
             if(currModel == "editor.character" || currModel == "editor.location"){ 
-                finalarr.push(this.hashJSON[key]);
+                //this.hashJSON[key].pk = null;
+                var currJSONobj = this.hashJSON[key];
+            
+                var JSONcharloc = {
+                    "model": currJSONobj.model,
+                    "pk": currJSONobj.pk+1,
+                    "fields": currJSONobj.fields
+                };
+                finalarr.push(JSONcharloc);
             }
 
             //Else, it's some other event object 
@@ -673,7 +683,8 @@ function toJSONClass() {
                 //Matching all fields as specified in fixture.json
                 JSONevent = {
                     "model": currJSONobj.model,
-                    "pk": currJSONobj.pk,
+                    "pk": currJSONobj.pk+1,
+                    //"pk": null,
                     "fields": {
                         "turn": currJSONobj.fields.turn
                     }
@@ -683,7 +694,8 @@ function toJSONClass() {
                 //then create the description object 
                 JSONdesc = {
                     "model": currJSONobj.description.descmodel,
-                    "pk": currJSONobj.description.descpk,
+                    "pk": currJSONobj.description.descpk+1,
+                    //"pk": null,
                     "fields": {
                         "text": currJSONobj.description.snippet,
                         "hidden": currJSONobj.description.secret
@@ -694,10 +706,11 @@ function toJSONClass() {
                 //then create the described by objects
                 JSONdescby = {
                     "model": currJSONobj.description.describedby.descbymodel,
-                    "pk": currJSONobj.description.describedby.descbypk,
+                    "pk": currJSONobj.description.describedby.descbypk+1,
+                    //"pk": null,
                     "fields": {
-                        "event_id": currJSONobj.pk,
-                        "description_id": currJSONobj.description.pk
+                        "event_id": currJSONobj.pk+1,
+                        "description_id": currJSONobj.description.descpk+1
                     }
                 };
                 finalarr.push(JSONdescby);
@@ -712,10 +725,11 @@ function toJSONClass() {
 
                         JSONtag = {
                             "model": currJSONobj.tags[element].tagmodel,
-                            "pk": currJSONobj.tags[element].tagpk,
+                            "pk": currJSONobj.tags[element].tagpk++,
+                            //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk,
-                                "character_id": currJSONobj.tags[element].targetpk
+                                "event_id": currJSONobj.pk+1,
+                                "character_id": currJSONobj.tags[element].targetpk+1
                             }
                         };
 
@@ -725,10 +739,11 @@ function toJSONClass() {
 
                          JSONtag = {
                             "model": currJSONobj.tags[element].tagmodel,
-                            "pk": currJSONobj.tags[element].tagpk,
+                            "pk": currJSONobj.tags[element].tagpk+1,
+                            //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk,
-                                "location_id": currJSONobj.tags[element].targetpk
+                                "event_id": currJSONobj.pk+1,
+                                "location_id": currJSONobj.tags[element].targetpk+1
                             }
                         };                       
                     }
@@ -745,13 +760,19 @@ function toJSONClass() {
 
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
-        //xhttp.open('POST', "../accept_ajax_scenario/", false);
-        xhttp.open('POST', "../dump_request/", false);
+        xhttp.open('POST', "../accept_ajax_scenario/", false);
+        //xhttp.open('POST', "../dump_request/", false);
         xhttp.send(fileUpload);
+    
+        var response = xhttp.responseText;
+        var dict = JSON.parse(response);
+        console.log(dict);
+        Graph.getData(dict.tables, JSON.parse(dict.schema), JSON.parse(dict.dump), dict.split);
+
 
         //Print out the results of the dump in the dump location at the bottom
         //of the webpage
-        document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
+        //document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
 
 

@@ -12,6 +12,7 @@
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <!--Instantiating the JSON class object after the script was referenced -->
   <script src="{% static "editor/FrontEndtoJSON.js" %}"></script>
+  <script src="{% static "editor/vis.min.js" %}"></script>
 </head>
 <body>
 <div class="container">
@@ -153,7 +154,7 @@
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">
         Deleting an Existing Character</a>
         </h4>
-        </div>
+       </div>
         <div id="collapse6" class="panel-collapse collapse">
         <div class="panel-body">
               <ol>
@@ -564,13 +565,13 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">
                           <div id="eventKeyBox" class="checkbox">
-                            <label><input type="checkbox" value="">Key</label>
+                            <label><input type="checkbox" value="" id="eventKeyBoxIn">Key</label>
                           </div>
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">                      
                           <div id="eventSecretBox" class="checkbox" data-toggle="collapse" data-target="#secretCollapse">
-                            <label><input type="checkbox" value="">Secret</label>
+                            <label><input type="checkbox" value="" id='eventSecretBoxIn'>Secret</label>
                           </div>
                         </div>
                       </div>
@@ -706,6 +707,7 @@
   </div>
 </div>
 <!-- Where the dump contents are going to go... -->
-<div class="container" id="dumpLoc">Dump Object Location</div>
+<div style="height:400px;" id="dumpLoc">Dump Object Location</div>
 </body>
+<script src="{% static 'editor/graph.js' %}"></script>
 </html>

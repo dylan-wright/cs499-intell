@@ -63,6 +63,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.files import File
 from django.conf import settings
 from django.core.files.base import ContentFile
+import json
 
 # Create your views here.
 '''
@@ -253,6 +254,14 @@ def accept_ajax_scenario(request):
     # add file name to db
     if request.method == 'POST':
         data = []
+        events = []
+        locations = []
+        descriptions = []
+        characters = []
+
+        happened_ats = []
+        involveds = []
+        described_bys = []
 
         #fileUpload = request.FILES['fileUpload']
         body = request.body
@@ -261,14 +270,94 @@ def accept_ajax_scenario(request):
                 scenario = obj.object
                 scenario.author = ""
                 scenario.save()
-            elif isinstance(obj.object, Event):
-                event = obj.object
-                event.scenario = scenario
-                event.save()
             else:
-                obj.save()
-            data.append(obj)
-        context = {"data":data}
+                if isinstance(obj.object, Event):
+                    events.append(obj.object)
+                elif isinstance(obj.object, Character):
+                    characters.append(obj.object)
+                elif isinstance(obj.object, Location):
+                    locations.append(obj.object)
+                elif isinstance(obj.object, Description):
+                    descriptions.append(obj.object)
+                elif isinstance(obj.object, Involved):
+                    involveds.append(obj.object)
+                elif isinstance(obj.object, HappenedAt):
+                    happened_ats.append(obj.object)
+                elif isinstance(obj.object, DescribedBy):
+                    described_bys.append(obj.object)
+                
+        dump = []
+
+        #process characters
+        dump.append([])
+        character_translation = {}
+        for character in characters:
+            old = character.pk
+            character.pk = None
+            character.save()
+            character_translation[old] = character.pk
+            dump[-1].append(character.graph_dump())
+            
+        #process locations
+        dump.append([])
+        location_translation = {}
+        for location in locations:
+            old = location.pk
+            location.pk = None
+            location.save()
+            location_translation[old] = location.pk
+            dump[-1].append(location.graph_dump())
+        
+        #process descriptions
+        dump.append([])
+        description_translation = {}
+        for description in descriptions:
+            old = description.pk
+            description.pk = None
+            description.save()
+            description_translation[old] = description.pk
+            dump[-1].append(description.graph_dump())
+        
+        dump.append([])
+        #process events
+        event_translation = {}
+        for event in events:
+            #search connection lists for event 
+            old = event.pk
+            event.pk = None
+            event.save()
+            event_translation[old] = event.pk
+            dump[-1].append(event.graph_dump())
+        
+        dump.append([])
+        for db in described_bys:
+            db.event_id = event_translation[db.event_id]
+            db.description_id = description_translation[db.description_id]
+            db.save()
+            dump[-1].append(db.graph_dump())
+        dump.append([])
+        for ha in happened_ats:
+            ha.event_id = event_translation[ha.event_id]
+            ha.location_id = location_translation[ha.location_id]
+            ha.save()
+            dump[-1].append(ha.graph_dump())
+        dump.append([])
+        for i in involveds:
+            i.event_id = event_translation[i.event_id]
+            i.character_id = character_translation[i.character_id]
+            i.save()
+            dump[-1].append(i.graph_dump())
+
+
+
+#        context = {"data": {"scenario": scenario, 
+#                            "events": events,
+#                            "characters": characters,
+#                            "locations": locations,
+#                            "descriptions": descriptions,
+#                            "involveds": involveds,
+#                            "happend_ats": happened_ats,
+#                            "described_bys": described_bys}}
 
         if (scenario != None):
             scenario.file_name.save(str(scenario.id), ContentFile(body))
@@ -277,9 +366,26 @@ def accept_ajax_scenario(request):
         #file_name = str(scenario.id)
         #scenario.file_name.save(file_name, fileUpload)
         #scenario.save()
+        tables = ['Character', 'Location', 'Description', 'Event', 
+                  'DescribedBy', 'HappenedAt', 'Involved']
+        schema = {"Character":["id","name","key"],
+                  "Location":["id", "name","x","y"], 
+                  "Description":["id","text","hidden"],
+                  "Event":["id","turn"],
+                  "DescribedBy":["id","event_id","description_id"],
+                  "HappenedAt":["id","event_id","location_id"],
+                  "Involved":["id","event_id","character_id"]}
+        split = 4
+        json_dump = json.dumps({"tables": tables, "schema": json.dumps(schema), 
+                                "dump": json.dumps(dump), "split": split})
+        context = {
+            "json_dump": json_dump
+        }
+        #return render(request, "editor/accept_ajax_scenario.html", context)
+        return HttpResponse(json_dump, content_type="application_json")
     else:
         context = {"data":request}
-    return render(request, "editor/accept_ajax_scenario.html", context)
+        return render(request, "editor/graph", context)
 
 #TODO: move registrations things out of editor
 '''
@@ -338,3 +444,4 @@ def dump_request(request):
                    "files": request.body,
                    "meta": request.META}
     return render(request, "editor/dump_request.html", context)
+

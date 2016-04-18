@@ -73,6 +73,9 @@ class Character(models.Model):
     def __str__(self):
         return self.name
 
+    def graph_dump(self):
+        return {"key": self.key, "name": self.name, "id": self.pk}
+
     def get_absolute_url(self):
         return reverse("edit")
 
@@ -90,6 +93,9 @@ class Location(models.Model):
 
     def __str__(self):
         return self.name
+
+    def graph_dump(self):
+        return {"x": self.x, "name": self.name, "y": self.y, "id": self.pk}
 
     def get_absolute_url(self):
         return reverse("edit")
@@ -116,6 +122,9 @@ class Description(models.Model):
     def __str__(self):
         return self.text
 
+    def graph_dump(self):
+        return {"id": self.pk, "text": self.text, "hidden": self.hidden}
+
     def get_absolute_url(self):
         return reverse("edit")
         
@@ -131,6 +140,9 @@ class Event(models.Model):
 
     def __str__(self):
         return "Event on turn "+str(self.turn)
+
+    def graph_dump(self):
+        return {"id": self.pk, "turn": self.turn}
 
     def get_absolute_url(self):
         return reverese("edit")
@@ -154,6 +166,9 @@ class Involved(models.Model):
     def __str__(self):
         return "Connection between " + str(self.event) + " and " + str(self.character)
 
+    def graph_dump(self):
+        return {"id": self.pk, "event_id": self.event_id, "character_id": self.character_id}
+
     def get_absolute_url(self):
         return reverse("edit")
 
@@ -169,6 +184,9 @@ class HappenedAt(models.Model):
 
     def __str__(self):
         return "Connection between " + str(self.event) + " and " + str(self.location)
+
+    def graph_dump(self):
+        return {"id": self.pk, "event_id": self.event_id, "location_id": self.location_id}
     
     def get_absolute_url(self):
         return reverse("edit")
@@ -185,6 +203,9 @@ class DescribedBy(models.Model):
 
     def __str__(self):
         return "Connection between " + str(self.event) + " and " + str(self.description)
+
+    def graph_dump(self):
+        return {"id": self.pk, "event_id": self.event_id, "description_id": self.description_id}
 
     def get_absolute_url(self):
         return reverse("edit")

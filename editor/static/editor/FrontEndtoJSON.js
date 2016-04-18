@@ -676,7 +676,7 @@ function toJSONClass() {
                 //Matching all fields as specified in fixture.json
                 JSONevent = {
                     "model": currJSONobj.model,
-                    "pk": currJSONobj.pk++,
+                    "pk": currJSONobj.pk+1,
                     //"pk": null,
                     "fields": {
                         "turn": currJSONobj.fields.turn
@@ -687,7 +687,7 @@ function toJSONClass() {
                 //then create the description object 
                 JSONdesc = {
                     "model": currJSONobj.description.descmodel,
-                    "pk": currJSONobj.description.descpk++,
+                    "pk": currJSONobj.description.descpk+1,
                     //"pk": null,
                     "fields": {
                         "text": currJSONobj.description.snippet,
@@ -699,11 +699,11 @@ function toJSONClass() {
                 //then create the described by objects
                 JSONdescby = {
                     "model": currJSONobj.description.describedby.descbymodel,
-                    "pk": currJSONobj.description.describedby.descbypk++,
+                    "pk": currJSONobj.description.describedby.descbypk+1,
                     //"pk": null,
                     "fields": {
-                        "event_id": currJSONobj.pk++,
-                        "description_id": currJSONobj.description.descpk++
+                        "event_id": currJSONobj.pk,
+                        "description_id": currJSONobj.description.descpk+1
                     }
                 };
                 finalarr.push(JSONdescby);
@@ -721,8 +721,8 @@ function toJSONClass() {
                             "pk": currJSONobj.tags[element].tagpk++,
                             //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk++,
-                                "character_id": currJSONobj.tags[element].targetpk++
+                                "event_id": currJSONobj.pk,
+                                "character_id": currJSONobj.tags[element].targetpk+1
                             }
                         };
 
@@ -732,11 +732,11 @@ function toJSONClass() {
 
                          JSONtag = {
                             "model": currJSONobj.tags[element].tagmodel,
-                            "pk": currJSONobj.tags[element].tagpk++,
+                            "pk": currJSONobj.tags[element].tagpk+1,
                             //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk++,
-                                "location_id": currJSONobj.tags[element].targetpk++
+                                "event_id": currJSONobj.pk,
+                                "location_id": currJSONobj.tags[element].targetpk+1
                             }
                         };                       
                     }

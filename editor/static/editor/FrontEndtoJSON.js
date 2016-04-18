@@ -665,7 +665,14 @@ function toJSONClass() {
             //if element is a character/location then just push as is
             if(currModel == "editor.character" || currModel == "editor.location"){ 
                 //this.hashJSON[key].pk = null;
-                finalarr.push(this.hashJSON[key]);
+                var currJSONobj = this.hashJSON[key];
+            
+                var JSONcharloc = {
+                    "model": currJSONobj.model,
+                    "pk": currJSONobj.pk+1,
+                    "fields": currJSONobj.fields
+                };
+                finalarr.push(JSONcharloc);
             }
 
             //Else, it's some other event object 
@@ -702,7 +709,7 @@ function toJSONClass() {
                     "pk": currJSONobj.description.describedby.descbypk+1,
                     //"pk": null,
                     "fields": {
-                        "event_id": currJSONobj.pk,
+                        "event_id": currJSONobj.pk+1,
                         "description_id": currJSONobj.description.descpk+1
                     }
                 };
@@ -721,7 +728,7 @@ function toJSONClass() {
                             "pk": currJSONobj.tags[element].tagpk++,
                             //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk,
+                                "event_id": currJSONobj.pk+1,
                                 "character_id": currJSONobj.tags[element].targetpk+1
                             }
                         };
@@ -735,7 +742,7 @@ function toJSONClass() {
                             "pk": currJSONobj.tags[element].tagpk+1,
                             //"pk": null, 
                             "fields": {
-                                "event_id": currJSONobj.pk,
+                                "event_id": currJSONobj.pk+1,
                                 "location_id": currJSONobj.tags[element].targetpk+1
                             }
                         };                       

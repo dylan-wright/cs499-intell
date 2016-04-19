@@ -38,7 +38,11 @@ class Scenario(models.Model):
     file_name = models.FileField(upload_to='scenarios', null=True) 
 
     def __str__(self):
-        return self.author + " presents " + self.name
+        if self.author != None:
+            return self.author.username + " presents " + self.name
+        else:
+            return self.name
+
 
     '''
     load_events

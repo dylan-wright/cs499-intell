@@ -217,7 +217,6 @@ def submit_action(request, pk):
                 action.save()
                 agent.action = action
                 agent.save()
-                print("logging action %s"%(action))
 
         context = {"response": request.body}
     elif request.method == "GET":

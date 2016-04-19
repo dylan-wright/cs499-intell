@@ -48,6 +48,7 @@
 
 #TODO: remove this
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
@@ -225,6 +226,7 @@ def index(request):
 navigation page for page based (protoeditor)
     edit -> templates/editor/edit/index.html
 '''
+@login_required
 def edit(request):
     return render(request, "editor/edit/edit.html")
 
@@ -268,7 +270,7 @@ def accept_ajax_scenario(request):
         for obj in serializers.deserialize("json", body):
             if isinstance(obj.object, Scenario):
                 scenario = obj.object
-                scenario.author = ""
+                scenario.author = request.user
                 scenario.save()
             else:
                 if isinstance(obj.object, Event):
@@ -330,6 +332,7 @@ def accept_ajax_scenario(request):
             dump[-1].append(event.graph_dump())
         
         dump.append([])
+        print(described_bys)
         for db in described_bys:
             db.event_id = event_translation[db.event_id]
             db.description_id = description_translation[db.description_id]

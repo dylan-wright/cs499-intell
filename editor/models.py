@@ -16,6 +16,7 @@
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 # Create your models here.
 '''
@@ -33,7 +34,7 @@ class Scenario(models.Model):
     name = models.CharField(max_length=64, null=True)
     turn_num = models.IntegerField()
     point_num = models.IntegerField()
-    author = models.CharField(max_length=32)     # too short?
+    author = models.ForeignKey(User)     # too short?
     file_name = models.FileField(upload_to='scenarios', null=True) 
 
     def __str__(self):

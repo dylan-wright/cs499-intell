@@ -20,7 +20,7 @@ from editor import views
 urlpatterns = [
     url(r'^editor/', include('editor.urls')),
     url(r'^game/', include('game.urls')),
+    url(r'^', include('top_site.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^', include('django.contrib.auth.urls')),
-    url(r'^register', views.register, name="register"),
 ]

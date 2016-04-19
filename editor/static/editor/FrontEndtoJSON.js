@@ -751,12 +751,17 @@ function toJSONClass() {
         //Trying to send the current hashmap to the dump request webpage
         var xhttp = new XMLHttpRequest();
         //xhttp.open('POST', "../accept_ajax_scenario/", false);
-        xhttp.open('POST', "../dump_request/", false);
+        xhttp.open('POST', "../accept_ajax_scenario/", false);
         xhttp.send(fileUpload);
+
+        var response = xhttp.responseText;
+        var dict = JSON.parse(response);
+        Graph.getData(dict.tables, JSON.parse(dict.schema), 
+                      JSON.parse(dict.dump), dict.split);
 
         //Print out the results of the dump in the dump location at the bottom
         //of the webpage
-        document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
+        //document.getElementById('dumpLoc').innerHTML = xhttp.responseText;
     }
 
 

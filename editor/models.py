@@ -34,7 +34,7 @@ class Scenario(models.Model):
     name = models.CharField(max_length=64, null=True)
     turn_num = models.IntegerField()
     point_num = models.IntegerField()
-    author = models.ForeignKey(User)     # too short?
+    author = models.ForeignKey(User, null=True)     # too short?
     file_name = models.FileField(upload_to='scenarios', null=True) 
 
     def __str__(self):

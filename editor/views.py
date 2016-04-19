@@ -270,7 +270,8 @@ def accept_ajax_scenario(request):
         for obj in serializers.deserialize("json", body):
             if isinstance(obj.object, Scenario):
                 scenario = obj.object
-                scenario.author = request.user
+                if not request.user.is_anonymous():
+                    scenario.author = request.user
                 scenario.save()
             else:
                 if isinstance(obj.object, Event):
@@ -332,7 +333,6 @@ def accept_ajax_scenario(request):
             dump[-1].append(event.graph_dump())
         
         dump.append([])
-        print(described_bys)
         for db in described_bys:
             db.event_id = event_translation[db.event_id]
             db.description_id = description_translation[db.description_id]

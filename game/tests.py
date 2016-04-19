@@ -47,7 +47,6 @@ class  GameTestCase(TestCase):
         Scenario.objects.create(name="test",
                                 turn_num=20,
                                 point_num=20,
-                                author="test",
                                 file_name="fixture.json")
         Game.objects.create(scenario=Scenario.objects.all()[0])
 
@@ -87,7 +86,6 @@ class  GameTestCase(TestCase):
         self.assertEqual(scenario.name, "test")
         self.assertEqual(scenario.turn_num, 20)
         self.assertEqual(scenario.point_num, 20)
-        self.assertEqual(scenario.author, "test")
         self.assertEqual(scenario.file_name, "fixture.json")
         self.assertEqual(game.started, False)
 

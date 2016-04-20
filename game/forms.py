@@ -20,4 +20,4 @@ GameForm
 class GameForm(ModelForm):
     class Meta:
         model = Game
-        fields = ['scenario', 'turn_length', 'next_turn']
+        fields = ['scenario', 'turn_length']

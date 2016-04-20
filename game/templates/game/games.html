@@ -18,19 +18,27 @@
       </div>
       <div class="panel-body">  
         <div id="currGamesTable" class="table-responsive">
-          <table class="table table-hover, table-bordered">
+          <table class="table table-hover table-bordered">
             <thead>
               <tr>
                 <th>Turn</th>
                 <th>Game Owner</th>
+                <th>In Game</th>
                 <th>Turn Timer</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="currGamesBody">
             {% for game in current %}
-              <tr><td>{{ game.turn }}</td>
-                  <td>{{ game.creator }}</td>
-                  <td>{{ game.time_till }}</td>
+              <tr data-value="{{ game.pk }}">
+                <td>{{ game.turn }}</td>
+                <td>{{ game.creator }}</td>
+                <td>{% if user in game.get_users %}
+                    Yes
+                    {% else %}
+                    No
+                    {% endif %}
+                </td>
+                <td>{{ game.time_till }}</td>
               </tr>
             {% empty %}
             {% endfor %}
@@ -47,7 +55,7 @@
       </div>
       <div class="panel-body">  
         <div id="pendGamesTable" class="table-responsive">
-          <table class="table table-hover, table-bordered">
+          <table class="table table-hover table-bordered">
             <thead>
               <tr>
                 <th>Game Owner</th>
@@ -55,11 +63,19 @@
                 <th>Starts in</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="pendGamesBody">
             {% for game in pending %}
-              <tr><td>{{ game.creator }}</td>
-                  <td>{{ game.players }}</td>
-                  <td>{{ game.time_till }}</td>
+              <tr data-value="{{ game.pk }}">
+                <td>{{ game.creator }}</td>
+                <td>{{ game.get_users }}</td>
+                {% if game.creator == user %}
+                <td><form action="{{ game.pk }}/" method="post">{% csrf_token %}
+                      <button type="submit">Start Game</button>
+                    </form>
+                </td>
+                {% else %}
+                <td></td>
+                {% endif %}
               </tr>
             {% empty %}
             {% endfor %}
@@ -111,7 +127,6 @@
             {% include "game/games/create.html" %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Create</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>

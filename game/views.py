@@ -122,8 +122,7 @@ def create(request):
         if form.is_valid():
             game = Game(scenario=form.cleaned_data["scenario"],
                         creator=request.user,
-                        turn_length=form.cleaned_data["turn_length"],
-                        next_turn=form.cleaned_data["next_turn"])
+                        turn_length=form.cleaned_data["turn_length"])
             game.save()
             return HttpResponseRedirect("../")
         #TODO: else send error message to user

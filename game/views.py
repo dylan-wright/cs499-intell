@@ -146,7 +146,7 @@ def join(request, pk):
     player = Player(user=request.user, points=game.scenario.point_num)
     player.save()
     #add to game
-    game.add_player(player)
+    game.add_player(request.user)
 
     context = {"startsat": game.next_turn}
     return render(request, "game/games/join.html", context)

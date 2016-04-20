@@ -117,13 +117,16 @@ class Game(models.Model):
         return users
     '''
     add_player
-        I: player - a Player object
-        O: player is added to the players field if the game has not started
+        I: player - a user object
+        O: player created and
+            is added to the players field if the game has not started
             and the player is not in the game already
             otherwise no change
     '''
-    def add_player(self, player):
-        if player not in self.players.all():
+    def add_player(self, user):
+        if user not in self.get_users():
+            player = Player(user=user)
+            player.save()
             self.players.add(player)
             self.save()
 

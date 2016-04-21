@@ -28,6 +28,7 @@ var Status = (function () {
     turnDisplay: document.getElementById("turnDisplay"),
     pointsDisplay: document.getElementById("pointsDisplay"),
     messagesDisplay: document.getElementById("messagesDisplay"),
+    check: 0,
     timer: null,
     turn: null,
     points: null,
@@ -92,16 +93,19 @@ var Status = (function () {
   function update () {
     //60 second padding for timing issue
     //TODO resolve issue itself
-    console.log("next "+settings.nextturn);
-    console.log("now  "+Math.round(Date.now()/1000));
+    //console.log("next "+settings.nextturn);
+    //console.log("now  "+Math.round(Date.now()/1000));
     var time_till = settings.nextturn - Math.round(Date.now()/1000);
     if (time_till < 1) {
       settings.timerDisplay.innerHTML = "00 : 00 : 00";
       //TODO: make sure this is sufficient for catching updates (query till
       //        one appears?
-      updateStatus();
-      Snippets.update();
-      Actions.update()
+      if (settings.check == 9) {
+        updateStatus();
+        Snippets.update();
+        Actions.update()
+      }
+      settings.check = (settings.check+1)%10;
     } else {
       var s = time_till % 60;
       var m = Math.trunc(time_till/60) % 60;

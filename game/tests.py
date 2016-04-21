@@ -101,26 +101,18 @@ class  GameTestCase(TestCase):
         u2.save()
         u3.save()
 
-        p1 = Player(user=u1)
-        p2 = Player(user=u2)
-        p3 = Player(user=u3)
-
-        p1.save()
-        p2.save()
-        p3.save()
-
         self.assertEqual(len(game.players.all()), 0)
 
-        game.add_player(p1)
-        game.add_player(p2)
-        game.add_player(p3)
+        game.add_player(u1)
+        game.add_player(u2)
+        game.add_player(u3)
 
         self.assertEqual(len(game.players.all()), 3)
         self.assertEqual(game.players.all()[0].user.username, "user1")
 
-        game.add_player(p1)
-        game.add_player(p2)
-        game.add_player(p2)
+        game.add_player(u1)
+        game.add_player(u2)
+        game.add_player(u3)
 
         self.assertEqual(len(game.players.all()), 3)
 
@@ -170,14 +162,6 @@ class ProcessActionsTestCase(TestCase):
         u2.save()
         u3.save()
 
-        p1 = Player(user=u1)
-        p2 = Player(user=u2)
-        p3 = Player(user=u3)
-
-        p1.save()
-        p2.save()
-        p3.save()
-
         #fixture scenario
         c = Client()
         file_in = open("editor/static/editor/fixture.json", 'r')
@@ -188,9 +172,9 @@ class ProcessActionsTestCase(TestCase):
                           data=body)
         game = Game(scenario=Scenario.objects.all()[0])
         game.save()
-        game.add_player(p1)
-        game.add_player(p2)
-        game.add_player(p3)
+        game.add_player(u1)
+        game.add_player(u2)
+        game.add_player(u3)
         game.start()
                     
 
@@ -464,9 +448,14 @@ class ProcessActionsTestCase(TestCase):
     def test_misinf_action(self):
         '''test create misinf action'''
         game = Game.objects.all()[0]
+        action = Action(acttype="misinf")
+        action.save()
         player = game.players.all()[0]
         agent = player.agent_set.all()[0]
-        self.assertEqual(True, False)
+        agent.action = action
+        agent.save()
+        valid = game.is_target_valid(action)
+        self.assertEqual(valid, True)
 
         #check that points deducted correctly
         point_count = player.points

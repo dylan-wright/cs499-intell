@@ -265,7 +265,7 @@ var Actions = (function () {
       clearSelect(settings.checkDescSel);
       for (i = 1; i < descriptions.length; i+=2) {
         option = document.createElement("option");
-        option.text = descriptions[i].fields.text;
+        option.text = descriptions[i].text;
         option.value = descriptions[i].pk;
         settings.checkDescSel.add(option);
       }

@@ -43,12 +43,19 @@ var Snippets = (function () {
   /*  addSnippet
    *    add snippet to the table
    */
-  function addSnippet (event, snippet) {
+  function addSnippet (snippet) {
     var tbody = settings.snippetTable.children[1];
     var row = tbody.insertRow(0);
+
+    if (snippet.secret) {
+      row.className += " info";
+    } else if (snippet.misinf) {
+      row.className += " warning";
+    }
+
     var textCell = row.insertCell(0)
-    textCell.innerHTML = snippet.fields.text;
-    row.insertCell(0).innerHTML = event.fields.turn;
+    textCell.innerHTML = snippet.text;
+    row.insertCell(0).innerHTML = snippet.turn;
   }
 
   /*  clearSnippets
@@ -66,19 +73,17 @@ var Snippets = (function () {
    *    snippets
    */
   function getSnippets () {
-    var csrftoken = Cookies.get("csrftoken")
     var xhttp = new XMLHttpRequest();
     //TODO: make async true
-    xhttp.open("POST", "get_snippets/", false);
-    xhttp.setRequestHeader("X-CSRFtoken", csrftoken);
+    xhttp.open("GET", "get_snippets/", false);
     xhttp.send();
     response = xhttp.responseText;
-    models = JSON.parse(response);
+    snippets = JSON.parse(response);
     var i;
-    for (i = 0; i < models.length; i+=2) {
-      addSnippet(models[i], models[i+1]);
+    for (i = 0; i < snippets.length; i+=1) {
+      addSnippet(snippets[i]);
     }
-    return models;
+    return snippets;
   }
 
   /*  getCharacters

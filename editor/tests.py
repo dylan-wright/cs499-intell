@@ -193,7 +193,7 @@ class IntegrationTestCase(TestCase):
         self.assertEqual(len(Scenario.objects.all()), 1)
         
         scenario = Scenario.objects.all()[0]
-        self.assertEqual(scenario.name, "Test Scenario")
+        self.assertEqual(scenario.name, "Fixture")
 
         #there are 29 characters in fixture.json
         self.assertEqual(len(Character.objects.all()), 29)

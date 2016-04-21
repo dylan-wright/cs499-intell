@@ -284,12 +284,31 @@ def get_snippets(request, pk):
     if request.user in game.get_users():
         events = game.get_snippets()
         data = []
+        player = game.players.filter(user=request.user)
+        player_knowledge = Knowledge.objects.filter(player=player)
+
+        known_events = []
+        for knowledge in player_knowledge.all():
+            if knowledge.event not in known_events:
+                known_events += [knowledge.event]
+
         for event in events.all():
+            edict = {}
             describedbys = event.describedby_set.all()
             for describedby in describedbys:
-                data += [event, describedby.description]
-        json = serializers.serialize("json", data)
-        return HttpResponse(json, content_type="application_json")
+                #check if player knowledge should be relayed
+                knows = describedby.event in known_events
+                edict["hidden"] = knows and describedby.description.hidden
+                edict["misinf"] = knows and describedby.event.misinf
+
+                edict["text"] = describedby.description.text
+                edict["turn"] = event.turn
+                edict["pk"] = describedby.description.pk
+
+                data += [edict]
+
+        data = json.dumps(data)
+        return HttpResponse(data, content_type="application_json")
 
 '''
 get_characters

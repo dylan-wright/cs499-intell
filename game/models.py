@@ -126,7 +126,7 @@ class Game(models.Model):
     def add_player(self, user):
         if user not in self.get_users():
             player = Player(user=user)
-            player.points = self.points
+            player.points = self.scenario.point_num
             player.save()
             self.players.add(player)
             self.save()
@@ -344,6 +344,7 @@ class Game(models.Model):
             description_text = target_dict["description"]
             
             event = Event(turn=self.turn, misinf=True)
+            event.scenario = self.scenario
             event.save()
 
             description = Description(text=description_text,
@@ -352,10 +353,10 @@ class Game(models.Model):
             description.save()
 
             happenedat = HappenedAt(event=event,
-                                    location__id=location_id)
+                                    location_id=location_id)
             happenedat.save()
             involved = Involved(event=event,
-                                character__id=character_id)
+                                character_id=character_id)
             involved.save()
             describedby = DescribedBy(event=event,
                                       description=description)

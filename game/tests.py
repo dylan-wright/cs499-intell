@@ -32,7 +32,7 @@ from editor.models import Scenario
 from django.contrib.auth.models import User
 from django.test import Client
 from datetime import timedelta
-
+import json
 # Create your tests here.
 '''
 GameTestCase
@@ -564,3 +564,140 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
+
+'''
+GameSiteTestCase
+    test_index
+    test_games
+    test_game_details
+    test_create
+    test_join
+    test_agents
+    test_agent_detail
+    test_players
+    test_player_detail
+    test_knowledges
+    test_knowledge_detail
+'''
+class GameListViewsTestCase(TestCase):
+    def setUp(self):
+        #make game
+        file_in = open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                          content_type="application/json",
+                          data=body)
+        game = Game(scenario=Scenario.objects.all()[0])
+        game.save()
+        user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        self.client.force_login(user)
+
+    def test_index(self):
+        response = self.client.get("/game/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_games(self):
+        response = self.client.get("/game/games/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_game_details(self):
+        response = self.client.get("/game/games/1/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_create(self):
+        response = self.client.get("/game/games/create/")
+        self.assertEqual(response.status_code, 200)
+        #TODO: create post test
+
+    def test_join(self):
+        response = self.client.get("/game/games/1/join/")
+        self.assertEqual(response.status_code, 200)
+        #TODO test if joined game
+
+    def test_agents(self):
+        response = self.client.get("/game/agents/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_agent_detail(self):
+        #TODO crete agent and test view
+        pass
+
+    def test_players(self):
+        response = self.client.get("/game/players/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_player_detail(self):
+        #TODO joing game and test view
+        pass
+
+    def test_knowledges(self):
+        response = self.client.get("/game/knowledges/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_knowledge_detail(self):
+        #TODO test view
+        pass
+
+'''
+GamePlayViewsTestCase
+    test_submit_action
+    test_play
+    test_get_status
+    test_get_snippets
+    test_get_characters
+    test_get_locations
+    test_get_agents
+    test_get_own_agents
+'''
+class GamePlayViewsTestCase(TestCase):
+    def setUp(self):
+        #make game
+        file_in = open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                          content_type="application/json",
+                          data=body)
+        game = Game(scenario=Scenario.objects.all()[0])
+        game.save()
+        user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        self.client.force_login(user)
+        game.add_player(user)
+        game.start()
+
+    def test_submit_action(self):
+        response = self.client.post("/game/play/1/submit_action/")
+        self.assertEqual(resopnse.status_code, 200)
+        self.assertContains(response, "research")
+        response = self.client.get("/game/play/1/submit_action/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_play(self):
+        response = self.client.get("/game/play/1/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_status(self):
+        response = self.client.get("/game/play/1/get_status/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_snippets(self):
+        response = self.client.get("/game/play/1/get_snippets/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_characters(self):
+        response = self.client.get("/game/play/1/get_characters/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_locations(self):
+        response = self.client.get("/game/play/1/get_locations/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_agents(self):
+        response = self.client.get("/game/play/1/get_agents/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_own_agents(self):
+        response = self.client.get("/game/play/1/get_own_agents/")
+        self.assertEqual(response.status_code, 200)
+

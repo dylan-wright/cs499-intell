@@ -175,6 +175,7 @@ class Game(models.Model):
             message.save()
             return False
 
+
         if target_table != None:
             targets = target_table.objects.filter(pk=acttarget)
             #should only match one target
@@ -200,27 +201,45 @@ class Game(models.Model):
                         message.text = "Agent not found"
                         message.save()
                         return False
-                else:
+                else: #pragma: no cover
                     message.text = "target table not found"
                     messave.save()
                     return False
 
-                if len(event_qset) == 1:
-                    if event_qset[0] in event_qset.all():
-                        return True
-                    else:
-                        message.text = "Event not found"
-                        message.save()
-                        return False
-                else:
-                    message.text = "ambiguous set of events"
+                if len(event_qset) != 0:
+                    return True
+                else: 
+                    message.text = "Event not found"
                     message.save()
                     return False
-            else:
+            else: #pragma: no cover
                 message.text = "ambiguous target pk"
                 message.save()
                 return False
         else:
+            if acttype == "misInfo":
+                events = self.scenario.event_set.all()
+
+                actdict = json.loads(action.actdict)
+                character = Character.objects.filter(pk=actdict["character"])
+                location = Location.objects.filter(pk=actdict["location"])
+                text = actdict["description"]
+                
+                #character/location exists
+                if len(character) == 1 and len(location) == 1:
+                    #in scenario
+                    character_qset = events.filter(involved=Involved.objects.filter(character=character))
+                    location_qset = events.filter(happenedat=HappenedAt.objects.filter(location=location))
+                    if len(character_qset) != 0 and len(location_qset) != 0:
+                        return True
+                    else:
+                        message.text = "Character or location not in scenario"
+                        message.save()
+                        return False
+                else:
+                    message.text = "Character or location does not exist"
+                    message.save()
+                    return False
             #any invalid acttype will throw a key error
             #so dont worry about bad acttype 
             return True

@@ -50,9 +50,17 @@ class  GameTestCase(TestCase):
                                 file_name="fixture.json")
         Game.objects.create(scenario=Scenario.objects.all()[0])
 
+    def test_knowledge_model(self):
+        knowledge = Knowledge(turn=10)
+        knowledge.save()
+        str(knowledge)
+        
     def test_start_next_turn(self):
         '''test turn timing function works'''
         game = Game.objects.get(pk=1)
+        u1 = User.objects.create_user("user1", "user1@intellproject.com", "1234pass")
+        u1.save()
+        game.add_player(u1)
         
         self.assertEqual(game.started, False)
         next_turn = game.next_turn
@@ -77,6 +85,22 @@ class  GameTestCase(TestCase):
         self.assertEqual(game.turn, 3)
         self.assertNotEqual(game.next_turn, next_turn)
         #self.assertAlmostEqual(game.next_turn.timestamp(), (next_turn+game.turn_length).timestamp())
+
+        player = game.players.all()[0]
+        agent = player.agent_set.all()[0]
+        action = Action(acttype="research")
+        action.save()
+        agent.action = action
+
+        game.start_next_turn()
+
+        player.points = 0
+        player.save()
+        action = Action(acttype="tail", acttarget=1)
+        action.save()
+        agent.action = action
+
+        game.start_next_turn()
 
     def test_games_init(self):
         '''test game initialized'''
@@ -304,6 +328,10 @@ class ProcessActionsTestCase(TestCase):
         game.turn = 0
         game.save()
 
+        action.acttarget = Location.objects.get(name="SanFrancisco").pk
+        action.save()
+        self.assertEqual(game.is_target_valid(action), False)
+
         #create a location not in the scenario
         moon = Location(name="The Moon", x=0, y=0)
         moon.save()
@@ -448,7 +476,10 @@ class ProcessActionsTestCase(TestCase):
     def test_misinf_action(self):
         '''test create misinf action'''
         game = Game.objects.all()[0]
-        action = Action(acttype="misinf")
+        action = Action(acttype="misInfo")
+        action.actdict = json.dumps({"character":1, 
+                                     "location":1, 
+                                     "description":""})
         action.save()
         player = game.players.all()[0]
         agent = player.agent_set.all()[0]
@@ -462,7 +493,7 @@ class ProcessActionsTestCase(TestCase):
         game.perform_action(action)
         player.refresh_from_db()
         self.assertEqual(player.points, 
-                         point_count-game.ACTION_COSTS["misinf"])
+                         point_count-game.ACTION_COSTS["misInfo"])
 
     def test_recruit_action(self):
         '''test recruit agent action'''
@@ -515,6 +546,13 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
+
+        #try to apprehend a character in the scenario but not involved in plot
+        timmy = Character.objects.get(name="Timothy McVeigh")
+        action.acttarget = timmy.pk
+        action.save()
+        self.assertTrue(game.is_target_valid(action))
+
 
     def test_research_action(self):
         '''test research action'''
@@ -667,8 +705,13 @@ class GamePlayViewsTestCase(TestCase):
         game.start()
 
     def test_submit_action(self):
-        response = self.client.post("/game/play/1/submit_action/")
-        self.assertEqual(resopnse.status_code, 200)
+        player = Game.objects.all()[0].players.all()[0]
+        agent = player.agent_set.all()[0]
+        response = self.client.post("/game/play/1/submit_action/",
+                                    content_type="application/json",
+                                    data=json.dumps({"action":"research",
+                                                     "agent":agent.pk}))
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "research")
         response = self.client.get("/game/play/1/submit_action/")
         self.assertEqual(response.status_code, 200)

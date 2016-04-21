@@ -327,6 +327,7 @@ def accept_ajax_scenario(request):
             #search connection lists for event 
             old = event.pk
             event.pk = None
+            event.scenario = scenario
             event.save()
             event_translation[old] = event.pk
             dump[-1].append(event.graph_dump())

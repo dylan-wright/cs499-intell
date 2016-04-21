@@ -126,6 +126,7 @@ class Game(models.Model):
     def add_player(self, user):
         if user not in self.get_users():
             player = Player(user=user)
+            player.points = self.points
             player.save()
             self.players.add(player)
             self.save()
@@ -141,7 +142,6 @@ class Game(models.Model):
         if self.next_turn != None:
             #otherwise get large ugly number of seconds
             till = self.next_turn - now
-            print(till)
             return till.seconds
         
     

@@ -2,7 +2,7 @@
     {
         "model": "editor.scenario",
         "fields": {
-            "name": "Test Scenario",
+            "name": "Fixture",
             "turn_num": 25,
             "point_num": 20
         }

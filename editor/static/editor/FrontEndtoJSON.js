@@ -31,6 +31,7 @@
  *      descbyKey - Keeps track of describedby (relationship) objects   
  *      happatKey - Keeps track of happenedat (relationship)  objects   
  *      involvKey - Keeps track of involved (relationship)  objects    
+ *		tagKey - Keeps track of all tags objects (so tables show up correctly)
  *
  *      eventTags[] - collection of event tags stored in the event object
  *      charHash[] - arrays for tab keys 
@@ -109,6 +110,7 @@ function toJSONClass() {
     this.descbyKey = 0;
     this.happatKey = 0;
     this.involvKey = 0;
+	this.tagKey = 0;
     
     //Used for the event listeners 
     this.currSelObj = {};
@@ -282,8 +284,8 @@ function toJSONClass() {
        
         //Get values stored in the current fields 
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBoxIn').checked;
-        var isSecret = document.getElementById('eventSecretBoxIn').checked;
+        var isKey = document.getElementById('eventKeyBox').checked;
+        var isSecret = document.getElementById('eventSecretBox').checked;
         var eventSnip = document.getElementById('snippet').value;
         var secretSnip = document.getElementById('secretSnippet').value;
         var tagTurn = document.getElementById('turnTagSel').value;
@@ -350,18 +352,29 @@ function toJSONClass() {
         this.descbyKey++;
 		
 		document.getElementById('eventNameBox').value = "";
-        document.getElementById('eventKeyBox').checked = "";
-        document.getElementById('eventSecretBox').checked = "";
+        document.getElementById('eventKeyBoxIn').checked = "";
+        document.getElementById('eventSecretBoxIn').checked = "";
         document.getElementById('snippet').value = "";
         document.getElementById('secretSnippet').value = "";
         document.getElementById('turnTagSel').value = "0";
-    }
+    	var table = document.getElementById('eventsTagBody');
+		var rowsLen = table.rows.length;
+		for(i = 0; i < rowsLen; i++){
+			table.deleteRow(0);
+		}
+		
+		$('#secretCollapse').collapse('hide');
+		
+		// document.getElementById('tagTypeSel').selectedIndex = 0;
+		// document.getElementById('targetSel').selectedIndex = 0;
+		this.eventTags.splice(0,this.eventTags.length);
+	}
 
     this.edit_event = function() {
         
         var eventName = document.getElementById('eventNameBox').value;
-        var isKey = document.getElementById('eventKeyBox').checked;
-        var isSecret = document.getElementById('eventSecretBox').value;
+        var isKey = document.getElementById('eventKeyBoxIn').checked;
+        var isSecret = document.getElementById('eventSecretBoxIn').value;
         
         
 
@@ -407,7 +420,7 @@ function toJSONClass() {
         //Iterate through the charactr/location hash arrays to find the key
         //with the desired target name in order to get the pk of that object
         var key;
-        //Check if we need to check through character or location obejcts 
+        //Check if we need to check through character or location obejects 
         if(tagTypeinput == 0){
             for(key in this.charHash){
                 if(this.hashJSON[this.charHash[key]].pk == selTarget.value){
@@ -425,7 +438,7 @@ function toJSONClass() {
         
         //check if tag type is character or location and match values based on result
         //If selected index=0, then character was selected and involved tag is used
-        if(document.getElementById('tagTypeSel').selectedIndex == 0){
+        if(tagTypeinput == 0){
             currModel = 'editor.involved';
             selTag = 'involved';
             tagType = 'Character';
@@ -445,13 +458,15 @@ function toJSONClass() {
 
         //The event tag object 
         var eventTagObj = {
-
+			pk: this.tagKey,
             tagmodel: currModel,
             tagpk: currTagKey,
             targetpk: currTarget.pk,
             tagtypeinput:tagType,
             targetinput:selTarget
         };
+		
+		this.tagKey++;
 
         //Update the table with the new tag element 
 		
@@ -821,7 +836,6 @@ var currEdit = new toJSONClass();
 var prevChar =0;
 var prevLoc =0;
 var prevEvent=0;
-var prevTag=0;
 
 /*
     Used to handle highlighting and row selection for the character table
@@ -943,33 +957,33 @@ function selEvent(eventObj) {
     this.prevEvent = currRow;
 	
 	//load the selected eventObj tags into the global tags array
-	this.currEdit.eventTags = eventObj.tags;
+	this.currEdit.eventTags = eventObj.tags.slice();
 	
 	//clear the current table
 	var table = document.getElementById('eventsTagBody');
-	for(i = table.rows.length-1; i > 0; i--)
-	{
-		document.getElementById('eventsTagBody').deleteRow(-1);
+	var rowsLen = table.rows.length;
+	for(i = 0; i < rowsLen; i++){
+		table.deleteRow(0);
 	}
-	//table.innerHTML='';
 	
 	//load the tags for the event into the tags table
 	console.log(eventObj);
 	for(tag in eventObj.tags){
+		var currTag = eventObj.tags[tag];
 		//Update the event tags table with the event tags objects
-        var newEventElement = document.getElementById("eventsTagBody").insertRow(0);
+        var newEventElement = table.insertRow(0);
         tagTypeCell = newEventElement.insertCell(0);
 		tagTargetCell = newEventElement.insertCell(1);
-        if(tag.tagmodel == "editor.involved"){
+        if(currTag.tagmodel == "editor.involved"){
 			tagTypeCell.innerHTML = "Involved";
-			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.charHash[targetpk]].fields.name;
+			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.charHash[urrTag.targetpk]].fields.name;
 		}
-		else if(tag.tagmodel == "editor.happenedat"){
+		else if(currTag.tagmodel == "editor.happenedat"){
 			tagTypeCell.innerHTML = "Happend At";
-			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.locHash[targetpk]].fields.name;
+			tagTargetCell.innerHTML = this.currEdit.hashJSON[this.currEdit.locHash[currTag.targetpk]].fields.name;
 		}
 	}
-	
+	currEdit.populateTagTargets();
 }
 
 /*
@@ -977,31 +991,33 @@ function selEvent(eventObj) {
 */
 
 function selEventTag(tagObj) {
-
     //Store current/total rows in order to determine which row is hilighted
-    //console.log(tagObj.pk);
     var currRow = tagObj.pk;
-    var totalRows = document.getElementById('locsTableBody').rows.length -1;
-    
-    if(prevTag>totalRows){
-        prevTag = totalRows;
-    }
+    var table = document.getElementById('eventsTagBody')
+	var totalRows = table.rows.length -1;
 
     //Set fields to those associated with the selected object
     document.getElementById('tagTypeSel').value = tagObj.tagtypeinput;
-    document.getElementById('targetSel').value = tagObj.targetinput;
-    
+   
     //Enable the edit/delete buttons and highlight the selected row
     document.getElementById('eventTagEditBtn').disabled = false;
     document.getElementById('eventTagDelBtn').disabled = false;
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('eventsTageBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    if (this.prevTag != null && this.prevTag != currRow) {
-        document.getElementById('eventsTagBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
-    }
-
+    for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+	}
+	table.rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    table.rows[totalRows-currRow].cells[1].style.backgroundColor='red';
+	
+	currEdit.populateTagTargets();
+	console.log(tagObj);
+	document.getElementById('targetSel').selectedIndex = tagObj.tagpk;
+	
     this.prevTag = currRow;
     //Might need to fix this
     window.currSelObj = tagObj;

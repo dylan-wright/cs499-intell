@@ -11,7 +11,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <!--Instantiating the JSON class object after the script was referenced -->
-  <script src="{% static "editor/FrontEndtoJSON.js" %}"></script>
+  <script src="FrontEndtoJSON.js"></script>
   <script src="{% static "editor/vis.min.js" %}"></script>
 </head>
 <body>
@@ -537,7 +537,7 @@
                 </div>
               </div>
               <!-- Events Tab contents -->
-              <div id="EventsTab" class="tab-pane fade">
+              <div id="EventsTab" class="tab-pane fade" >
                 <div class="row">
                   <div class="col-sm-5">
                     <div id="eventTable" class="table-responsive">
@@ -684,7 +684,7 @@
               <li class="active"><a data-target="#TitleInstr, #TitleTitle, #TitleTab" data-toggle="pill" href="#Title">Title</a></li>
               <li><a data-target="#CharsInstr, #CharsTitle, #CharsTab" data-toggle="pill" href="#Chars">Characters</a></li>
               <li><a data-target="#LocsInstr, #LocsTitle, #LocsTab" data-toggle="pill" href="#Locs">Locations</a></li>
-              <li><a data-target="#EventsInstr, #EventsTitle, #EventsTab" data-toggle="pill" href="#Events">Events</a></li>
+              <li><a data-target="#EventsInstr, #EventsTitle, #EventsTab" data-toggle="pill" href="#Events" onclick="currEdit.populateTagTargets()">Events</a></li>
             </ul>
           </div>
         </div>

@@ -1,7 +1,22 @@
+'''
+    INTELL The Craft of Intelligence
+        https://github.com/dylan-wright/cs499-intell
+        https://intellproject.com
+
+        /top_site/forms.py
+            Django forms
+                UserCreationForm
+'''
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
+'''
+UserCreationForm
+    form adds first name to user registration form provided
+    from django.contrib.auth.forms.UserCreationForm
+'''
 class UserCreationForm(UserCreationForm):
     first_name = forms.CharField(required=True)
 

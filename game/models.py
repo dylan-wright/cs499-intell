@@ -388,7 +388,7 @@ class Game(models.Model):
         elif action.acttype == "terminate":
             if (random() < self.ACTION_SUCC_RATE[action.acttype]):
                 message.text = "Opposing agent terminated"
-                agent = Agent.objects.get(pk=action.acttype)
+                agent = Agent.objects.get(pk=action.acttarget)
                 agent.alive = False
             else:
                 message.text = "Opposing agent not terminated"

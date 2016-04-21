@@ -475,12 +475,13 @@ Agent
 '''
 class Agent(models.Model):
     name = models.CharField(max_length=64)
-    action = models.ForeignKey(Action)
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
     alive = models.BooleanField(default=True)
     location = models.ManyToManyField(Location)
-    player = models.ForeignKey(Player, null=True) #a null player is an orphaned
-                                                  # agent-they cant perform
-                                                  # actions
+    #a null player is an orphaned
+    #   agent-they cant perform
+    #   actions
+    player = models.ForeignKey(Player, null=True, on_delete=models.CASCADE) 
 
     def __str__(self):
         return "Agent %s"%(str(self.name))
@@ -496,7 +497,7 @@ Knowledge
 class Knowledge(models.Model):
     event = models.ForeignKey(Event, null=True)
     turn = models.IntegerField()
-    player = models.ForeignKey(Player, null=True)
+    player = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "result of investigation of %s on turn %s"%(str(self.event), str(self.turn))
@@ -518,7 +519,7 @@ Message
     ... TODO: add more
 '''
 class Message(models.Model):
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     text = models.CharField(max_length=512) # is .5KB enough? (hopefully)
     turn = models.IntegerField()
 

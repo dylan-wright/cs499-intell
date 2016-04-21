@@ -236,6 +236,7 @@ def play(request, pk):
     user = request.user
     game = Game.objects.get(pk=pk)
     #verify user is playing game
+    print(user, game.get_users())
     if user in game.get_users():
         player = game.players.get(user=user)
         context = {"pointsDisplay": player.points,
@@ -246,7 +247,7 @@ def play(request, pk):
                    "agents": Agent.objects.filter(player=player)}
         return render(request, "game/play/IntellGame.html", context)
     else:
-        return HttpResponseRedirect("../../games")
+        return HttpResponseRedirect("/game/games/")
 
 '''
 get_status
@@ -388,3 +389,20 @@ def get_own_agents(request, pk):
         data = game.players.get(user=request.user).agent_set.all()
         json = serializers.serialize("json", data)
         return HttpResponse(json, content_type="application_json")
+
+'''
+end
+    used by front end to end a game. user must own the game
+
+    url         /game/play/pk/end/
+'''
+@login_required
+def end(request, pk):
+    game = Game.objects.get(pk=pk)
+    if request.user == game.creator:
+        game.delete()
+        data = {"deleted": True, "message": "deleted"}
+    else:
+        data = {"deleted": False, "message": "can only delete owned games"}
+    return HttpResponse(json.dumps(data), content_type="application_json")
+

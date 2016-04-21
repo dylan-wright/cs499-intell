@@ -53,7 +53,6 @@ var Status = (function () {
     settings.turnDisplay.innerHTML = settings.turn;
     settings.pointsDisplay.innerHTML = settings.points;
     settings.timerDisplay.timer = settings.timer;
-
     //populate the message table
     while (settings.messagesDisplay.children[1].rows.length != 0) {
       settings.messagesDisplay.children[1].deleteRow(0);

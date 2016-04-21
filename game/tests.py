@@ -626,9 +626,9 @@ class GameListViewsTestCase(TestCase):
         response = self.client.post("/editor/accept_ajax_scenario/",
                           content_type="application/json",
                           data=body)
-        game = Game(scenario=Scenario.objects.all()[0])
-        game.save()
         user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        game = Game(scenario=Scenario.objects.all()[0], creator=user)
+        game.save()
         self.client.force_login(user)
 
     def test_index(self):
@@ -677,6 +677,19 @@ class GameListViewsTestCase(TestCase):
         #TODO test view
         pass
 
+    def test_end(self):
+        user_owner = User.objects.all()[0]
+        user_not_owner = User.objects.create_user("user2", "balh@blah.com", "1234pass")
+        self.client.force_login(user_not_owner)
+
+        response = self.client.get("/game/games/1/end/")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json.loads(response.content.decode())["deleted"])
+
+        self.client.force_login(user_owner)
+        response = self.client.get("/game/games/1/end/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json.loads(response.content.decode())["deleted"])
 '''
 GamePlayViewsTestCase
     test_submit_action
@@ -697,9 +710,9 @@ class GamePlayViewsTestCase(TestCase):
         response = self.client.post("/editor/accept_ajax_scenario/",
                           content_type="application/json",
                           data=body)
-        game = Game(scenario=Scenario.objects.all()[0])
-        game.save()
         user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        game = Game(scenario=Scenario.objects.all()[0], creator=user)
+        game.save()
         self.client.force_login(user)
         game.add_player(user)
         game.start()
@@ -743,4 +756,7 @@ class GamePlayViewsTestCase(TestCase):
     def test_get_own_agents(self):
         response = self.client.get("/game/play/1/get_own_agents/")
         self.assertEqual(response.status_code, 200)
+    
+    def test_end(self):
+        response = self.client.get("/game/play/1/end/")
 

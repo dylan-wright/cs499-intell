@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^games/create/$', views.create, name="create"),
     url(r'^games/(?P<pk>[0-9]+)/$', views.game_detail, name="game_detail"),
     url(r'^games/(?P<pk>[0-9]+)/join/$', views.join, name="join"),
+    url(r'^games/(?P<pk>[0-9]+)/end/$', views.end, name="end"),
     url(r'^agents/$', views.agents, name='agents'),
     url(r'^agents/(?P<pk>[0-9]+)/$', views.agent_detail, name="agent_detail"),
     url(r'^players/$', views.players, name='players'),

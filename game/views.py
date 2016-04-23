@@ -386,9 +386,11 @@ get_own_agents
 def get_own_agents(request, pk):
     game = Game.objects.get(pk=pk)
     if request.user in game.get_users():
-        data = game.players.get(user=request.user).agent_set.all()
-        json = serializers.serialize("json", data)
-        return HttpResponse(json, content_type="application_json")
+        data = []
+        for agent in game.players.get(user=request.user).agent_set.all():
+            data.append({"pk":agent.pk,"name":agent.name,
+                         "action":agent.action.acttype})
+        return HttpResponse(json.dumps(data), content_type="application_json")
 
 '''
 end

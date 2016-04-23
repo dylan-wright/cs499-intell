@@ -221,6 +221,14 @@ class Game(models.Model):
                 events = self.scenario.event_set.all()
 
                 actdict = json.loads(action.actdict)
+                if actdict["location"] == "":
+                    message.text = "misinf requires a location"
+                    message.save()
+                    return False
+                if actdict["character"] == "":
+                    message.text = "misinf requires a character"
+                    message.save()
+                    return False
                 character = Character.objects.filter(pk=actdict["character"])
                 location = Location.objects.filter(pk=actdict["location"])
                 text = actdict["description"]

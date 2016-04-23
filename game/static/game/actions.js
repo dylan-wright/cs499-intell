@@ -372,7 +372,7 @@ var Actions = (function () {
     for (i = 0; i < agents.length; i+=1) {
       option = document.createElement("option");
       option.value = agents[i].pk;
-      option.innerHTML = agents[i].fields.name;
+      option.innerHTML = agents[i].name;
       settings.agentSelect.add(option);
     }
   }

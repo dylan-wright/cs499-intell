@@ -236,7 +236,6 @@ def play(request, pk):
     user = request.user
     game = Game.objects.get(pk=pk)
     #verify user is playing game
-    print(user, game.get_users())
     if user in game.get_users():
         player = game.players.get(user=user)
         context = {"pointsDisplay": player.points,

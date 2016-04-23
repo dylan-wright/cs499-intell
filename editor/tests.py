@@ -22,6 +22,7 @@
 
 from django.test import TestCase, Client
 from .models import *
+import json
 
 # Create your tests here.
 '''
@@ -225,6 +226,22 @@ class EditorViewsTestCase(TestCase):
 
     def test_accept_ajax_scenario(self):
         response = self.client.get("/editor/accept_ajax_scenario/")
+        self.assertEqual(response.status_code, 404)
+
+        file_in = open("editor/static/editor/fixture.json", "r")
+        body = file_in.read()
+        file_in.close()
+
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                                    body,
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        self.client.logout()
+
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                                    body,
+                                    content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
     def test_dump_session(self):

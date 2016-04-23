@@ -387,8 +387,7 @@ def accept_ajax_scenario(request):
         #return render(request, "editor/accept_ajax_scenario.html", context)
         return HttpResponse(json_dump, content_type="application_json")
     else:
-        context = {"data":request}
-        return render(request, "editor/graph", context)
+        return HttpResponse(status=404)
 
 #TODO: move registrations things out of editor
 '''

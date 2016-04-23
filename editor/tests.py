@@ -199,3 +199,38 @@ class IntegrationTestCase(TestCase):
         self.assertEqual(len(Character.objects.all()), 29)
 
         #TODO: test number of other things
+
+'''
+EditorViewsTestCase
+    test_index
+    test_edit
+    test_accept_ajax_scenario
+    test_dump_session
+    test_dump_request
+'''
+class EditorViewsTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_user("user1", 
+                                        "user@intellproject.com",
+                                        "1234pass")
+        self.client.force_login(user)
+
+    def test_index(self):
+        response = self.client.get("/editor/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_edit(self):
+        response = self.client.get("/editor/edit/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_accept_ajax_scenario(self):
+        response = self.client.get("/editor/accept_ajax_scenario/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_dump_session(self):
+        response = self.client.get("/editor/dump_session/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_dump_request(self):
+        response = self.client.get("/editor/dump_request/")
+        self.assertEqual(response.status_code, 200)

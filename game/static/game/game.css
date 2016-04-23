@@ -3,7 +3,7 @@
     overflow: scroll;
 }
 
-#timerDisplay {
+.countdown {
     font-family: monospace;
     color: red;
     text-align:  center;

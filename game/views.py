@@ -295,14 +295,11 @@ def get_snippets(request, pk):
                 known_events += [knowledge.event]
 
         for event in events.all():
-            edict = {}
             describedbys = event.describedby_set.all()
-            print(describedbys)
             for describedby in describedbys:
+                edict = {}
                 #check if player knowledge should be relayed
-                print(describedby.description)
                 if not describedby.description.hidden:
-                    print(describedby.description)
                     if describedby.event.misinf and \
                        describedby.event in known_events:
                         edict["misinf"] = True
@@ -323,9 +320,6 @@ def get_snippets(request, pk):
                         data += [edict]
                     else:
                         edict["secret"] = False
-
-
-
         data = json.dumps(data)
         return HttpResponse(data, content_type="application_json")
 

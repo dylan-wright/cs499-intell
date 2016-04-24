@@ -60,7 +60,7 @@ class Player(models.Model):
 
 '''
 Game
-    used to represent a particular game. 
+    used to represent a particular game.
 
     id -    auto gen primary key
     scenario - scenario being used by the game. Used to determine
@@ -94,18 +94,18 @@ class Game(models.Model):
     turn = models.IntegerField(default=0)
     next_turn = models.DateTimeField(null=True)
     turn_length = models.DurationField(default=timedelta(days=1))
-    
-    #TODO: make these configured in game create?
+
+    # TODO: make these configured in game create?
     #       would require more fields default values are same
     ACTION_COSTS = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
-                    "recruit": 3, "apprehend": 5, "terminate": 5, 
+                    "recruit": 3, "apprehend": 5, "terminate": 5,
                     "research": -2}
     ACTION_SUCC_RATE = {"tail": 1, "investigate": 1, "misInfo": 1, "check": 1,
                         "recruit": 1, "apprehend": .5, "terminate": .5,
                         "research": 1}
 
     def __str__(self):
-        return "Game using scenario %s"%(self.scenario.name)
+        return "Game using scenario %s" % (self.scenario.name)
 
     def detail_html(self):
         return "scenario: "+str(self.scenario)
@@ -139,12 +139,11 @@ class Game(models.Model):
     '''
     def time_till(self):
         now = make_aware(datetime.now())
-        if self.next_turn != None:
-            #otherwise get large ugly number of seconds
+        if self.next_turn is not None:
+            # otherwise get large ugly number of seconds
             till = self.next_turn - now
             return till.seconds
-        
-    
+
     '''
     is_target_valid
         I:  an action
@@ -159,8 +158,8 @@ class Game(models.Model):
         player = action.agent_set.all()[0].player
         message = Message(player=player, turn=self.turn)
 
-        #determine target table
-        #this is evil TODO: change it to if/elif/else
+        # determine target table
+        # this is evil TODO: change it to if/elif/else
         try:
             target_table = {"tail": Character,
                             "investigate": Location,
@@ -176,36 +175,36 @@ class Game(models.Model):
             return False
 
 
-        if target_table != None:
+        if target_table is not None:
             targets = target_table.objects.filter(pk=acttarget)
-            #should only match one target
+            # should only match one target
             if len(targets) == 1:
                 target = targets[0]
-                #is the target in the scenario for this game
+                # is the target in the scenario for this game
                 events = self.scenario.event_set.all()
                 if target_table == Character:
-                    #find events involving the character in this game
+                    # find events involving the character in this game
                     event_qset = events.filter(
                         involved=Involved.objects.filter(
                             character=target
                         )
                     )
                 elif target_table == Location:
-                    #find events happenedat the location in this game
+                    # find events happenedat the location in this game
                     event_qset = events.filter(
                         happenedat=HappenedAt.objects.filter(
                             location=target
                         )
                     )
                 elif target_table == Description:
-                    #find events describedby the description in this game
+                    # find events describedby the description in this game
                     event_qset = events.filter(
                         describedby=DescribedBy.objects.filter(
                             description=target
                             )
                     )
                 elif target_table == Agent:
-                    #find agents in this game
+                    # find agents in this game
                     agent_qset = Agent.objects.filter(
                         player__in=self.players.all()
                     )
@@ -215,18 +214,18 @@ class Game(models.Model):
                         message.text = "Agent not found"
                         message.save()
                         return False
-                else: #pragma: no cover
+                else:  # pragma: no cover
                     message.text = "target table not found"
                     messave.save()
                     return False
 
                 if len(event_qset) != 0:
                     return True
-                else: 
+                else:
                     message.text = "Event not found"
                     message.save()
                     return False
-            else: #pragma: no cover
+            else:  # pragma: no cover
                 message.text = "ambiguous target pk"
                 message.save()
                 return False
@@ -246,10 +245,10 @@ class Game(models.Model):
                 character = Character.objects.filter(pk=actdict["character"])
                 location = Location.objects.filter(pk=actdict["location"])
                 text = actdict["description"]
-                
-                #character/location exists
+
+                # character/location exists
                 if len(character) == 1 and len(location) == 1:
-                    #in scenario
+                    # in scenario
                     character_qset = events.filter(
                         involved=Involved.objects.filter(
                             character=character
@@ -270,10 +269,10 @@ class Game(models.Model):
                     message.text = "Character or location does not exist"
                     message.save()
                     return False
-            #any invalid acttype will throw a key error
-            #so dont worry about bad acttype 
+            # any invalid acttype will throw a key error
+            # so dont worry about bad acttype
             return True
-            
+
     '''
     start_next_turn
         I:
@@ -281,13 +280,13 @@ class Game(models.Model):
             set next turn time
     '''
     def start_next_turn(self):
-        #next turn
+        # next turn
         self.turn += 1
-        
-        #process actions
+
+        # process actions
         agents_to_proc = []
         for player in self.players.all():
-            #add agents to list
+            # add agents to list
             agents_to_proc += Agent.objects.filter(player=player, alive=True)
 
         #TODO: decide on order of agents?
@@ -324,14 +323,13 @@ class Game(models.Model):
         #store in db
         self.save()
 
-    
     '''
     perform_action
         I:  an action that has been verified
         O:  action performed, knowledge created,
             side effects effected
 
-        If the action is valid (assumed) then the action will 
+        If the action is valid (assumed) then the action will
         succeed (oh hello hubris)
 
         TODO: tail, investigate, checInfomisinf, apprehend, terminate
@@ -382,7 +380,7 @@ class Game(models.Model):
                         if describedby.description.hidden:
                             #TODO fix this
                             message.text = "Ivestigation into %s discovered that %s"%(
-                                Location.objects.get(pk=action.acttarget), 
+                                Location.objects.get(pk=action.acttarget),
                                 describedby.description
                             )
                         else:
@@ -413,7 +411,7 @@ class Game(models.Model):
             character_id = target_dict["character"]
             location_id = target_dict["location"]
             description_text = target_dict["description"]
-            
+
             event = Event(turn=self.turn, misinf=True)
             event.scenario = self.scenario
             event.save()
@@ -473,7 +471,7 @@ class Game(models.Model):
 
     '''
     start
-        I: 
+        I:
         O:  started becomes true
             sideffects: players are initialized, start_next_turn used to
             make next turn environment (turn counter, actions, snippets)
@@ -496,7 +494,7 @@ class Game(models.Model):
     def get_snippets(self):
         events = Event.objects.filter(scenario=self.scenario,
                                       turn__lt=self.turn)
-        
+
         return events
 
     '''
@@ -526,7 +524,7 @@ class Action(models.Model):
     acttype = models.CharField(max_length=64) #this is obviously not right
     acttarget = models.IntegerField(default=-1)
     #double text field length for safety
-    actdict = models.CharField(max_length=1024, null=True) 
+    actdict = models.CharField(max_length=1024, null=True)
 
     def __str__(self):
         return "Action %s"%(self.acttype)
@@ -549,7 +547,7 @@ class Agent(models.Model):
     #a null player is an orphaned
     #   agent-they cant perform
     #   actions
-    player = models.ForeignKey(Player, null=True, on_delete=models.CASCADE) 
+    player = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Agent %s"%(str(self.name))

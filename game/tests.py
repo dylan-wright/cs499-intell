@@ -4,7 +4,7 @@
         https://intellproject.com/
 
         /game/tests.py
-            Django TestCase's 
+            Django TestCase's
                 GameTestCase
                     test_start_next_turn
                     test_games_init
@@ -54,16 +54,16 @@ class  GameTestCase(TestCase):
         knowledge = Knowledge(turn=10)
         knowledge.save()
         str(knowledge)
-        
+
     def test_start_next_turn(self):
         '''test turn timing function works'''
         game = Game.objects.get(pk=1)
-        u1 = User.objects.create_user("user1", 
-                                      "user1@intellproject.com", 
+        u1 = User.objects.create_user("user1",
+                                      "user1@intellproject.com",
                                       "1234pass")
         u1.save()
         game.add_player(u1)
-        
+
         self.assertEqual(game.started, False)
         next_turn = game.next_turn
         self.assertEqual(next_turn, None)
@@ -108,7 +108,7 @@ class  GameTestCase(TestCase):
         '''test game initialized'''
         game = Game.objects.get(pk=1)
         scenario = game.scenario
-        
+
         self.assertEqual(scenario.name, "test")
         self.assertEqual(scenario.turn_num, 20)
         self.assertEqual(scenario.point_num, 20)
@@ -122,7 +122,7 @@ class  GameTestCase(TestCase):
         u1 = User(username="user1", first_name="Test 1")
         u2 = User(username="user2", first_name="Test 2")
         u3 = User(username="user3", first_name="Test 3")
-        
+
         u1.save()
         u2.save()
         u3.save()
@@ -148,6 +148,7 @@ class  GameTestCase(TestCase):
 
         game.start()
         self.assertEqual(game.started, True)
+
 '''
 PlayerTestCase
     used to test Player model
@@ -157,7 +158,7 @@ class PlayerTestCase(TestCase):
     def setUp(self):
         u1 = User(username="user1", first_name="Test 1")
         u1.save()
-    
+
     def test_create_player(self):
         '''test creating player'''
         player = Player(user=User.objects.get(username="user1"))
@@ -183,7 +184,7 @@ class ProcessActionsTestCase(TestCase):
         u1 = User(username="user1", first_name="Test 1")
         u2 = User(username="user2", first_name="Test 2")
         u3 = User(username="user3", first_name="Test 3")
-        
+
         u1.save()
         u2.save()
         u3.save()
@@ -201,8 +202,7 @@ class ProcessActionsTestCase(TestCase):
         game.add_player(u1)
         game.add_player(u2)
         game.add_player(u3)
-        game.start()
-                    
+        game.start()           
 
     def test_tail_action(self):
         '''test tail action'''
@@ -218,7 +218,7 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
-        
+
         #check that points deducted correctly
         #first turn involving ted is 9
         game.turn = 9
@@ -228,7 +228,7 @@ class ProcessActionsTestCase(TestCase):
         knowledge_count = len(player.get_knowledge())
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["tail"])
         #new knowledge?
         self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
@@ -253,7 +253,7 @@ class ProcessActionsTestCase(TestCase):
                                hidden=False)
         d_public.save()
         d_private = Description(name="private description",
-                                text="Must tail character/investigate location",
+                                text="Must tail character/investigate loc",
                                 key=True,
                                 hidden=True)
         d_private.save()
@@ -280,7 +280,7 @@ class ProcessActionsTestCase(TestCase):
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
-        
+
         #sanity check (other test should cover this)
         self.assertEqual(game.is_target_valid(action), True)
 
@@ -289,7 +289,7 @@ class ProcessActionsTestCase(TestCase):
         pre_messages = len(player.get_messages())
 
         game.perform_action(action)
-        
+
         player.refresh_from_db()
 
         post_knowledge = len(player.get_knowledge())
@@ -322,7 +322,7 @@ class ProcessActionsTestCase(TestCase):
         knowledge_count = len(player.get_knowledge())
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["investigate"])
         #new knowledge?
         self.assertNotEqual(len(player.get_knowledge()), knowledge_count)
@@ -341,7 +341,7 @@ class ProcessActionsTestCase(TestCase):
         action.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, False)
-    
+
     def test_investigate_succeed(self):
         '''test an investigate action that finds a hidden description'''
         #add target event/descriptions/character
@@ -351,7 +351,7 @@ class ProcessActionsTestCase(TestCase):
                                hidden=False)
         d_public.save()
         d_private = Description(name="private description",
-                                text="Must tail character/investigate location",
+                                text="Must tail character/investigate loc",
                                 key=True,
                                 hidden=True)
         d_private.save()
@@ -364,7 +364,7 @@ class ProcessActionsTestCase(TestCase):
         db_private = DescribedBy(event=event, description=d_private)
         db_public.save()
 
-        location = Location(name="Look here", x=0,y=0)
+        location = Location(name="Look here", x=0, y=0)
         location.save()
 
         happenedat = HappenedAt(event=event, location=location)
@@ -378,7 +378,7 @@ class ProcessActionsTestCase(TestCase):
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
-        
+
         #sanity check (other test should cover this)
         self.assertEqual(game.is_target_valid(action), True)
 
@@ -387,7 +387,7 @@ class ProcessActionsTestCase(TestCase):
         pre_messages = len(player.get_messages())
 
         game.perform_action(action)
-        
+
         player.refresh_from_db()
 
         post_knowledge = len(player.get_knowledge())
@@ -417,7 +417,7 @@ class ProcessActionsTestCase(TestCase):
         point_count = player.points
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["check"])
 
         #create a description not in the scenario
@@ -449,7 +449,7 @@ class ProcessActionsTestCase(TestCase):
         describedby.save()
         happenedat.save()
         involved.save()
-        
+
         #try to check
         game = Game.objects.all()[0]
         action = Action(acttype="check", acttarget=description.pk)
@@ -467,7 +467,7 @@ class ProcessActionsTestCase(TestCase):
         pre_messages = len(player.get_messages())
 
         game.perform_action(action)
-        
+
         player.refresh_from_db()
 
         post_knowledge = len(player.get_knowledge())
@@ -496,7 +496,7 @@ class ProcessActionsTestCase(TestCase):
         point_count = player.points
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["misInfo"])
 
     def test_recruit_action(self):
@@ -514,12 +514,12 @@ class ProcessActionsTestCase(TestCase):
         #test that player has an additional agent after performing action
         agent_count = len(player.agent_set.all())
         game.perform_action(action)
-        self.assertEqual(len(player.agent_set.all()), 
+        self.assertEqual(len(player.agent_set.all()),
                          agent_count+1)
         #check that points deducted correctly
         point_count = player.points
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["recruit"])
 
 
@@ -535,14 +535,14 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
-        
+
         #check that points deducted correctly
         point_count = player.points
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["apprehend"])
-        
+
         #create a character not in the scenario
         michael = Character(name="Michael", key=False, notes="")
         michael.save()
@@ -574,7 +574,7 @@ class ProcessActionsTestCase(TestCase):
         point_count = player.points
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["research"])
 
     def test_terminate__action(self):
@@ -589,12 +589,12 @@ class ProcessActionsTestCase(TestCase):
         agent.save()
         valid = game.is_target_valid(action)
         self.assertEqual(valid, True)
-    
+
         #check that points deducted correctly
         point_count = player.points
         game.perform_action(action)
         player.refresh_from_db()
-        self.assertEqual(player.points, 
+        self.assertEqual(player.points,
                          point_count-game.ACTION_COSTS["terminate"])
 
         #create agent not belonging to a player
@@ -630,8 +630,8 @@ class GameListViewsTestCase(TestCase):
         response = self.client.post("/editor/accept_ajax_scenario/",
                           content_type="application/json",
                           data=body)
-        user = User.objects.create_user('user1', 
-                                        'user1@intellproject.com', 
+        user = User.objects.create_user('user1',
+                                        'user1@intellproject.com',
                                         '1234pass')
         game = Game(scenario=Scenario.objects.all()[0], creator=user)
         game.save()
@@ -685,8 +685,8 @@ class GameListViewsTestCase(TestCase):
 
     def test_end(self):
         user_owner = User.objects.all()[0]
-        user_not_owner = User.objects.create_user("user2", 
-                                                  "balh@blah.com", 
+        user_not_owner = User.objects.create_user("user2",
+                                                  "balh@blah.com",
                                                   "1234pass")
         self.client.force_login(user_not_owner)
 

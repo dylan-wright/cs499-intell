@@ -259,6 +259,7 @@ get_status
 def get_status(request, pk):
     #get points, turn, time
     game = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         player = game.players.get(user=request.user)
         points = player.points
@@ -281,6 +282,7 @@ get_snippets
 @login_required
 def get_snippets(request, pk):
     game = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         events = game.get_snippets()
         data = []
@@ -320,6 +322,7 @@ get_characters
 @login_required
 def get_characters(request, pk):
     game  = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         events = game.get_snippets()
         data = []
@@ -343,6 +346,7 @@ get_locations
 @login_required
 def get_locations(request, pk):
     game = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         events = game.get_snippets()
         data = []
@@ -366,6 +370,7 @@ get_agents
 @login_required
 def get_agents(request, pk):
     game = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         data = []
         for player in game.players.all():
@@ -384,6 +389,7 @@ get_own_agents
 @login_required
 def get_own_agents(request, pk):
     game = Game.objects.get(pk=pk)
+    game.check_game()
     if request.user in game.get_users():
         data = []
         for agent in game.players.get(user=request.user).agent_set.all():

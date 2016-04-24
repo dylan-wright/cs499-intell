@@ -96,15 +96,15 @@ var Status = (function () {
     //console.log("now  "+Math.round(Date.now()/1000));
     var time_till = settings.nextturn - Math.round(Date.now()/1000);
     if (time_till < 1) {
-      settings.timerDisplay.innerHTML = "00 : 00 : 00";
+      settings.timerDisplay.innerHTML = "Processing";
       //TODO: make sure this is sufficient for catching updates (query till
       //        one appears?
-      if (settings.check == 9) {
+      if (settings.check == 1) {
         updateStatus();
         Snippets.update();
         Actions.update()
       }
-      settings.check = (settings.check+1)%10;
+      settings.check = (settings.check+1)%2;
     } else {
       var s = time_till % 60;
       var m = Math.trunc(time_till/60) % 60;

@@ -23,6 +23,8 @@ check_games
 def check_games():
     current_time = make_aware(datetime.now())
     for game in Game.objects.all():
+        game.check_game()
+        '''
         if current_time > game.next_turn:
             #check if next turn can start
             if game.started:
@@ -30,3 +32,4 @@ def check_games():
             #check if game is ready to start. If so call start
             else:
                 game.start()
+        ...

@@ -319,7 +319,7 @@ class Game(models.Model):
                 message.save()
 
         #next turn time
-        self.next_turn = make_aware(datetime.now() + self.turn_length)
+        self.next_turn = self.next_turn + self.turn_length
 
         #store in db
         self.save()
@@ -498,7 +498,19 @@ class Game(models.Model):
                                       turn__lt=self.turn)
         
         return events
-        
+
+    '''
+    check_game
+        I:
+        O:
+    '''
+    def check_game(self):
+        current_time = make_aware(datetime.now())
+        if current_time > self.next_turn:
+            if self.started:
+                self.start_next_turn()
+            else:
+                self.start()
 
 '''
 Action

@@ -200,7 +200,7 @@ function toJSONClass() {
         //Use key value to locate the object in the hashmap and then set  
         //it to a new object using the hashmap
 		var editTarget = this.hashJSON[this.charHash[window.currSelObj.pk]];
-        editTarget.fields.charName = charName;
+        editTarget.fields.name = charName;
 		editTarget.fields.key = isKey;
 		editTarget.fields.notes = charNotes;
 

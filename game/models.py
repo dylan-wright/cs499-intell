@@ -185,16 +185,30 @@ class Game(models.Model):
                 events = self.scenario.event_set.all()
                 if target_table == Character:
                     #find events involving the character in this game
-                    event_qset = events.filter(involved=Involved.objects.filter(character=target))
+                    event_qset = events.filter(
+                        involved=Involved.objects.filter(
+                            character=target
+                        )
+                    )
                 elif target_table == Location:
                     #find events happenedat the location in this game
-                    event_qset = events.filter(happenedat=HappenedAt.objects.filter(location=target))
+                    event_qset = events.filter(
+                        happenedat=HappenedAt.objects.filter(
+                            location=target
+                        )
+                    )
                 elif target_table == Description:
                     #find events describedby the description in this game
-                    event_qset = events.filter(describedby=DescribedBy.objects.filter(description=target))
+                    event_qset = events.filter(
+                        describedby=DescribedBy.objects.filter(
+                            description=target
+                            )
+                    )
                 elif target_table == Agent:
                     #find agents in this game
-                    agent_qset = Agent.objects.filter(player__in=self.players.all())
+                    agent_qset = Agent.objects.filter(
+                        player__in=self.players.all()
+                    )
                     if target in agent_qset.all():
                         return True
                     else:
@@ -236,8 +250,16 @@ class Game(models.Model):
                 #character/location exists
                 if len(character) == 1 and len(location) == 1:
                     #in scenario
-                    character_qset = events.filter(involved=Involved.objects.filter(character=character))
-                    location_qset = events.filter(happenedat=HappenedAt.objects.filter(location=location))
+                    character_qset = events.filter(
+                        involved=Involved.objects.filter(
+                            character=character
+                        )
+                    )
+                    location_qset = events.filter(
+                        happenedat=HappenedAt.objects.filter(
+                            location=location
+                        )
+                    )
                     if len(character_qset) != 0 and len(location_qset) != 0:
                         return True
                     else:
@@ -321,48 +343,70 @@ class Game(models.Model):
         message.player = player
         message.turn = self.turn
         if action.acttype == "tail":
-            involveds = Involved.objects.filter(character__id=action.acttarget)
+            involveds = Involved.objects.filter(
+                character__id=action.acttarget
+            )
             for involved in involveds.all():
                 if involved.event.turn < self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
                                           event=involved.event)
                     knowledge.save()
-                    describedbys = DescribedBy.objects.filter(event=involved.event)
+                    describedbys = DescribedBy.objects.filter(
+                        event=involved.event
+                    )
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
                             #TODO fix this
-                            message.text = "Tailing %s discovered that %s"%(Character.objects.get(pk=action.acttarget),
-                                                                            describedby.description)
+                            message.text = "Tailing %s discovered that %s"%(
+                                Character.objects.get(pk=action.acttarget),
+                                describedby.description
+                            )
                         else:
-                            message.text = "Tailing %s discovered nothing"%(Character.objects.get(pk=action.acttarget))
+                            message.text = "Tailing %s discovered nothing"%(
+                                Character.objects.get(pk=action.acttarget)
+                            )
                         message.save()
         elif action.acttype == "investigate":
-            happenedats = HappenedAt.objects.filter(location__id=action.acttarget)
+            happenedats = HappenedAt.objects.filter(
+                location__id=action.acttarget
+            )
             for happenedat in happenedats:
                 if happenedat.event.turn < self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
                                           event=happenedat.event)
                     knowledge.save()
-                    describedbys = DescribedBy.objects.filter(event=happenedat.event)
+                    describedbys = DescribedBy.objects.filter(
+                        event=happenedat.event
+                    )
                     for describedby in describedbys.all():
                         if describedby.description.hidden:
                             #TODO fix this
-                            message.text = "Ivestigation into %s discovered that %s"%(Location.objects.get(pk=action.acttarget), 
-                                                                                      describedby.description)
+                            message.text = "Ivestigation into %s discovered that %s"%(
+                                Location.objects.get(pk=action.acttarget), 
+                                describedby.description
+                            )
                         else:
-                            message.text = "Investigation into %s discovered nothing"%(Location.objects.get(pk=action.acttarget))
+                            message.text = "Investigation into %s discovered nothing"%(
+                                Location.objects.get(pk=action.acttarget)
+                            )
                         message.save()
         elif action.acttype == "check":
-            describedby = DescribedBy.objects.get(description__id=action.acttarget)
+            describedby = DescribedBy.objects.get(
+                description__id=action.acttarget
+            )
             if describedby.event.turn < self.turn:
                 knowledge = Knowledge(player=player, turn=self.turn,
                                       event=describedby.event)
                 knowledge.save()
                 if describedby.event.misinf:
                     #TODO: fix this
-                    message.text = "The informationt that '%s' has been proven to be false"%(Description.objects.get(pk=action.acttarget))
+                    message.text = "The informationt that '%s' has been proven to be false"%(
+                        Description.objects.get(pk=action.acttarget)
+                    )
                 else:
-                    message.text = "The infomration that '%s' has been provent to be true"%(Description.objects.get(pk=action.acttarget))
+                    message.text = "The infomration that '%s' has been provent to be true"%(
+                        Description.objects.get(pk=action.acttarget)
+                    )
                 message.save()
         elif action.acttype == "misInfo":
             target_dict = json.loads(action.actdict)
@@ -388,7 +432,9 @@ class Game(models.Model):
             describedby = DescribedBy(event=event,
                                       description=description)
             describedby.save()
-            message.text = "Misinformation that '%s' succesfully diseminated"%(description_text)
+            message.text = "Misinformation that '%s' succesfully diseminated"%(
+                description_text
+            )
         elif action.acttype == "recruit":
             #player gets another agent
             #TODO: test to ensure new agents cant act
@@ -405,7 +451,9 @@ class Game(models.Model):
                     #TODO better endgame handling
                     message.text = "%s captured. You win!"%(character)
                 else:
-                    message.text = "%s captured. They are not part of the plot"%(character)
+                    message.text = "%s captured. They are not part of the plot"%(
+                        character
+                    )
             else:
                 message.text = "%s escaped capture attempt"%(character)
             message.save()
@@ -508,7 +556,9 @@ class Knowledge(models.Model):
     player = models.ForeignKey(Player, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "result of investigation of %s on turn %s"%(str(self.event), str(self.turn))
+        return "result of investigation of %s on turn %s"%(
+            str(self.event), str(self.turn)
+        )
 
 '''
 Message

@@ -169,10 +169,13 @@ class Involved(models.Model):
     character = models.ForeignKey(Character, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Connection between " + str(self.event) + " and " + str(self.character)
+        return "Connection between " + str(self.event) + \
+               " and " + str(self.character)
 
     def graph_dump(self):
-        return {"id": self.pk, "event_id": self.event_id, "character_id": self.character_id}
+        return {"id": self.pk, 
+                "event_id": self.event_id, 
+                "character_id": self.character_id}
 
     def get_absolute_url(self):
         return reverse("edit")
@@ -188,10 +191,13 @@ class HappenedAt(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Connection between " + str(self.event) + " and " + str(self.location)
+        return "Connection between " + str(self.event) + \
+               " and " + str(self.location)
 
     def graph_dump(self):
-        return {"id": self.pk, "event_id": self.event_id, "location_id": self.location_id}
+        return {"id": self.pk, 
+                "event_id": self.event_id, 
+                "location_id": self.location_id}
     
     def get_absolute_url(self):
         return reverse("edit")
@@ -207,10 +213,13 @@ class DescribedBy(models.Model):
     description = models.ForeignKey(Description, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Connection between " + str(self.event) + " and " + str(self.description)
+        return "Connection between " + str(self.event) + \
+               " and " + str(self.description)
 
     def graph_dump(self):
-        return {"id": self.pk, "event_id": self.event_id, "description_id": self.description_id}
+        return {"id": self.pk, 
+                "event_id": self.event_id, 
+                "description_id": self.description_id}
 
     def get_absolute_url(self):
         return reverse("edit")

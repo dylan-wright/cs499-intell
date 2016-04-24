@@ -58,7 +58,9 @@ class  GameTestCase(TestCase):
     def test_start_next_turn(self):
         '''test turn timing function works'''
         game = Game.objects.get(pk=1)
-        u1 = User.objects.create_user("user1", "user1@intellproject.com", "1234pass")
+        u1 = User.objects.create_user("user1", 
+                                      "user1@intellproject.com", 
+                                      "1234pass")
         u1.save()
         game.add_player(u1)
         
@@ -397,7 +399,9 @@ class ProcessActionsTestCase(TestCase):
     def test_check_action(self):
         '''test check info action'''
         game = Game.objects.all()[0]
-        reserv_cairo = Description.objects.get(text__contains="reservations for Cairo")
+        reserv_cairo = Description.objects.get(
+            text__contains="reservations for Cairo"
+        )
         #targeting description "Ata hari makes ...."
         action = Action(acttype="check", acttarget=reserv_cairo.pk)
         action.save()
@@ -548,8 +552,8 @@ class ProcessActionsTestCase(TestCase):
         self.assertEqual(valid, False)
 
         #try to apprehend a character in the scenario but not involved in plot
-        timmy = Character.objects.get(name="Timothy McVeigh")
-        action.acttarget = timmy.pk
+        hitler = Character.objects.get(name="Adolf Hitler")
+        action.acttarget = hitler.pk
         action.save()
         self.assertTrue(game.is_target_valid(action))
 
@@ -626,7 +630,9 @@ class GameListViewsTestCase(TestCase):
         response = self.client.post("/editor/accept_ajax_scenario/",
                           content_type="application/json",
                           data=body)
-        user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        user = User.objects.create_user('user1', 
+                                        'user1@intellproject.com', 
+                                        '1234pass')
         game = Game(scenario=Scenario.objects.all()[0], creator=user)
         game.save()
         self.client.force_login(user)
@@ -679,7 +685,9 @@ class GameListViewsTestCase(TestCase):
 
     def test_end(self):
         user_owner = User.objects.all()[0]
-        user_not_owner = User.objects.create_user("user2", "balh@blah.com", "1234pass")
+        user_not_owner = User.objects.create_user("user2", 
+                                                  "balh@blah.com", 
+                                                  "1234pass")
         self.client.force_login(user_not_owner)
 
         response = self.client.get("/game/games/1/end/")
@@ -710,7 +718,9 @@ class GamePlayViewsTestCase(TestCase):
         response = self.client.post("/editor/accept_ajax_scenario/",
                           content_type="application/json",
                           data=body)
-        user = User.objects.create_user('user1', 'user1@intellproject.com', '1234pass')
+        user = User.objects.create_user('user1', 
+                                        'user1@intellproject.com', 
+                                        '1234pass')
         game = Game(scenario=Scenario.objects.all()[0], creator=user)
         game.save()
         self.client.force_login(user)

@@ -33,6 +33,9 @@ from django.contrib.auth.models import User
 from django.test import Client
 from datetime import timedelta
 import json
+from casper.tests import CasperTestCase
+import os.path
+
 # Create your tests here.
 '''
 GameTestCase
@@ -769,4 +772,10 @@ class GamePlayViewsTestCase(TestCase):
     
     def test_end(self):
         response = self.client.get("/game/play/1/end/")
+
+class ActionsTestCase(CasperTestCase):
+    def test_actions(self):
+        self.assertTrue(self.casper(
+            os.path.join(os.path.dirname(__file__),
+                'tests/test-actions.js')))
 

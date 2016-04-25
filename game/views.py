@@ -320,6 +320,9 @@ def get_snippets(request, pk):
                         data += [edict]
                     else:
                         edict["secret"] = False
+
+        ## sort by turn
+        data.sort(key=lambda snippet: snippet["turn"])
         data = json.dumps(data)
         return HttpResponse(data, content_type="application_json")
 

@@ -336,22 +336,23 @@ def accept_ajax_scenario(request):
         for db in described_bys:
             db.event_id = event_translation[db.event_id]
             db.description_id = description_translation[db.description_id]
+            db.pk = None
             db.save()
             dump[-1].append(db.graph_dump())
         dump.append([])
         for ha in happened_ats:
             ha.event_id = event_translation[ha.event_id]
             ha.location_id = location_translation[ha.location_id]
+            ha.pk = None
             ha.save()
             dump[-1].append(ha.graph_dump())
         dump.append([])
         for i in involveds:
             i.event_id = event_translation[i.event_id]
             i.character_id = character_translation[i.character_id]
+            i.pk = None
             i.save()
             dump[-1].append(i.graph_dump())
-
-
 
 #        context = {"data": {"scenario": scenario, 
 #                            "events": events,

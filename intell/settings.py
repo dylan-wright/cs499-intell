@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_crontab',
-    'django_jenkins'
+    'django_jenkins',
+    'casper',
 ]
 
 MIDDLEWARE_CLASSES = [

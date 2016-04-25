@@ -25,7 +25,10 @@ index
     template    /top_site/templates/top_site/index.html
 '''
 def index(request):
-    return render(request, "top_site/index.html")
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/accounts/profile/")
+    else:
+        return render(request, "top_site/index.html")
 
 '''
 login_required

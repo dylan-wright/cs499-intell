@@ -42,7 +42,7 @@ index
     template    /game/templates/game/index.html
 '''
 def index(request):
-    return HttpResponse("Game Index")
+    return HttpResponseRedirect("games/")
 
 '''
 games

@@ -774,8 +774,22 @@ class GamePlayViewsTestCase(TestCase):
         response = self.client.get("/game/play/1/end/")
 
 class ActionsTestCase(CasperTestCase):
+    def setUp(self):
+        #make game
+        file_in = open("editor/static/editor/fixture.json", 'r')
+        body = file_in.read()
+        file_in.close()
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                          content_type="application/json",
+                          data=body)
+        user = User.objects.create_user('user1', 
+                                        'user1@intellproject.com', 
+                                        '1234pass')
+        game = Game(scenario=Scenario.objects.all()[0], creator=user)
+        game.save()
+        self.client.force_login(user)
+        game.add_player(user)
+        game.start()
     def test_actions(self):
-        self.assertTrue(self.casper(
-            os.path.join(os.path.dirname(__file__),
-                'tests/test-actions.js')))
-
+        self.assertTrue(self.casper(os.path.join(os.path.dirname(__file__),
+            'tests/test-actions.js')))

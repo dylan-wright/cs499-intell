@@ -354,22 +354,10 @@ def accept_ajax_scenario(request):
             i.save()
             dump[-1].append(i.graph_dump())
 
-#        context = {"data": {"scenario": scenario, 
-#                            "events": events,
-#                            "characters": characters,
-#                            "locations": locations,
-#                            "descriptions": descriptions,
-#                            "involveds": involveds,
-#                            "happend_ats": happened_ats,
-#                            "described_bys": described_bys}}
-
         if (scenario != None):
             scenario.file_name.save(str(scenario.id), ContentFile(body))
             scenario.save()
-        #scenario.save()
-        #file_name = str(scenario.id)
-        #scenario.file_name.save(file_name, fileUpload)
-        #scenario.save()
+
         tables = ['Character', 'Location', 'Description', 'Event',
                   'DescribedBy', 'HappenedAt', 'Involved']
         schema = {"Character":["id", "name", "key"],
@@ -385,38 +373,9 @@ def accept_ajax_scenario(request):
         context = {
             "json_dump": json_dump
         }
-        #return render(request, "editor/accept_ajax_scenario.html", context)
         return HttpResponse(json_dump, content_type="application_json")
     else:
         return HttpResponse(status=404)
-
-#TODO: move registrations things out of editor
-'''
-    login
-        read post username/password
-        authenticate
-'''
-'''
-def login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None and user.is_active:
-        login(request, user)
-        return HttpResponseRedirect("/account/loggedin")
-    else:
-        return HttpResponseRedirect("/account/invalid")
-'''
-
-'''
-    logout
-        logout user
-'''
-'''
-def logout_view(request):
-    logout(request)
-    HttpResponseRedirect("/account/loggedout")
-'''
 
 def dump_session(request):
     context = {"session": request.session.items,

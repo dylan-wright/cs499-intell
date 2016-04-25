@@ -43,7 +43,6 @@ class Scenario(models.Model):
         else:
             return self.name
 
-
     '''
     load_events
         used to populate db if the events in the file are not in the db

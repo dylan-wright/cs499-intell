@@ -114,6 +114,7 @@ function toJSONClass() {
     
     //Used for the event listeners 
     this.currSelObj = {};
+	this.currSelTag = {};
 
     //Collection of event tags that will be stored in an event object
     this.eventTags = [];
@@ -562,21 +563,100 @@ function toJSONClass() {
 
         //Push the event tag to the array event object uses
         this.eventTags.push(eventTagObj);
-
     }
 
     this.edit_eventTag = function(){
+        var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
+        var tagType = '';
+        var currModel = '';
+        var currTagKey = 0;
+        var currTarget;
+        var selTag = '';
+        var selTargetText = '';
+        var selTarget = document.getElementById('targetSel');
+		if(tagTypeinput == 0){
+            for(key in this.charHash){
+                if(this.hashJSON[this.charHash[key]].pk == selTarget.value){
+                    currTarget = this.hashJSON[this.charHash[key]];
+                }
+            }
+        }
+        else{
+            for(key in this.locHash){
+                if(this.hashJSON[this.locHash[key]].pk == selTarget.value){
+                    currTarget = this.hashJSON[this.locHash[key]];
+                }
+            }
+        }
+		
+		//check if tag type is character or location and match values based on result
+        //If selected index=0, then character was selected and involved tag is used
+        if(tagTypeinput == 0){
+            currModel = 'editor.involved';
+            selTag = 'involved';
+            tagType = 'Character';
+            currTagKey= this.involvKey;
+            //this.hashKey++;
+        }
 
-        //var tagTypeinput = document.getElementById('tagTypeSel').selectedIndex;
-        //var selTarget = document.getElementById('targetSel').selectedIndex;
-        
-
-
+        else{
+            currModel = 'editor.happenedat';
+            selTag = 'happened at';
+            tagType = 'Location';
+            currTagKey = this.happatKey;
+            //this.hashKey++;
+        }
+		
+		var editTarget = this.eventTags[window.currSelTag.pk];
+		
+		editTarget.tagmodel = currModel;
+		editTarget.tagpk = currTagKey;
+		editTarget.targetpk = currTarget.pk;
+		editTarget.tagtypeinput = tagType;
+		editTarget.targetinput = selTarget;
+		
+		var table = document.getElementById('eventsTagBody');
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+        table.rows[table.rows.length - 1 - window.currSelTag.pk].cells[0].innerHTML = selTag;
+        table.rows[table.rows.length - 1 - window.currSelTag.pk].cells[1].innerHTML = currTarget.fields.name;
     }
 
 	//IN PROGRESS
     this.del_eventTag = function(){
-
+		this.tagKey --;
+		
+		var pivotLoc = window.currSelTag.pk;
+		
+		if(currSelTag.currModel == 'editor.happenedat'){
+			this.happatKey--;
+		}
+		else{
+			this.involvKey--;
+		}
+			
+		for(var tag in this.eventTags){
+			if(tag > pivotLoc && tag != pivotLoc){
+				this.eventTags[tag].pk--;
+			}
+		}
+		this.eventTags.splice([window.currSelTag.pk], 1);
+		
+		var table = document.getElementById("eventsTagBody");
+        var currPos = (table.rows.length-1) - window.currSelTag.pk;
+        table.deleteRow(currPos);
+		
+		for(i = 0; i < table.rows.length; i++) {
+			for(j = 0; j < table.rows[i].cells.length; j++)
+			{
+				table.rows[i].cells[j].style.backgroundColor='white';
+			}
+		}
+		console.log(this.eventTags);
     }
 
 
@@ -1097,6 +1177,7 @@ function selEvent(eventObj) {
 */
 function selEventTag(tagObj) {
     //Store current/total rows in order to determine which row is hilighted
+	console.log(tagObj);
     var currRow = tagObj.pk;
     var table = document.getElementById('eventsTagBody')
 	var totalRows = table.rows.length -1;
@@ -1124,11 +1205,11 @@ function selEventTag(tagObj) {
     table.rows[totalRows-currRow].cells[1].style.backgroundColor='red';
 	
 	currEdit.populateTagTargets();
-	document.getElementById('targetSel').selectedIndex = tagObj.tagpk;
+	document.getElementById('targetSel').selectedIndex = tagObj.targetpk;
 	
     this.prevTag = currRow;
     //Might need to fix this
-    //window.currSelObj = tagObj;
+    window.currSelTag = tagObj;
 }
 
 

@@ -181,9 +181,6 @@ submit_action
     used by js frontend for ajax communication
     POST:
         turn    -   what turn does the client think it is?
-    TODO: route to correct player
-    TODO: THIS!
-    TODO: authenticate user->player
                     player in game.players
 
     url         /game/play/pk/submit_action/

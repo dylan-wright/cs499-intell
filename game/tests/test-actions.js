@@ -8,6 +8,7 @@ helper.scenario('/game/play/1/',
     });
   },
 
+  //test tail modal opens and closes
   function () {
     casper.evaluate(function () {
       document.getElementById("tailBtn").click();
@@ -23,7 +24,9 @@ helper.scenario('/game/play/1/',
   },
   function () {
     casper.evaluate(function () {
-      document.getElementById("tailModal").getElementsByClassName("modal-footer")[0].getElementsByClassName("btn")[0].click();
+      document.getElementById("tailModal").getElementsByClassName(
+        "modal-footer")[0].getElementsByClassName(
+            "btn")[0].click();
     });
   },
   function () {
@@ -33,6 +36,36 @@ helper.scenario('/game/play/1/',
     this.test.assertEval(function () {
       return !$("#tailModal").is(":visible");
     }, "tail close");
+  },
+  //test tail modal form populates and sends
+  function () {
+    casper.evaluate(function () {
+      document.getElementById("tailBtn").click();
+    });
+  },
+  function () {
+    casper.wait(1000);
+  },
+  function () {
+    //test options not empty select one
+    this.test.assertEval(function () {
+      var select = document.getElementById("tailCharSel");
+      var options = select.options;
+      if (options.length > 1) {
+        select.selectedIndex = 1;
+      } else {
+        return false;
+      }
+      document.getElementById("confirmTail").click();
+      return true;
+    }, "tail select character");
+  },
+  function () {
+    casper.wait(1000);
+  },
+  function () {
+    casper.log("hello", "error");
+    casper.capture("tailcharmodal.png");
   },
 
   function () {

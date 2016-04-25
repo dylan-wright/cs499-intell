@@ -790,6 +790,14 @@ class ActionsTestCase(CasperTestCase):
         self.client.force_login(user)
         game.add_player(user)
         game.start()
+        game.start_next_turn()
+        game.start_next_turn()
+        game.start_next_turn()
+        game.start_next_turn()
+        game.start_next_turn()
+        game.start_next_turn()
+        game.start_next_turn()
+
     def test_actions(self):
         self.assertTrue(self.casper(os.path.join(os.path.dirname(__file__),
             'tests/test-actions.js')))

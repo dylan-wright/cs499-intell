@@ -62,6 +62,7 @@ var Actions = (function () {
     activeButton: document.getElementById("researchBtn"),
     agentSelect: document.getElementById("agentSel"),
     agentWarn: document.getElementById("agentWarn"),
+    loggedAct: document.getElementById("loggedAct"),
 
     tailCharSel: document.getElementById("tailCharSel"),
     investigateLocSel: document.getElementById("investigateLocSel"),
@@ -193,9 +194,11 @@ var Actions = (function () {
     xhttp.send(request);
     var response = xhttp.responseText;
 
-    //TODO remove this
-    var d = document.createElement("div");
-    d.innerHTML = response;
+    var d = settings.agentWarn;
+    d.innerHTML = settings.activeButton.id.slice(0,-3) + " action logged";
+    d.hidden = true;
+    //Create div element so it's displayed 
+    loggedAct.innerHTML= settings.activeButton.id.slice(0,-3) + " action logged";
     settings.agentWarn.insertAdjacentElement("beforeBegin", d);
 
     //return request == response;

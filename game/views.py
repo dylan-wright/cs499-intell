@@ -203,12 +203,10 @@ def submit_action(request, pk):
                 action = Action(acttype=actionName)
                 if actionName == "misInfo":
                     target_dict = actionDict["target"]
-                    action.acttype = actionName
                     action.actdict = json.dumps(target_dict)
                 elif actionName not in ["recruit", "research"]:
                     #(what target)
                     targetKey = actionDict["target"]
-                    action.acttype = actionName 
                     action.acttarget = targetKey
                 action.save()
                 agent.action = action

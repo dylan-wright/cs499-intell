@@ -178,7 +178,6 @@ function toJSONClass() {
 
         //EventListener used when a row in the character table is selected 
         newCharElement.addEventListener("click", function(){selChar(charObj);});
-        //newCharElement.addEventListener("click", function(){selChar(this.hashJSON[this.hashKey]);});
         		
         //incrememnt the keys associated with character object and hash location. 
         this.hashKey++;
@@ -188,7 +187,8 @@ function toJSONClass() {
 		document.getElementById('charNameBox').value = "";
 		document.getElementById('keyCharBox').checked = "";
 		document.getElementById('charComment').value = "";
-
+		document.getElementById('charEditBtn').disabled = true;
+		document.getElementById('charDelBtn').disabled = true;
     }
 
     this.edit_char = function() {
@@ -225,6 +225,8 @@ function toJSONClass() {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 		}
+		document.getElementById('charEditBtn').disabled = true;
+		document.getElementById('charDelBtn').disabled = true;
     }
 
     this.del_char = function() {
@@ -271,6 +273,8 @@ function toJSONClass() {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 		}
+		document.getElementById('charEditBtn').disabled = true;
+		document.getElementById('charDelBtn').disabled = true;
     }
 
     /*
@@ -375,6 +379,11 @@ function toJSONClass() {
 		$('#secretCollapse').collapse('hide');
 		this.tagKey = 0;
 		
+		//Enable the edit/delete buttons and highlight the selected row
+		document.getElementById('eventEditBtn').disabled = true;
+		document.getElementById('eventDelBtn').disabled = true;
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
 		this.eventTags.splice(0,this.eventTags.length);
 	}
 
@@ -425,6 +434,11 @@ function toJSONClass() {
 		$('#secretCollapse').collapse('hide');
 		
 		this.eventTags.splice(0,this.eventTags.length);
+		//Enable the edit/delete buttons and highlight the selected row
+		document.getElementById('eventEditBtn').disabled = true;
+		document.getElementById('eventDelBtn').disabled = true;
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
     }
 
     this.del_event = function() {
@@ -477,6 +491,12 @@ function toJSONClass() {
 		$('#secretCollapse').collapse('hide');
 		
 		this.eventTags.splice(0,this.eventTags.length);
+		//Enable the edit/delete buttons and highlight the selected row
+		document.getElementById('eventEditBtn').disabled = true;
+		document.getElementById('eventDelBtn').disabled = true;
+			
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
     }
 
     this.add_eventTag = function(){
@@ -560,7 +580,10 @@ function toJSONClass() {
 
         //enable row selection 
         newEventTagElement.addEventListener("click", function(){selEventTag(eventTagObj);});
-
+		
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
+		
         //Push the event tag to the array event object uses
         this.eventTags.push(eventTagObj);
     }
@@ -624,6 +647,9 @@ function toJSONClass() {
 		}
         table.rows[table.rows.length - 1 - window.currSelTag.pk].cells[0].innerHTML = selTag;
         table.rows[table.rows.length - 1 - window.currSelTag.pk].cells[1].innerHTML = currTarget.fields.name;
+		
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
     }
 
 	//IN PROGRESS
@@ -656,7 +682,9 @@ function toJSONClass() {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 		}
-		console.log(this.eventTags);
+		
+		document.getElementById('eventTagEditBtn').disabled = true;
+		document.getElementById('eventTagDelBtn').disabled = true;
     }
 
 
@@ -716,6 +744,9 @@ function toJSONClass() {
 		document.getElementById('locNameInput').value = "";
         document.getElementById('locXinput').value = "";
         document.getElementById('locYinput').value = "";
+		
+		document.getElementById('locEditBtn').disabled = true;
+		document.getElementById('locDelBtn').disabled = true;
     }
 
     this.edit_loc = function() {
@@ -754,6 +785,8 @@ function toJSONClass() {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 		}
+		document.getElementById('locEditBtn').disabled = true;
+		document.getElementById('locDelBtn').disabled = true;
     }
 
 
@@ -797,6 +830,8 @@ function toJSONClass() {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 		}
+		document.getElementById('locEditBtn').disabled = true;
+		document.getElementById('locDelBtn').disabled = true;
     }
 
 
@@ -1045,7 +1080,7 @@ function selChar(charObj) {
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    document.getElementById('charsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='lightblue';
     if (this.prevChar != null && this.prevChar != currRow) {
         document.getElementById('charsTableBody').rows[totalRows-this.prevChar].cells[0].style.backgroundColor='white';
     }
@@ -1081,9 +1116,9 @@ function selLoc(locObj) {
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[1].style.backgroundColor='red';
-	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[2].style.backgroundColor='red';
+    document.getElementById('locsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='lightblue';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[1].style.backgroundColor='lightblue';
+	document.getElementById('locsTableBody').rows[totalRows-currRow].cells[2].style.backgroundColor='lightblue';
     if (this.prevLoc != null && this.prevLoc != currRow) {
         document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[0].style.backgroundColor='white';
 		document.getElementById('locsTableBody').rows[totalRows-this.prevLoc].cells[1].style.backgroundColor='white';
@@ -1136,7 +1171,7 @@ function selEvent(eventObj) {
 
     //Highlight the currently selected item reseting the background of an object
     //that is no longer selected
-    document.getElementById('eventsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='red';
+    document.getElementById('eventsTableBody').rows[totalRows-currRow].cells[0].style.backgroundColor='lightblue';
     if (this.prevEvent != null && this.prevEvent != currRow) {
         document.getElementById('eventsTableBody').rows[totalRows-this.prevEvent].cells[0].style.backgroundColor='white';
     }
@@ -1202,8 +1237,8 @@ function selEventTag(tagObj) {
 				table.rows[i].cells[j].style.backgroundColor='white';
 			}
 	}
-	table.rows[totalRows-currRow].cells[0].style.backgroundColor='red';
-    table.rows[totalRows-currRow].cells[1].style.backgroundColor='red';
+	table.rows[totalRows-currRow].cells[0].style.backgroundColor='lightblue';
+    table.rows[totalRows-currRow].cells[1].style.backgroundColor='lightblue';
 	
 	currEdit.populateTagTargets();
 	document.getElementById('targetSel').selectedIndex = tagObj.targetpk;

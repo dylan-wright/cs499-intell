@@ -11,7 +11,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <!--Instantiating the JSON class object after the script was referenced -->
-  <script src="{% static "editor/FrontEndtoJSON.js" %}"></script>
+  <script src="FrontEndtoJSON.js"></script>
   <script src="{% static "editor/vis.min.js" %}"></script>
 </head>
 <body>
@@ -497,6 +497,17 @@
                 <div class="row">
                   <img id="locMap" src="{% static "Img/map.png" %}" class="img-responsive thumbnail" alt="Map">
                 </div>
+				<div class="row"><!--table input-->
+                    <div class="form-group col-xs-6">
+                        <input id="locNameInput" class="form-control" type="text" placeholder="Location Name">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <input id="locXinput" class="form-control" type="text" placeholder="X Coord">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <input id="locYinput" class="form-control" type="text" placeholder="Y Coord">
+                    </div>
+                </div>
                 <div class="row"> <!--Buttons -->
                   <div class="col-sm-4">
                     <button id="locAddBtn" type="button" class="btn btn-block" onclick="currEdit.add_loc()">Add</button>
@@ -523,17 +534,6 @@
                   </tbody>
                 </table>
                 </div>
-                </div>
-                <div class="row"><!--table input-->
-                    <div class="form-group col-xs-6">
-                        <input id="locNameInput" class="form-control" type="text" placeholder="Location Name">
-                    </div>
-                    <div class="form-group col-xs-3">
-                        <input id="locXinput" class="form-control" type="text" placeholder="X Coord">
-                    </div>
-                    <div class="form-group col-xs-3">
-                        <input id="locYinput" class="form-control" type="text" placeholder="Y Coord">
-                    </div>
                 </div>
               </div>
               <!-- Events Tab contents -->

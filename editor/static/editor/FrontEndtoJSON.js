@@ -204,8 +204,6 @@ function toJSONClass() {
 		editTarget.fields.key = isKey;
 		editTarget.fields.notes = charNotes;
 		
-        var editCharObj = this.hashJSON[this.charHash[window.currSelObj.pk]];
-		
         //also need to edit that specified value in the table
 		//get ref to table object
         var table = document.getElementById("charsTableBody");
@@ -246,6 +244,7 @@ function toJSONClass() {
                 //this.charHash[iCharObj.pk] = this.charHash[iCharObj.pk+1];
                 //decrement the pk of the object after the deleted value 
                 this.hashJSON[this.charHash[iCharHash]].pk--;
+				this.charHash[iCharHash]--;
             }
         }
 
@@ -440,6 +439,7 @@ function toJSONClass() {
         for(var iEventHash in this.eventHash){
 			if(iEventHash > pivotLoc && iEventHash != pivotLoc){
 				this.hashJSON[this.eventHash[iEventHash]].pk--;
+				this.eventHash[iEventHash]--;
 			}
 		}
 		
@@ -770,6 +770,7 @@ function toJSONClass() {
         for(var iLocHash in this. locHash){
             if(iLocHash > pivotLoc && iLocHash != pivotLoc){
                 this.hashJSON[this.locHash[iLocHash]].pk--;
+				this.locHash[iLocHash]--;
             }
         }
 
@@ -780,9 +781,9 @@ function toJSONClass() {
         this.locHash.splice(window.currSelObj.pk,1);
 
         //Finally, delete the actual row 
-        var delLocElement = document.getElementById("locsTableBody");
-        var currPos = (delLocElement.rows.length-1) - window.currSelObj.pk;
-        delLocElement.deleteRow(currPos);
+        var table = document.getElementById("locsTableBody");
+        var currPos = (table.rows.length-1) - window.currSelObj.pk;
+        table.deleteRow(currPos);
 		
 		//clear the input fields
         document.getElementById('locNameInput').value = "";

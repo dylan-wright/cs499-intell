@@ -395,7 +395,11 @@ def dump_request(request):
 
 @login_required
 def scenario_list(request):
-    return render(request, "editor/scenarios/scenario_list.html")
+    scenarios = Scenario.objects.filter(author=request.user)
+    context = {"scenarios": scenarios}
+
+    return render(request, "editor/scenarios/scenario_list.html", context)
+
 @login_required
 def scenario_details(request, pk):
     try:

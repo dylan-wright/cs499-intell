@@ -238,7 +238,7 @@ def play(request, pk):
                    "agents": Agent.objects.filter(player=player)}
         return render(request, "game/play/IntellGame.html", context)
     else:
-        return HttpResponseRedirect("/game/games/")
+        return render(request, "game/play/not_in_game.html")
 
 '''
 get_status

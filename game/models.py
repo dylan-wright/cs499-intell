@@ -31,6 +31,7 @@ Player
 '''
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
     points = models.IntegerField(default=0)
     names = ["Smith", "Brown", "Jones", "Bond", "Bourne", "Elam", "O'Kane",
              "Wright", "Campbell", "Fullington", "Washington", "Piwowarski"]
@@ -103,7 +104,6 @@ methods
 '''
 class Game(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
-    players = models.ManyToManyField(Player)
     started = models.BooleanField(default=False)
     creator = models.ForeignKey(User, null=True)
     turn = models.IntegerField(default=0)
@@ -127,7 +127,7 @@ class Game(models.Model):
 
     def get_users(self):
         users = []
-        for player in self.players.all():
+        for player in self.player_set.all():
             users += [player.user]
         return users
     '''
@@ -140,11 +140,10 @@ class Game(models.Model):
     '''
     def add_player(self, user):
         if user not in self.get_users():
-            player = Player(user=user)
-            player.points = self.scenario.point_num
+            player = Player(user=user, 
+                            game=self, 
+                            points=self.scenario.point_num)
             player.save()
-            self.players.add(player)
-            self.save()
 
     '''
     time_till
@@ -221,7 +220,7 @@ class Game(models.Model):
                 elif target_table == Agent:
                     # find agents in this game
                     agent_qset = Agent.objects.filter(
-                        player__in=self.players.all()
+                        player__in=self.player_set.all()
                     )
                     if target in agent_qset.all():
                         return True
@@ -300,7 +299,7 @@ class Game(models.Model):
 
         # process actions
         agents_to_proc = []
-        for player in self.players.all():
+        for player in self.player_set.all():
             # add agents to list
             agents_to_proc += Agent.objects.filter(player=player, alive=True)
 
@@ -500,7 +499,7 @@ class Game(models.Model):
     '''
     def start(self):
         #init players
-        for player in self.players.all():
+        for player in self.player_set.all():
             #all players get an agent
             player.add_agent()
 

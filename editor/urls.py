@@ -66,6 +66,9 @@ urlpatterns = [
     url(r'^edit/event/$', views.EventList.as_view(), name="character-view"),
     url(r'^edit/event/add/$', views.EventCreate.as_view(), name="character-add"),
     url(r'^edit/event/(?P<pk>[0-9]+)/$', views.EventUpdate.as_view(), name="character-update"),
-    url(r'^edit/event/(?P<pk>[0-9]+)/delete/$', views.EventDelete.as_view(), name="character-delete")
+    url(r'^edit/event/(?P<pk>[0-9]+)/delete/$', views.EventDelete.as_view(), name="character-delete"),
 
+    url(r'^scenarios/(?P<pk>[0-9]+)/$', views.scenario_details, name="scenario_details"),
+    url(r'^scenarios/$', views.scenario_list, name="scenario_list"),
+    url(r'^scenarios/(?P<pk>[0-9]+)/graph/$', views.scenario_graph, name="scenario_graph"),
 ]

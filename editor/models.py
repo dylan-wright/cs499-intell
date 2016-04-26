@@ -18,6 +18,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
+import json
 # Create your models here.
 '''
 Scenario
@@ -43,6 +44,56 @@ class Scenario(models.Model):
         else:
             return self.name
 
+    def graph_dump(self):
+        events = list(self.event_set.all())
+        characters = []
+        locations = []
+        descriptions = []
+        describedbys = []
+        happenedats = []
+        involveds = []
+
+        for event in events:
+            dbs = event.describedby_set.all()
+            describedbys += list(dbs)
+            for db in dbs:
+                descriptions += [db.description]
+
+            has = event.happenedat_set.all()
+            happenedats += list(has)
+            for ha in has:
+                location = ha.location
+                if location not in locations:
+                    locations += [location]
+
+            invs = event.involved_set.all()
+            involveds += list(invs)
+            for inv in invs:
+                character = inv.character
+                if character not in characters:
+                    characters += [character]
+
+
+        dump = [characters, locations, descriptions, events,
+                describedbys, happenedats, involveds]
+        for i in range(len(dump)):
+            for j in range(len(dump[i])):
+                dump[i][j] = dump[i][j].graph_dump()
+        tables = ['Character', 'Location', 'Description', 'Event',
+                  'DescribedBy', 'HappenedAt', 'Involved']
+        schema = {"Character":["id", "name", "key"],
+                  "Location":["id", "name", "x", "y"], 
+                  "Description":["id", "text", "hidden"],
+                  "Event":["id", "turn"],
+                  "DescribedBy":["id", "event_id", "description_id"],
+                  "HappenedAt":["id", "event_id", "location_id"],
+                  "Involved":["id", "event_id", "character_id"]}
+        split = 4
+
+        return json.dumps({"tables": tables,
+                           "schema": json.dumps(schema),
+                           "dump": json.dumps(dump),
+                           "split": split})
 
     '''
     load_events

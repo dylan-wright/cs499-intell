@@ -49,9 +49,21 @@ TopSiteTestCase
         test_profile
 '''
 class TopSiteTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user("user1",
+                                 "user@intellproject.com",
+                                 "1234pass")
+
     def test_index(self):
+        #test logged out returns login page
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
+
+        #test logged in returns account page
+        self.client.force_login(User.objects.all()[0])
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 302)
+        self.client.logout()
 
     def test_login(self):
         response = self.client.get("/login/")
@@ -61,9 +73,17 @@ class TopSiteTestCase(TestCase):
         #get register
         response = self.client.get("/register/")
         self.assertEqual(response.status_code, 200)
-        #post register
+
+        #post register same username
         response = self.client.post("/register/", {"first_name": "user",
                                                    "username": "user1",
+                                                   "password1": "1234pass",
+                                                   "password2": "1234pass"})
+        self.assertEqual(response.status_code, 200)
+
+        #post register diff username
+        response = self.client.post("/register/", {"first_name": "user",
+                                                   "username": "user2",
                                                    "password1": "1234pass",
                                                    "password2": "1234pass"})
         self.assertEqual(response.status_code, 302)

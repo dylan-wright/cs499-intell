@@ -77,7 +77,6 @@ var Waiting = (function () {
       if (settings.currGamesRow != null) {
         var key = settings.currGamesBody.rows[settings.currGamesRow].dataset.value;
         var xhttp = new XMLHttpRequest();
-        //TODO make async true
         xhttp.open("GET", "/game/games/"+key+"/end/", false);
         xhttp.send();
         response = JSON.parse(xhttp.responseText);
@@ -117,6 +116,7 @@ var Waiting = (function () {
           }
           settings.pendGamesBody.rows[rowIndex].className = "active";
           settings.pendGamesRow = rowIndex;
+          settings.buttons.joinButton.disabled = false;
         });
       })(i);
     }
@@ -153,11 +153,14 @@ var Waiting = (function () {
    */
   function create () {
     var xhttp = new XMLHttpRequest();
-    //TODO: make async true
-    xhttp.open("GET", "create/", false);
+    xhttp.onreadystatechange = function () {
+      if (xhttp.readystate == 4 && xhttp.status == 200) {
+        response = xhttp.responseText;
+        settings.createModalBody.innerHTML = response;
+      }
+    }
+    xhttp.open("GET", "create/", true);
     xhttp.send();
-    response = xhttp.responseText;
-    settings.createModalBody.innerHTML = response;
     
     $("#gameModal").modal();
   }

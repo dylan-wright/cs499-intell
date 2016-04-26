@@ -42,7 +42,7 @@ index
     template    /game/templates/game/index.html
 '''
 def index(request):
-    return HttpResponse("Game Index")
+    return HttpResponseRedirect("games/")
 
 '''
 games
@@ -142,9 +142,6 @@ join
 @login_required
 def join(request, pk):
     game = Game.objects.get(pk=pk)
-    #create player
-    player = Player(user=request.user, points=game.scenario.point_num)
-    player.save()
     #add to game
     game.add_player(request.user)
 
@@ -192,7 +189,7 @@ def submit_action(request, pk):
         #route to player
         game = Game.objects.get(pk=pk)
         if request.user in game.get_users():
-            player = game.players.get(user=request.user)
+            player = game.player_set.get(user=request.user)
             actionDict = json.loads(str(request.body)[2:-1])
 
             #does player control?
@@ -203,12 +200,10 @@ def submit_action(request, pk):
                 action = Action(acttype=actionName)
                 if actionName == "misInfo":
                     target_dict = actionDict["target"]
-                    action.acttype = actionName
                     action.actdict = json.dumps(target_dict)
                 elif actionName not in ["recruit", "research"]:
                     #(what target)
                     targetKey = actionDict["target"]
-                    action.acttype = actionName 
                     action.acttarget = targetKey
                 action.save()
                 agent.action = action
@@ -234,7 +229,7 @@ def play(request, pk):
     game = Game.objects.get(pk=pk)
     #verify user is playing game
     if user in game.get_users():
-        player = game.players.get(user=user)
+        player = game.player_set.get(user=user)
         context = {"pointsDisplay": player.points,
                    "turnDisplay": game.turn,
                    "timerDisplay": game.time_till(),
@@ -243,7 +238,7 @@ def play(request, pk):
                    "agents": Agent.objects.filter(player=player)}
         return render(request, "game/play/IntellGame.html", context)
     else:
-        return HttpResponseRedirect("/game/games/")
+        return render(request, "game/play/not_in_game.html")
 
 '''
 get_status
@@ -258,7 +253,7 @@ def get_status(request, pk):
     game = Game.objects.get(pk=pk)
     game.check_game()
     if request.user in game.get_users():
-        player = game.players.get(user=request.user)
+        player = game.player_set.get(user=request.user)
         points = player.points
         turn = game.turn
         messages = Message.objects.filter(player=player)
@@ -283,7 +278,7 @@ def get_snippets(request, pk):
     if request.user in game.get_users():
         events = game.get_snippets()
         data = []
-        player = game.players.filter(user=request.user)
+        player = game.player_set.filter(user=request.user)
         player_knowledge = Knowledge.objects.filter(player=player)
 
         known_events = []
@@ -384,7 +379,7 @@ def get_agents(request, pk):
     game.check_game()
     if request.user in game.get_users():
         data = []
-        for player in game.players.all():
+        for player in game.player_set.all():
             if player.user != request.user:
                 data += player.agent_set.all()
         json = serializers.serialize("json", data)
@@ -403,7 +398,7 @@ def get_own_agents(request, pk):
     game.check_game()
     if request.user in game.get_users():
         data = []
-        for agent in game.players.get(user=request.user).agent_set.all():
+        for agent in game.player_set.get(user=request.user).agent_set.all():
             data.append({"pk":agent.pk,"name":agent.name,
                          "action":agent.action.acttype})
         return HttpResponse(json.dumps(data), content_type="application_json")

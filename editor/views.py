@@ -63,6 +63,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.http import Http404
 import json
 
 # Create your views here.
@@ -354,22 +355,10 @@ def accept_ajax_scenario(request):
             i.save()
             dump[-1].append(i.graph_dump())
 
-#        context = {"data": {"scenario": scenario, 
-#                            "events": events,
-#                            "characters": characters,
-#                            "locations": locations,
-#                            "descriptions": descriptions,
-#                            "involveds": involveds,
-#                            "happend_ats": happened_ats,
-#                            "described_bys": described_bys}}
-
         if (scenario != None):
             scenario.file_name.save(str(scenario.id), ContentFile(body))
             scenario.save()
-        #scenario.save()
-        #file_name = str(scenario.id)
-        #scenario.file_name.save(file_name, fileUpload)
-        #scenario.save()
+
         tables = ['Character', 'Location', 'Description', 'Event',
                   'DescribedBy', 'HappenedAt', 'Involved']
         schema = {"Character":["id", "name", "key"],
@@ -385,38 +374,9 @@ def accept_ajax_scenario(request):
         context = {
             "json_dump": json_dump
         }
-        #return render(request, "editor/accept_ajax_scenario.html", context)
         return HttpResponse(json_dump, content_type="application_json")
     else:
         return HttpResponse(status=404)
-
-#TODO: move registrations things out of editor
-'''
-    login
-        read post username/password
-        authenticate
-'''
-'''
-def login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None and user.is_active:
-        login(request, user)
-        return HttpResponseRedirect("/account/loggedin")
-    else:
-        return HttpResponseRedirect("/account/invalid")
-'''
-
-'''
-    logout
-        logout user
-'''
-'''
-def logout_view(request):
-    logout(request)
-    HttpResponseRedirect("/account/loggedout")
-'''
 
 def dump_session(request):
     context = {"session": request.session.items,
@@ -432,3 +392,39 @@ def dump_request(request):
                    "files": request.body,
                    "meta": request.META}
     return render(request, "editor/dump_request.html", context)
+
+@login_required
+def scenario_list(request):
+    scenarios = Scenario.objects.filter(author=request.user)
+    context = {"scenarios": scenarios}
+
+    return render(request, "editor/scenarios/scenario_list.html", context)
+
+@login_required
+def scenario_details(request, pk):
+    try:
+        scenario = Scenario.objects.get(pk=pk)
+    except Scenario.DoesNotExist:
+        raise Http404("Scenario does not exist")
+
+    if request.user == scenario.author:
+        if request.method == "GET":
+            file_in = open(scenario.file_name.path, 'r')
+            body = file_in.read()
+            file_in.close()
+            json_dump = scenario.graph_dump()
+            context = {"file_data": body,
+                       "scenario": scenario,
+                       "json_dump": json_dump}
+            return render(request, "editor/scenarios/scenario_details.html",
+                          context=context)
+        elif request.method == "POST":
+            scenario.delete()
+            return HttpResponseRedirect("../")
+    else:
+        return HttpResponse("Cannot view scenarios you dont own",
+                            content_type="text/plain")
+@login_required
+def scenario_graph(request, pk):
+    return HttpResponse(Scenario.objects.get(pk=pk).graph_dump(), 
+                        content_type="application/json")

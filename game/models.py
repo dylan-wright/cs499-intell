@@ -17,7 +17,7 @@ from editor.models import *
 from django.contrib.auth.models import User
 from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
-from random import random
+from random import random, choice
 import json
 
 # Create your models here.
@@ -31,7 +31,10 @@ Player
 '''
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
     points = models.IntegerField(default=0)
+    names = ["Smith", "Brown", "Jones", "Bond", "Bourne", "Elam", "O'Kane",
+             "Wright", "Campbell", "Fullington", "Washington", "Piwowarski"]
 
     def __str__(self):
         return "player controlled by %s"%(self.user.username)
@@ -39,7 +42,20 @@ class Player(models.Model):
     def add_agent(self):
         action = Action()
         action.save()
-        agent = Agent(name="", alive=True, action=action, player=self)
+
+        curr_agent_names = [agent.name for agent in self.agent_set.all()]
+        
+        if len(curr_agent_names) == len(self.names):
+            name = "X"
+        else:
+            name = choice(self.names)
+            while name in curr_agent_names:
+                name = choice(self.names)
+
+        agent = Agent(name=name,
+                      alive=True, 
+                      action=action, 
+                      player=self)
         agent.save()
 
     '''
@@ -88,7 +104,6 @@ methods
 '''
 class Game(models.Model):
     scenario = models.ForeignKey(Scenario, on_delete=models.CASCADE)
-    players = models.ManyToManyField(Player)
     started = models.BooleanField(default=False)
     creator = models.ForeignKey(User, null=True)
     turn = models.IntegerField(default=0)
@@ -112,7 +127,7 @@ class Game(models.Model):
 
     def get_users(self):
         users = []
-        for player in self.players.all():
+        for player in self.player_set.all():
             users += [player.user]
         return users
     '''
@@ -125,11 +140,10 @@ class Game(models.Model):
     '''
     def add_player(self, user):
         if user not in self.get_users():
-            player = Player(user=user)
-            player.points = self.scenario.point_num
+            player = Player(user=user, 
+                            game=self, 
+                            points=self.scenario.point_num)
             player.save()
-            self.players.add(player)
-            self.save()
 
     '''
     time_till
@@ -206,7 +220,7 @@ class Game(models.Model):
                 elif target_table == Agent:
                     # find agents in this game
                     agent_qset = Agent.objects.filter(
-                        player__in=self.players.all()
+                        player__in=self.player_set.all()
                     )
                     if target in agent_qset.all():
                         return True
@@ -285,7 +299,7 @@ class Game(models.Model):
 
         # process actions
         agents_to_proc = []
-        for player in self.players.all():
+        for player in self.player_set.all():
             # add agents to list
             agents_to_proc += Agent.objects.filter(player=player, alive=True)
 
@@ -412,7 +426,8 @@ class Game(models.Model):
             location_id = target_dict["location"]
             description_text = target_dict["description"]
 
-            event = Event(turn=self.turn, misinf=True)
+            ## -1 fixes timing
+            event = Event(turn=self.turn-1, misinf=True)
             event.scenario = self.scenario
             event.save()
 
@@ -430,9 +445,14 @@ class Game(models.Model):
             describedby = DescribedBy(event=event,
                                       description=description)
             describedby.save()
+            knowledge = Knowledge(player=player, turn=self.turn,
+                                  event=event)
+            knowledge.save()
+
             message.text = "Misinformation that '%s' succesfully diseminated"%(
                 description_text
             )
+            message.save()
         elif action.acttype == "recruit":
             #player gets another agent
             #TODO: test to ensure new agents cant act
@@ -479,7 +499,7 @@ class Game(models.Model):
     '''
     def start(self):
         #init players
-        for player in self.players.all():
+        for player in self.player_set.all():
             #all players get an agent
             player.add_agent()
 

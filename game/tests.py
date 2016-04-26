@@ -91,7 +91,7 @@ class  GameTestCase(TestCase):
         self.assertNotEqual(game.next_turn, next_turn)
         #self.assertAlmostEqual(game.next_turn.timestamp(), (next_turn+game.turn_length).timestamp())
 
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         action = Action(acttype="research")
         action.save()
@@ -130,20 +130,20 @@ class  GameTestCase(TestCase):
         u2.save()
         u3.save()
 
-        self.assertEqual(len(game.players.all()), 0)
+        self.assertEqual(len(game.player_set.all()), 0)
 
         game.add_player(u1)
         game.add_player(u2)
         game.add_player(u3)
 
-        self.assertEqual(len(game.players.all()), 3)
-        self.assertEqual(game.players.all()[0].user.username, "user1")
+        self.assertEqual(len(game.player_set.all()), 3)
+        self.assertEqual(game.player_set.all()[0].user.username, "user1")
 
         game.add_player(u1)
         game.add_player(u2)
         game.add_player(u3)
 
-        self.assertEqual(len(game.players.all()), 3)
+        self.assertEqual(len(game.player_set.all()), 3)
 
     def test_start_game(self):
         '''test games start correctly'''
@@ -158,13 +158,18 @@ PlayerTestCase
         test_create_player
 '''
 class PlayerTestCase(TestCase):
-    def setUp(self):
-        u1 = User(username="user1", first_name="Test 1")
-        u1.save()
-
     def test_create_player(self):
         '''test creating player'''
-        player = Player(user=User.objects.get(username="user1"))
+        u1 = User(username="user1", first_name="Test 1")
+        u1.save()
+        scenario = Scenario(name="test",
+                            turn_num=20,
+                            point_num=20,
+                            file_name="fixture.json")
+        scenario.save()
+        game = Game.objects.create(scenario=scenario)
+        game.save()
+        player = Player(user=u1, game=game)
         player.save()
 
         self.assertEqual(len(Player.objects.all()), 1)
@@ -215,7 +220,7 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="tail", acttarget=ted.pk)
         action.save()
         #using player 1's 1st agent (only at this point)
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -279,7 +284,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="tail", acttarget=character.pk)
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -309,7 +314,7 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="investigate", acttarget=seattle.pk)
         action.save()
         #using player 1's 1st agent (only at this point)
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -377,7 +382,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="investigate", acttarget=location.pk)
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -409,7 +414,7 @@ class ProcessActionsTestCase(TestCase):
         action = Action(acttype="check", acttarget=reserv_cairo.pk)
         action.save()
         #using player 1's 1st agent
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -457,7 +462,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="check", acttarget=description.pk)
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -488,7 +493,7 @@ class ProcessActionsTestCase(TestCase):
                                      "location":1, 
                                      "description":""})
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -507,7 +512,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="recruit")
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -532,7 +537,7 @@ class ProcessActionsTestCase(TestCase):
         ted = Character.objects.get(name="Ted Kaczynski")
         action = Action(acttype="apprehend", acttarget=ted.pk)
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -566,7 +571,7 @@ class ProcessActionsTestCase(TestCase):
         game = Game.objects.all()[0]
         action = Action(acttype="research")
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -583,10 +588,10 @@ class ProcessActionsTestCase(TestCase):
     def test_terminate__action(self):
         '''test terminate agent action'''
         game = Game.objects.all()[0]
-        p2_agent = game.players.all()[1].agent_set.all()[0]
+        p2_agent = game.player_set.all()[1].agent_set.all()[0]
         action = Action(acttype="terminate", acttarget=p2_agent.pk)
         action.save()
-        player = game.players.all()[0]
+        player = game.player_set.all()[0]
         agent = player.agent_set.all()[0]
         agent.action = action
         agent.save()
@@ -642,7 +647,7 @@ class GameListViewsTestCase(TestCase):
 
     def test_index(self):
         response = self.client.get("/game/")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def test_games(self):
         response = self.client.get("/game/games/")
@@ -731,7 +736,7 @@ class GamePlayViewsTestCase(TestCase):
         game.start()
 
     def test_submit_action(self):
-        player = Game.objects.all()[0].players.all()[0]
+        player = Game.objects.all()[0].player_set.all()[0]
         agent = player.agent_set.all()[0]
         response = self.client.post("/game/play/1/submit_action/",
                                     content_type="application/json",

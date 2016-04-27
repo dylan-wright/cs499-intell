@@ -251,3 +251,24 @@ class EditorViewsTestCase(TestCase):
     def test_dump_request(self):
         response = self.client.get("/editor/dump_request/")
         self.assertEqual(response.status_code, 200)
+
+    def test_scenario_details(self):
+        file_in = open("editor/static/editor/fixture.json", "r")
+        body = file_in.read()
+        file_in.close()
+
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                                    body,
+                                    content_type="application/json")
+        response = self.client.get("/editor/scenarios/1/")
+        self.assertEqual(response.status_code, 200)
+    def test_scenario_graph(self):
+        file_in = open("editor/static/editor/fixture.json", "r")
+        body = file_in.read()
+        file_in.close()
+
+        response = self.client.post("/editor/accept_ajax_scenario/",
+                                    body,
+                                    content_type="application/json")
+        response = self.client.get("/editor/scenarios/1/graph/")
+        self.assertEqual(response.status_code, 200)

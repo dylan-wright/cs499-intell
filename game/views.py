@@ -286,7 +286,7 @@ def get_snippets(request, pk):
             if knowledge.event not in known_events:
                 known_events += [knowledge.event]
 
-        for event in events.all():
+        for event in events:
             describedbys = event.describedby_set.all()
             for describedby in describedbys:
                 edict = {}
@@ -333,7 +333,7 @@ def get_characters(request, pk):
         events = game.get_snippets()
         data = []
         pks = []
-        for event in events.all():
+        for event in events:
             involveds = event.involved_set.all()
             for involved in involveds:
                 if involved.character.pk not in pks:
@@ -357,7 +357,7 @@ def get_locations(request, pk):
         events = game.get_snippets()
         data = []
         pks = []
-        for event in events.all():
+        for event in events:
             happenedats = event.happenedat_set.all()
             for happenedat in happenedats:
                 if happenedat.location.pk not in pks:

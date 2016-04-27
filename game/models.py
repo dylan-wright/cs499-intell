@@ -19,6 +19,7 @@ from datetime import timedelta
 from django.utils.timezone import datetime, make_aware
 from random import random, choice
 import json
+from django.db.models import Q
 
 # Create your models here.
 '''
@@ -359,7 +360,7 @@ class Game(models.Model):
                 character__id=action.acttarget
             )
             for involved in involveds.all():
-                if involved.event.turn < self.turn:
+                if involved.event.turn <= self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
                                           event=involved.event)
                     knowledge.save()
@@ -383,7 +384,7 @@ class Game(models.Model):
                 location__id=action.acttarget
             )
             for happenedat in happenedats:
-                if happenedat.event.turn < self.turn:
+                if happenedat.event.turn <= self.turn:
                     knowledge = Knowledge(player=player, turn=self.turn,
                                           event=happenedat.event)
                     knowledge.save()
@@ -406,7 +407,7 @@ class Game(models.Model):
             describedby = DescribedBy.objects.get(
                 description__id=action.acttarget
             )
-            if describedby.event.turn < self.turn:
+            if describedby.event.turn <= self.turn:
                 knowledge = Knowledge(player=player, turn=self.turn,
                                       event=describedby.event)
                 knowledge.save()
@@ -427,7 +428,7 @@ class Game(models.Model):
             description_text = target_dict["description"]
 
             ## -1 fixes timing
-            event = Event(turn=self.turn-1, misinf=True)
+            event = Event(turn=self.turn, misinf=True)
             event.scenario = self.scenario
             event.save()
 
@@ -448,6 +449,8 @@ class Game(models.Model):
             knowledge = Knowledge(player=player, turn=self.turn,
                                   event=event)
             knowledge.save()
+            misinfo = Misinformation(game=self, event=event)
+            misinfo.save()
 
             message.text = "Misinformation that '%s' succesfully diseminated"%(
                 description_text
@@ -511,11 +514,23 @@ class Game(models.Model):
         #init first turn 
         self.start_next_turn()
 
+    '''
+    get_snippets
+    '''
     def get_snippets(self):
         events = Event.objects.filter(scenario=self.scenario,
-                                      turn__lt=self.turn)
-
-        return events
+                                      turn__lt=self.turn+1)
+        misinf = Misinformation.objects.filter(game=self)
+        misinfevents = [mis.event for mis in misinf]
+        ##build presented events
+        present = []
+        for event in events:
+            if event.misinf:
+                if event in misinfevents:
+                    present.append(event)
+            else:
+                present.append(event)
+        return present
 
     '''
     check_game
@@ -613,3 +628,19 @@ class Message(models.Model):
 
     def __str__(self):
         return self.text
+
+'''
+Misinformation
+    model representing misinfo. needed to prevent scenarios from being
+    corrupted by games
+
+    id
+    event
+    game
+'''
+class Misinformation(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "misinfo event %i game %i" % (self.event.id, self.game.id)

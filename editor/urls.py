@@ -71,4 +71,6 @@ urlpatterns = [
     url(r'^scenarios/(?P<pk>[0-9]+)/$', views.scenario_details, name="scenario_details"),
     url(r'^scenarios/$', views.scenario_list, name="scenario_list"),
     url(r'^scenarios/(?P<pk>[0-9]+)/graph/$', views.scenario_graph, name="scenario_graph"),
+    url(r'^scenarios/(?P<pk>[0-9]+)/search/$', views.search, name="search"),
+    url(r'^scenarios/(?P<pk>[0-9]+)/search/(?P<tag>[0-1])/(?P<tagName>([a-z]|[A-Z])*)/$', views.scenario_search, name="scenario_search"),
 ]

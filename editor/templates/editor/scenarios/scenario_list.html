@@ -6,7 +6,8 @@
 {% for scenario in scenarios %}
 <tr><td>{{ scenario.pk }}</td>
     <td>{{ scenario.name }}</td>
-    <td><a href="{{ scenario.pk }}/">View</a></td></tr>
+    <td><a href="{{ scenario.pk }}/">View</a></td>
+    <td><a href="{{ scenario.pk}}/search/">Search</a></td></tr>
 {% empty %}
 <tr><td>No scenarios</td></tr>
 {% endfor %}

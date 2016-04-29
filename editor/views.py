@@ -428,3 +428,37 @@ def scenario_details(request, pk):
 def scenario_graph(request, pk):
     return HttpResponse(Scenario.objects.get(pk=pk).graph_dump(), 
                         content_type="application/json")
+
+@login_required
+def scenario_search(request, pk, tag, tagName):
+    try:
+        scenario = Scenario.objects.get(pk=pk)
+    except Scenario.DoesNotExist:
+        raise Http404("Scenario does not exist")
+    events = list(scenario.event_set.all())
+    results = []
+    for event in events:
+        if tag == "0":
+            #character search
+            invs = list(event.involved_set.all())
+            for inv in invs:
+                if inv.character.name == tagName:
+                    results.append(event)
+                    break
+        elif tag == "1":
+            #location search
+            has = list(event.happenedat_set.all())
+            for ha in has:
+                if ha.location.name == tagName:
+                    results.append(event)
+                    break
+    context = {"tag": tag,
+               "query": tagName,
+               "results": results,
+               "scenario": scenario}
+    return render(request, "editor/scenarios/scenario_search.html",
+                  context=context)
+
+@login_required
+def search(request, pk):
+    return render(request, "editor/scenarios/search.html")
